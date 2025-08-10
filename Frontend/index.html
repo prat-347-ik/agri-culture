@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Home</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <header>
+      <a href="#" class="logo">Agri-Culture</a>
+      <div class="header-right">
+        <select id="langSelect" class="lang-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="mr">मराठी</option>
+        </select>
+        <a href="#" id="headerLoginLink" class="login-btn" data-i18n="login">Login</a>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+      <!-- Left Sidebar -->
+      <aside class="sidebar">
+        <div class="menu-text" data-i18n="menu">Menu</div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li><a href="home.html" class="nav-link active" data-i18n="home">Home</a></li>
+            <li><a href="map.html" class="nav-link" data-i18n="map">Map</a></li>
+            <li><a href="marketplace.html" class="nav-link" data-i18n="market">Market</a></li>
+            <li><a href="contacts.html" class="nav-link" data-i18n="contacts">Contacts</a></li>
+            <li><a href="profile.html" class="nav-link" data-i18n="profile">Profile</a></li>
+            <li><a href="etc.html" class="nav-link" data-i18n="etc">etc</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area hosts each page inside an iframe so menu stays visible -->
+      <main class="content">
+        <iframe id="contentFrame" class="content-frame" src="home.html?embed=1" title="Section content"></iframe>
+      </main>
+    </div>
+  </div>
+
+  <!-- Fullscreen login overlay -->
+  <div id="loginOverlay" class="fullscreen-overlay" aria-hidden="true">
+    <button class="overlay-close" id="loginOverlayClose" aria-label="Close">×</button>
+    <div class="overlay-inner">
+      <iframe id="loginOverlayFrame" src="about:blank" title="Login"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Agri-Culture. Connecting Farmers for a Better Tomorrow.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

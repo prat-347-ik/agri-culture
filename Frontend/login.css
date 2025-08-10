@@ -1,0 +1,95 @@
+@import url('style.css');
+
+/* Login specific overrides */
+.auth-card h2 { 
+    text-align: center; 
+    margin-bottom: 2rem;
+}
+
+.auth-card { 
+    border-top: 6px solid var(--secondary); 
+    position: relative;
+    overflow: hidden;
+}
+
+/* Enhanced step transitions */
+#stepPhone, #stepOtp, #stepSuccess {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Better form field alignment */
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-field label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+/* Enhanced button styling */
+.btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Success step enhancements */
+#stepSuccess {
+    padding: 1rem 0;
+}
+
+#stepSuccess .success {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+}
+
+/* Responsive improvements */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    #stepSuccess .success {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    
+    #stepSuccess .btn {
+        min-width: 120px;
+        padding: 0.8rem 1.5rem;
+    }
+}

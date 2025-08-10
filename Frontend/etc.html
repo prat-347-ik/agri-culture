@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Additional Services</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      if (p.get('embed') === '1') document.body ? document.body.classList.add('embedded') : null;
+      if (p.get('embed') === '1') document.documentElement.classList.add('embed');
+    })();
+  </script>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="content-inner">
+    <div class="content-section">
+      <h2 data-i18n="additionalServices">Additional Services</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <h3 data-i18n="weatherForecast">Weather Forecast</h3>
+          <p data-i18n="weatherDesc">Get daily weather updates for your area</p>
+          <div class="weather-widget">
+            <div class="weather-info">
+              <span class="temp">28°C</span>
+              <span class="condition" data-i18n="sunny">Sunny</span>
+            </div>
+            <button class="service-btn" data-i18n="viewDetails">View Details</button>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <h3 data-i18n="cropCalendar">Crop Calendar</h3>
+          <p data-i18n="cropCalendarDesc">Plan your farming activities</p>
+          <div class="calendar-widget">
+            <div class="calendar-info">
+              <span class="month">December</span>
+              <span class="crop" data-i18n="wheatSeason">Wheat Season</span>
+            </div>
+            <button class="service-btn" data-i18n="viewCalendar">View Calendar</button>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <h3 data-i18n="priceUpdates">Price Updates</h3>
+          <p data-i18n="priceUpdatesDesc">Latest market prices for crops</p>
+          <div class="price-widget">
+            <div class="price-info">
+              <span class="crop-price">Wheat: ₹2,100/qt</span>
+              <span class="trend">↑ +5%</span>
+            </div>
+            <button class="service-btn" data-i18n="viewPrices">View Prices</button>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <h3 data-i18n="expertAdvice">Expert Advice</h3>
+          <p data-i18n="expertAdviceDesc">Connect with agricultural experts</p>
+          <div class="expert-widget">
+            <div class="expert-info">
+              <span class="expert-name">Dr. Sharma</span>
+              <span class="expert-specialty" data-i18n="soilExpert">Soil Expert</span>
+            </div>
+              <button class="service-btn" data-i18n="chatNow">Chat Now</button>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <h3 data-i18n="trainingPrograms">Training Programs</h3>
+          <p data-i18n="trainingDesc">Learn modern farming techniques</p>
+          <div class="training-widget">
+            <div class="training-info">
+              <span class="course" data-i18n="organicFarming">Organic Farming</span>
+              <span class="duration" data-i18n="twoWeeks">2 weeks</span>
+            </div>
+            <button class="service-btn" data-i18n="enrollNow">Enroll Now</button>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <h3 data-i18n="insuranceServices">Insurance Services</h3>
+          <p data-i18n="insuranceDesc">Protect your crops and equipment</p>
+          <div class="insurance-widget">
+            <div class="insurance-info">
+              <span class="coverage" data-i18n="cropInsurance">Crop Insurance</span>
+              <span class="premium">₹500/year</span>
+            </div>
+            <button class="service-btn" data-i18n="getQuote">Get Quote</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Marketplace</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      if (p.get('embed') === '1') document.body ? document.body.classList.add('embedded') : null;
+      if (p.get('embed') === '1') document.documentElement.classList.add('embed');
+    })();
+  </script>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="content-inner">
+    <div class="content-section">
+      <h2 data-i18n="market">Marketplace</h2>
+      <div class="market-tabs">
+        <button class="tab-link active" onclick="openMarketTab(event, 'buy')" data-i18n="buy">Buy</button>
+        <button class="tab-link" onclick="openMarketTab(event, 'bid')" data-i18n="bid">Bid</button>
+        <button class="tab-link" onclick="openMarketTab(event, 'rent')" data-i18n="rent">Rent</button>
+      </div>
+      
+      <div id="buy" class="tab-content" style="display:block;">
+        <div class="market-items">
+          <div class="market-item">
+            <h3>Tractor</h3>
+            <p class="price">$10,000</p>
+            <p class="description" data-i18n="tractorDesc">High-quality farming tractor</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="seeds">Seeds Package</h3>
+            <p class="price">$200</p>
+            <p class="description" data-i18n="seedsDesc">Premium quality seeds</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="fertilizer">Fertilizer</h3>
+            <p class="price">$150</p>
+            <p class="description" data-i18n="fertilizerDesc">Organic fertilizer blend</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="irrigation">Irrigation System</h3>
+            <p class="price">$5,000</p>
+            <p class="description" data-i18n="irrigationDesc">Complete irrigation setup</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="bid" class="tab-content">
+        <div class="bid-section-header">
+          <h3>Live Auctions</h3>
+          <p>Place your bids on agricultural equipment and supplies</p>
+        </div>
+        <div class="market-items">
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="pesticide">Pesticide</h3>
+            <p class="price" data-i18n="starting50">Starting: $50</p>
+            <p class="current-bid">Current Bid: $75</p>
+            <p class="description" data-i18n="pesticideDesc">Eco-friendly pesticide</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="76" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 2h 15m</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="harvester">Harvester</h3>
+            <p class="price" data-i18n="starting15000">Starting: $15,000</p>
+            <p class="current-bid">Current Bid: $18,500</p>
+            <p class="description" data-i18n="harvesterDesc">Advanced harvesting machine</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="18501" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 1d 8h</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="greenhouse">Greenhouse</h3>
+            <p class="price" data-i18n="starting8000">Starting: $8,000</p>
+            <p class="current-bid">Current Bid: $9,200</p>
+            <p class="description" data-i18n="greenhouseDesc">Complete greenhouse setup</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="9201" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 5h 30m</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status ending">Ending Soon</div>
+            <h3>Tractor Parts</h3>
+            <p class="price">Starting: $500</p>
+            <p class="current-bid">Current Bid: $750</p>
+            <p class="description">Complete set of tractor replacement parts</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="751" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 45m</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="rent" class="tab-content">
+        <div class="rent-section-header">
+          <h3>Equipment Rental</h3>
+          <p>Rent agricultural equipment for your farming needs</p>
+        </div>
+        <div class="market-items">
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="irrigationPump">Irrigation Pump</h3>
+            <p class="price">$40/month</p>
+            <p class="rental-period">Minimum: 1 month</p>
+            <p class="description" data-i18n="pumpDesc">High-capacity pump</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Month</option>
+                <option value="3">3 Months</option>
+                <option value="6">6 Months</option>
+                <option value="12">1 Year</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Free delivery within 50km</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="tractor">Tractor</h3>
+            <p class="price">$200/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description" data-i18n="tractorRentDesc">Daily tractor rental</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Operator included</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="harvester">Harvester</h3>
+            <p class="price">$500/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description" data-i18n="harvesterRentDesc">Professional harvester</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Professional operator included</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3>Seed Drill</h3>
+            <p class="price">$80/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description">Precision seed drilling equipment</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Setup assistance included</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html> 

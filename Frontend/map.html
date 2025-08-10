@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Farmers' Map</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      if (p.get('embed') === '1') document.body ? document.body.classList.add('embedded') : null;
+      if (p.get('embed') === '1') document.documentElement.classList.add('embed');
+    })();
+  </script>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="map-page">
+    <div class="map-overlay-controls">
+      <button class="map-btn active" data-i18n="allFarms">All Farms</button>
+      <button class="map-btn" data-i18n="cropFields">Crop Fields</button>
+      <button class="map-btn" data-i18n="equipment">Equipment</button>
+      <button class="map-btn" data-i18n="weather">Weather</button>
+    </div>
+    <iframe class="map-iframe" src="https://www.openstreetmap.org/export/embed.html"></iframe>
+  </div>
+</body>
+</html> 

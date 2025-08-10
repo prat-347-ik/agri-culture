@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Contacts</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      if (p.get('embed') === '1') document.body ? document.body.classList.add('embedded') : null;
+      if (p.get('embed') === '1') document.documentElement.classList.add('embed');
+    })();
+  </script>
+</head>
+<body>
+  <!-- Main Content Area -->
+  <div class="content-inner">
+    <div class="content-section">
+      <h2 data-i18n="contacts">Important Contacts</h2>
+      <div class="contact-search">
+        <input type="text" placeholder="Search contacts..." class="search-input" data-i18n-placeholder="searchContacts">
+        <button class="search-btn" data-i18n="search">Search</button>
+      </div>
+      
+      <div class="contact-categories">
+        <button class="category-btn active" data-i18n="all">All</button>
+        <button class="category-btn" data-i18n="government">Government</button>
+        <button class="category-btn" data-i18n="emergency">Emergency</button>
+        <button class="category-btn" data-i18n="services">Services</button>
+      </div>
+      
+      <table class="contacts-table">
+        <thead>
+          <tr>
+            <th data-i18n="role">Role</th>
+            <th data-i18n="nameDept">Name/Dept</th>
+            <th data-i18n="contactNumber">Contact Number</th>
+            <th>Email</th>
+            <th data-i18n="action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-i18n="talukaOffice">Taluka Office</td>
+            <td>Main Taluka</td>
+            <td>12345 67890</td>
+            <td>taluka@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="policeStation">Police Station</td>
+            <td>Main Police</td>
+            <td>100</td>
+            <td>police@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="vetVan">Vet Van</td>
+            <td>Vet Service Dept</td>
+            <td>101</td>
+            <td>vet@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="soilTesting">Soil Testing</td>
+            <td>Agri Lab</td>
+            <td>102</td>
+            <td>soil@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="weatherService">Weather Service</td>
+            <td>Met Dept</td>
+            <td>103</td>
+            <td>weather@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="agriExtension">Agricultural Extension</td>
+            <td>Extension Office</td>
+            <td>104</td>
+            <td>extension@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="emergencyHelpline">Emergency Helpline</td>
+            <td>24/7 Support</td>
+            <td>105</td>
+            <td>emergency@agri.gov</td>
+            <td><button class="call-btn emergency" data-i18n="call">Call</button></td>
+          </tr>
+          <tr>
+            <td data-i18n="cropInsurance">Crop Insurance</td>
+            <td>Insurance Dept</td>
+            <td>106</td>
+            <td>insurance@agri.gov</td>
+            <td><button class="call-btn" data-i18n="call">Call</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html> 

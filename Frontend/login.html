@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agri-Culture - Login</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="login.css"/>
+  <script>
+    (function(){
+      const p = new URLSearchParams(location.search);
+      const isEmbed = p.get('embed') === '1';
+      if (isEmbed) {
+        document.documentElement.classList.add('embed');
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.classList.add('embedded','login-only');
+        });
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>Agri-Culture</h1>
+    </div>
+    <div class="header-right">
+      <a href="#" class="login-link" data-i18n="login">Login</a>
+      <select id="langSelect" class="lang-select" aria-label="Language">
+        <option value="en">English</option>
+        <option value="mr">मराठी</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="content" style="height: calc(100vh - var(--header-height));">
+    <div class="auth-wrapper">
+      <div class="auth-card">
+        <h2 data-i18n="login">Login</h2>
+        <div id="stepPhone">
+          <div class="form-field">
+            <label data-i18n="phoneNumber">Phone Number</label>
+            <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210"/>
+            <div class="helper" data-i18n="phoneHelper">Enter 10-digit mobile number</div>
+          </div>
+          <button class="btn" id="sendOtpBtn" data-i18n="sendOtp">Send OTP</button>
+        </div>
+
+        <div id="stepOtp" style="display:none;">
+          <div class="form-field">
+            <label data-i18n="enterOtp">Enter OTP</label>
+            <div class="otp-row" id="otpRow">
+              <input type="text" maxlength="1"/>
+              <input type="text" maxlength="1"/>
+              <input type="text" maxlength="1"/>
+              <input type="text" maxlength="1"/>
+              <input type="text" maxlength="1"/>
+              <input type="text" maxlength="1"/>
+            </div>
+            <div class="helper" id="otpHelper">OTP sent to your phone</div>
+          </div>
+          <div class="form-row">
+            <button class="btn secondary" id="resendBtn" data-i18n="resend">Resend</button>
+            <button class="btn" id="verifyBtn" data-i18n="verify">Verify</button>
+          </div>
+        </div>
+
+        <div id="stepSuccess" style="display:none;">
+          <div class="success-step-content">
+            <p class="success" data-i18n="verified">Phone verified!</p>
+            <a class="btn continue-btn" href="profile.html" data-i18n="continue">Continue</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const phoneInput = document.getElementById('phoneInput');
+      const sendBtn = document.getElementById('sendOtpBtn');
+      const stepPhone = document.getElementById('stepPhone');
+      const stepOtp = document.getElementById('stepOtp');
+      const stepSuccess = document.getElementById('stepSuccess');
+      const otpInputs = Array.from(document.querySelectorAll('#otpRow input'));
+      const verifyBtn = document.getElementById('verifyBtn');
+      const resendBtn = document.getElementById('resendBtn');
+
+      let otp = '';
+
+      function generateOtp() {
+        otp = String(Math.floor(100000 + Math.random()*900000));
+        console.log('DEBUG OTP:', otp);
+        document.getElementById('otpHelper').textContent = `OTP sent: ${otp}`;
+      }
+
+      function gotoOtp() {
+        stepPhone.style.display = 'none';
+        stepOtp.style.display = 'block';
+        generateOtp();
+        otpInputs[0].focus();
+      }
+
+      sendBtn.addEventListener('click', () => {
+        const val = (phoneInput.value || '').trim();
+        if (!/^\d{10}$/.test(val)) { alert('Enter a valid 10-digit number'); return; }
+        localStorage.setItem('auth_phone', val);
+        gotoOtp();
+      });
+
+      otpInputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/\D/g,'').slice(0,1);
+          if (input.value && idx < otpInputs.length - 1) otpInputs[idx+1].focus();
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) otpInputs[idx-1].focus();
+        });
+      });
+
+      verifyBtn.addEventListener('click', () => {
+        const entered = otpInputs.map(i => i.value).join('');
+        if (entered.length !== 6) { alert('Enter the 6-digit OTP'); return; }
+        if (entered !== otp) { alert('Invalid OTP'); return; }
+        localStorage.setItem('auth_verified', '1');
+        stepOtp.style.display = 'none';
+        stepSuccess.style.display = 'block';
+      });
+
+      resendBtn.addEventListener('click', generateOtp);
+    });
+  </script>
+</body>
+</html>
