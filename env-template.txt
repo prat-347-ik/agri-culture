@@ -1,0 +1,17 @@
+# Environment Variables for Agri-Culture Project
+# Copy this content to a file named .env in your project root
+
+# HERE Maps API Configuration
+HERE_MAPS_API_KEY=your_actual_here_maps_api_key_here
+
+# API Configuration
+ENROLL_API_BASE=http://localhost:5000
+
+# Server Configuration
+PORT=3000
+
+# Database Configuration (if needed later)
+# DATABASE_URL=your_database_url_here
+
+# JWT Secret (if needed later)
+# JWT_SECRET=your_jwt_secret_here
