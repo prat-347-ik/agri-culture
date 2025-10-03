@@ -697,4 +697,330 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (overlayClose) overlayClose.addEventListener('click', closeOverlay);
 });
+
+// Marketplace API Integration Functions
+async function getApiConfig() {
+  try {
+    const response = await fetch('/api/config');
+    if (!response.ok) throw new Error('Failed to get API config');
+    const config = await response.json();
+    return {
+      baseUrl: config.ENROLL_API_BASE || 'http://localhost:5000'
+    };
+  } catch (error) {
+    console.error('API config error:', error);
+    return {
+      baseUrl: 'http://localhost:5000'
+    };
+  }
+}
+
+// Load regular products (Buy tab)
+async function loadProducts() {
+  const buyItems = document.getElementById('buy-items');
+  const buyLoading = document.getElementById('buy-loading');
+  const buyError = document.getElementById('buy-error');
+  
+  if (!buyItems) return;
+  
+  showLoading(buyLoading);
+  hideError(buyError);
+  
+  try {
+    const config = await getApiConfig();
+    const response = await fetch(`${config.baseUrl}/api/marketplace/products?isBidding=false&limit=12`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.success && data.data.products) {
+      renderProducts(data.data.products, buyItems);
+    } else {
+      throw new Error('Invalid API response format');
+    }
+  } catch (error) {
+    console.error('Error loading products:', error);
+    showError(buyError, 'Failed to load products. Please try again later.');
+  } finally {
+    hideLoading(buyLoading);
+  }
+}
+
+// Load bidding products (Bid tab)
+async function loadBiddingProducts() {
+  const bidItems = document.getElementById('bid-items');
+  const bidLoading = document.getElementById('bid-loading');
+  const bidError = document.getElementById('bid-error');
+  
+  if (!bidItems) return;
+  
+  showLoading(bidLoading);
+  hideError(bidError);
+  
+  try {
+    const config = await getApiConfig();
+    const response = await fetch(`${config.baseUrl}/api/marketplace/products?isBidding=true&limit=12`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.success && data.data.products) {
+      renderBiddingProducts(data.data.products, bidItems);
+    } else {
+      throw new Error('Invalid API response format');
+    }
+  } catch (error) {
+    console.error('Error loading bidding products:', error);
+    showError(bidError, 'Failed to load auctions. Please try again later.');
+  } finally {
+    hideLoading(bidLoading);
+  }
+}
+
+// Load rentals (Rent tab)
+async function loadRentals() {
+  const rentItems = document.getElementById('rent-items');
+  const rentLoading = document.getElementById('rent-loading');
+  const rentError = document.getElementById('rent-error');
+  
+  if (!rentItems) return;
+  
+  showLoading(rentLoading);
+  hideError(rentError);
+  
+  try {
+    const config = await getApiConfig();
+    // Note: Using products endpoint as rental endpoint may not be implemented yet
+    const response = await fetch(`${config.baseUrl}/api/marketplace/products?category=rental&limit=12`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // For now, we'll use products data for rentals as well
+    // In a real implementation, there would be a separate rentals endpoint
+    if (data.success && data.data.products) {
+      renderRentals(data.data.products.slice(0, 6), rentItems); // Limit to 6 for demo
+    } else {
+      throw new Error('Invalid API response format');
+    }
+  } catch (error) {
+    console.error('Error loading rentals:', error);
+    showError(rentError, 'Failed to load rentals. Please try again later.');
+  } finally {
+    hideLoading(rentLoading);
+  }
+}
+
+// Render functions
+function renderProducts(products, container) {
+  container.innerHTML = products.map(product => `
+    <div class="market-item">
+      <h3>${escapeHtml(product.name)}</h3>
+      <p class="price">$${parseFloat(product.price).toLocaleString()}</p>
+      <p class="location">📍 ${escapeHtml(product.location)}</p>
+      <p class="quantity">Available: ${product.quantity} ${product.unit}</p>
+      <p class="description">${escapeHtml(product.description.substring(0, 120))}${product.description.length > 120 ? '...' : ''}</p>
+      ${product.organicCertified ? '<div class="organic-badge">🌿 Organic</div>' : ''}
+      ${product.deliveryAvailable ? '<p class="delivery-info">🚛 Delivery Available</p>' : ''}
+      <button class="buy-btn" onclick="buyProduct('${product.id}')">Buy Now</button>
+    </div>
+  `).join('');
+}
+
+function renderBiddingProducts(products, container) {
+  container.innerHTML = products.map(product => {
+    const endTime = new Date(product.biddingEndTime);
+    const timeLeft = formatTimeLeft(endTime);
+    const minBid = product.currentBid ? parseFloat(product.currentBid) + 1 : parseFloat(product.startingBid);
+    const bidCount = (product.bids && product.bids.length) || 0;
+    
+    return `
+      <div class="market-item bid-item" data-product-id="${product.id}">
+        <div class="bid-status ${timeLeft.includes('day') ? 'active' : 'ending'}">${timeLeft.includes('day') ? 'Live Auction' : 'Ending Soon'}</div>
+        <h3>${escapeHtml(product.name)}</h3>
+        <p class="price">Starting: ₹${parseFloat(product.startingBid).toLocaleString()}</p>
+        <p class="current-bid">Current Bid: <span class="bid-amount">₹${parseFloat(product.currentBid || product.startingBid).toLocaleString()}</span></p>
+        <p class="location">📍 ${escapeHtml(product.location)}</p>
+        <p class="description">${escapeHtml(product.description.substring(0, 100))}${product.description.length > 100 ? '...' : ''}</p>
+        <div class="bid-info">
+          <span class="bid-count">${bidCount} bids</span>
+          <span class="bid-activity">🔥 Active</span>
+        </div>
+        <div class="bid-input-group">
+          <input type="number" placeholder="Enter your bid" min="${minBid}" class="bid-input" />
+          <button class="bid-btn" onclick="placeBid(this, '${product.id}')">Place Bid</button>
+        </div>
+        <p class="auction-end">Ends in: ${timeLeft}</p>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRentals(products, container) {
+  container.innerHTML = products.map(product => `
+    <div class="market-item rent-item">
+      <div class="rent-status available">Available</div>
+      <h3>${escapeHtml(product.name)}</h3>
+      <p class="price">$${parseFloat(product.price).toLocaleString()}/month</p>
+      <p class="rental-period">Minimum: 1 month</p>
+      <p class="location">📍 ${escapeHtml(product.location)}</p>
+      <p class="description">${escapeHtml(product.description.substring(0, 100))}${product.description.length > 100 ? '...' : ''}</p>
+      <div class="rent-input-group">
+        <select class="rent-duration">
+          <option value="1">1 Month</option>
+          <option value="3">3 Months</option>
+          <option value="6">6 Months</option>
+          <option value="12">1 Year</option>
+        </select>
+        <button class="rent-btn" onclick="rentEquipment(this, '${product.id}')">Rent Now</button>
+      </div>
+      ${product.deliveryAvailable ? '<p class="delivery-info">🚛 Delivery Available</p>' : '<p class="delivery-info">📍 Pickup Only</p>'}
+    </div>
+  `).join('');
+}
+
+// Helper functions
+function showLoading(element) {
+  if (element) element.style.display = 'block';
+}
+
+function hideLoading(element) {
+  if (element) element.style.display = 'none';
+}
+
+function showError(element, message) {
+  if (element) {
+    element.textContent = message;
+    element.style.display = 'block';
+  }
+}
+
+function hideError(element) {
+  if (element) element.style.display = 'none';
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function formatTimeLeft(endTime) {
+  const now = new Date();
+  const diff = endTime - now;
+  
+  if (diff <= 0) return 'Ended';
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+// Enhanced action functions
+async function buyProduct(productId) {
+  alert(`Purchase functionality will be implemented. Product ID: ${productId}`);
+  // TODO: Implement actual purchase flow
+}
+
+async function placeBid(buttonElement, productId) {
+  const bidItem = buttonElement.closest('.bid-item');
+  const bidInput = bidItem.querySelector('.bid-input');
+  const currentBidElement = bidItem.querySelector('.current-bid');
+  
+  if (bidInput.value.trim() === '') {
+    alert('Please enter a bid amount');
+    return;
+  }
+  
+  const bidAmount = parseFloat(bidInput.value);
+  const currentBidText = currentBidElement.textContent;
+  const currentAmount = parseFloat(currentBidText.replace('Current Bid: $', '').replace(',', ''));
+  
+  if (bidAmount <= currentAmount) {
+    alert('Your bid must be higher than the current bid');
+    return;
+  }
+  
+  try {
+    // TODO: Implement actual API call to place bid
+    // For now, just update the UI
+    currentBidElement.textContent = `Current Bid: $${bidAmount.toLocaleString()}`;
+    bidInput.value = '';
+    
+    // Update minimum bid for next bidder
+    bidInput.min = bidAmount + 1;
+    
+    // Show success message
+    const successMsg = document.createElement('div');
+    successMsg.textContent = 'Bid placed successfully!';
+    successMsg.style.color = '#4caf50';
+    successMsg.style.fontSize = '0.8rem';
+    successMsg.style.marginTop = '0.5rem';
+    successMsg.style.textAlign = 'center';
+    
+    bidItem.appendChild(successMsg);
+    
+    setTimeout(() => {
+      if (successMsg.parentNode) {
+        successMsg.remove();
+      }
+    }, 3000);
+    
+    console.log(`Bid placed for product ${productId}: $${bidAmount}`);
+  } catch (error) {
+    console.error('Error placing bid:', error);
+    alert('Failed to place bid. Please try again.');
+  }
+}
+
+async function rentEquipment(buttonElement, productId) {
+  const rentItem = buttonElement.closest('.rent-item');
+  const durationSelect = rentItem.querySelector('.rent-duration');
+  const equipmentName = rentItem.querySelector('h3').textContent;
+  const price = rentItem.querySelector('.price').textContent;
+  
+  const duration = durationSelect.value;
+  const durationText = durationSelect.options[durationSelect.selectedIndex].text;
+  
+  const confirmRent = confirm(`Confirm rental:\nEquipment: ${equipmentName}\nDuration: ${durationText}\nPrice: ${price}`);
+  
+  if (confirmRent) {
+    try {
+      // TODO: Implement actual API call for rental
+      console.log(`Rental requested for product ${productId}: ${duration} months`);
+      
+      // Show success message
+      const successMsg = document.createElement('div');
+      successMsg.textContent = 'Rental confirmed! You will be contacted soon.';
+      successMsg.style.color = '#4caf50';
+      successMsg.style.fontSize = '0.8rem';
+      successMsg.style.marginTop = '0.5rem';
+      successMsg.style.textAlign = 'center';
+      
+      rentItem.appendChild(successMsg);
+      
+      setTimeout(() => {
+        if (successMsg.parentNode) {
+          successMsg.remove();
+        }
+      }, 5000);
+    } catch (error) {
+      console.error('Error processing rental:', error);
+      alert('Failed to process rental. Please try again.');
+    }
+  }
+}
   

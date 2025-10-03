@@ -349,6 +349,27 @@ router.post('/products/:id/bid', auth, async (req, res) => {
     // Update product current bid
     await product.update({ currentBid: amount });
 
+    // Emit real-time bid notification via Socket.io
+    const io = req.app.get('io');
+    if (io) {
+      const bidData = {
+        id: bid.id,
+        productId: id,
+        productName: product.name,
+        amount,
+        bidderName: req.user.fullName,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Emit to all connected clients
+      io.emit('newBid', bidData);
+      
+      // Also emit to specific product room if using rooms
+      io.to(`product_${id}`).emit('productBidUpdate', bidData);
+      
+      console.log(`🔥 New bid notification sent: ${product.name} - ₹${amount}`);
+    }
+
     res.status(201).json({
       success: true,
       message: 'Bid placed successfully',

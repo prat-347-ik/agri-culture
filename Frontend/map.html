@@ -157,59 +157,86 @@
           }
         }
 
-        // Enhanced sample farm data around MGM Kamothe
-        const farmData = [
-          {
-            id: 1,
-            name: "Green Valley Farm",
-            type: "crops",
-            lat: 19.0350,
-            lng: 73.0310,
-            description: "Wheat and Rice cultivation",
-            status: "active",
-            icon: "🌾"
-          },
-          {
-            id: 2,
-            name: "Organic Paradise",
-            type: "crops",
-            lat: 19.0310,
-            lng: 73.0280,
-            description: "Organic vegetables and fruits",
-            status: "active",
-            icon: "🥬"
-          },
-          {
-            id: 3,
-            name: "Equipment Hub",
-            type: "equipment",
-            lat: 19.0370,
-            lng: 73.0320,
-            description: "Tractors and farming equipment available",
-            status: "available",
-            icon: "🚜"
-          },
-          {
-            id: 4,
-            name: "Weather Station",
-            type: "weather",
-            lat: 19.0340,
-            lng: 73.0300,
-            description: "Local weather monitoring station",
-            status: "operational",
-            icon: "🌤️"
-          },
-          {
-            id: 5,
-            name: "Dairy Farm",
-            type: "all",
-            lat: 19.0360,
-            lng: 73.0270,
-            description: "Milk production and cattle farming",
-            status: "active",
-            icon: "🐄"
+        // Load farm data from API
+        console.log('Loading farm data from API...');
+        await loadFarmData(map, ui, isMobile);
+
+        // Function to load and display farm data from API
+        async function loadFarmData(map, ui, isMobile) {
+          try {
+            // Get API configuration
+            const configResponse = await fetch('/api/config');
+            const config = await configResponse.json();
+            const baseUrl = config.ENROLL_API_BASE || 'http://localhost:5000';
+            
+            // Fetch farm data from API
+            const response = await fetch(`${baseUrl}/api/map/farms`);
+            const data = await response.json();
+            
+            let farmData = [];
+            if (data.success && data.data.farms) {
+              // Transform API data to map format
+              farmData = data.data.farms.map(farm => ({
+                id: farm.id,
+                name: farm.name,
+                type: farm.type,
+                lat: parseFloat(farm.latitude),
+                lng: parseFloat(farm.longitude),
+                description: farm.description,
+                status: farm.status,
+                icon: farm.icon || '🌾',
+                address: farm.address,
+                contactPhone: farm.contactPhone,
+                contactEmail: farm.contactEmail,
+                operatingHours: farm.operatingHours,
+                facilities: farm.facilities,
+                crops: farm.crops,
+                equipment: farm.equipment,
+                services: farm.services
+              }));
+              console.log(`Loaded ${farmData.length} farms from API`);
+            } else {
+              console.warn('No farm data received from API, using fallback data');
+              // Fallback data in case API fails
+              farmData = [
+                {
+                  id: 1,
+                  name: "Green Valley Farm",
+                  type: "crops",
+                  lat: 19.0350,
+                  lng: 73.0310,
+                  description: "Wheat and Rice cultivation",
+                  status: "active",
+                  icon: "🌾"
+                },
+                {
+                  id: 2,
+                  name: "Equipment Hub",
+                  type: "equipment",
+                  lat: 19.0370,
+                  lng: 73.0320,
+                  description: "Tractors and farming equipment available",
+                  status: "available",
+                  icon: "🚜"
+                }
+              ];
+            }
+          } catch (error) {
+            console.error('Error loading farm data:', error);
+            // Use fallback data on error
+            farmData = [
+              {
+                id: 1,
+                name: "Green Valley Farm (Local)",
+                type: "crops",
+                lat: 19.0350,
+                lng: 73.0310,
+                description: "Sample farm - API connection failed",
+                status: "active",
+                icon: "🌾"
+              }
+            ];
           }
-        ];
 
         // Create enhanced markers for each farm
         const markers = [];

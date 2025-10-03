@@ -369,21 +369,21 @@
                               <!-- Bidding Form -->
                       <div id="biddingForm" class="form-container">
             <form id="biddingFormElement">
-                                 <div class="form-section">
-                     <h3 data-i18n="serviceRequirements">What do you offer?</h3>
-                     <div class="form-group">
-                         <label data-i18n="whatServiceNeed">Which service are you providing?</label>
+                <div class="form-section">
+                    <h3 data-i18n="serviceRequirements">कोणती सेवा देता? (What do you offer?)</h3>
+                    <div class="form-group">
+                        <label data-i18n="whatServiceNeed">आपण कोणती सेवा देता? (What do you provide?)</label>
                          <div class="checkbox-group">
                              <input type="checkbox" id="building" name="services" value="building">
-                             <label for="building" data-i18n="buildingFarming" title="Farming tools, machines, equipment, seeds, fertilizers, etc.">Farming tools/products</label>
-                         </div>
-                         <div class="checkbox-group">
-                             <input type="checkbox" id="helpers" name="services" value="helpers">
-                             <label for="helpers" data-i18n="helpersLabor" title="Skilled workers, helpers, laborers for farming work">Labor/Workers</label>
-                         </div>
-                         <div class="checkbox-group">
-                             <input type="checkbox" id="other" name="services" value="other">
-                             <label for="other" data-i18n="otherServices" title="Any other work or service you offer">Other work you offer</label>
+                            <label for="building" data-i18n="buildingFarming" title="Farming tools, machines, equipment, seeds, fertilizers, etc.">शेतातील वस्तू/उपकरणे (Farming tools/products)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="helpers" name="services" value="helpers">
+                            <label for="helpers" data-i18n="helpersLabor" title="Skilled workers, helpers, laborers for farming work">कामगार/मजूर (Labor/Workers)</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="other" name="services" value="other">
+                            <label for="other" data-i18n="otherServices" title="Any other work or service you offer">इतर काम (Other work you offer)</label>
                          </div>
                          <div class="other-service-input" id="otherServiceInput">
                              <input type="text" data-i18n-placeholder="pleaseSpecify" placeholder="Describe your service" name="otherService">
@@ -391,15 +391,15 @@
                      </div>
                  </div>
                 
-                                 <div class="form-section">
-                     <h3 data-i18n="projectDetails">Work/Service details</h3>
-                     <div class="form-row">
-                         <div class="form-group">
-                             <label data-i18n="projectTitle" title="Give your work/service a name">Service/Product name</label>
-                             <input type="text" name="projectTitle" data-i18n-placeholder="enterProjectTitle" placeholder="What are you offering?" required>
-                         </div>
-                         <div class="form-group">
-                             <label data-i18n="projectType" title="Type - sale/rent/help">Type</label>
+                <div class="form-section">
+                    <h3 data-i18n="projectDetails">कामाची माहिती (Work/Service details)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label data-i18n="projectTitle" title="Give your work/service a name">सेवा/वस्तूचे नाव (Service/Product name)</label>
+                            <input type="text" name="projectTitle" data-i18n-placeholder="enterProjectTitle" placeholder="What are you offering?" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="projectType" title="Type - sale/rent/help">प्रकार (Type - sale/rent/help)</label>
                              <select name="projectType" required>
                                  <option value="" data-i18n="selectProjectType">Select type</option>
                                  <option value="construction" data-i18n="construction">Construction</option>
@@ -410,17 +410,17 @@
                              </select>
                          </div>
                      </div>
-                     <div class="form-group">
-                         <label data-i18n="projectDescription" title="Briefly describe what you provide">Describe in short what you provide</label>
-                         <textarea name="projectDescription" data-i18n-placeholder="describeProject" placeholder="Tell us about your service/product" required></textarea>
-                     </div>
-                     <div class="form-row">
-                         <div class="form-group">
-                             <label data-i18n="location" title="Where do you provide service?">Where do you provide service?</label>
-                             <input type="text" name="location" data-i18n-placeholder="enterLocation" placeholder="Your area/village" required>
-                         </div>
-                         <div class="form-group">
-                             <label data-i18n="budgetRange" title="Your price/charges">Price/Charges</label>
+                    <div class="form-group">
+                        <label data-i18n="projectDescription" title="Briefly describe what you provide">आपली सेवा/वस्तूबद्दल सांगा (Describe in short what you provide)</label>
+                        <textarea name="projectDescription" data-i18n-placeholder="describeProject" placeholder="Tell us about your service/product" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label data-i18n="location" title="Where do you provide service?">आपण कुठे सेवा देता? (Where do you provide service?)</label>
+                            <input type="text" name="location" data-i18n-placeholder="enterLocation" placeholder="Your area/village" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="budgetRange" title="Your price/charges">किंमत (Price/Charges)</label>
                              <select name="budgetRange" required>
                                  <option value="" data-i18n="selectBudgetRange">Select price range</option>
                                  <option value="0-10000">₹0 - ₹10,000</option>
@@ -432,15 +432,15 @@
                      </div>
                  </div>
                 
-                                 <div class="form-section">
-                     <h3>When can you provide service?</h3>
-                     <div class="form-row">
-                         <div class="form-group">
-                             <label title="When can you start working?">Service start date</label>
-                             <input type="date" name="startDate" required>
-                         </div>
-                         <div class="form-group">
-                             <label title="How long will it take?">How long will it take?</label>
+                <div class="form-section">
+                    <h3>कधीपासून सेवा उपलब्ध? (Service availability dates)</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label title="When can you start working?">सेवा सुरु होणार दिनांक (Service start date)</label>
+                            <input type="date" name="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label title="How long will it take?">किती दिवस/महिने लागतील? (How long will it take?)</label>
                              <select name="duration" required>
                                  <option value="">Select time frame</option>
                                  <option value="1-7days">1-7 days</option>
@@ -451,14 +451,14 @@
                              </select>
                          </div>
                      </div>
-                     <div class="form-group">
-                         <label title="Anything extra needed? (e.g., license, tools, etc.)">Special notes/needs</label>
-                         <textarea name="specialRequirements" placeholder="Any special skills, tools, or requirements?"></textarea>
-                     </div>
-                 </div>
+                    <div class="form-group">
+                        <label title="Anything extra needed? (e.g., license, tools, etc.)">काही खास सूचना (Special notes/needs)</label>
+                        <textarea name="specialRequirements" placeholder="Any special skills, tools, or requirements?"></textarea>
+                    </div>
+                </div>
                 
-                                 <div class="form-section">
-                     <h3 data-i18n="uploadPhotos">Images</h3>
+                                <div class="form-section">
+                    <h3 data-i18n="uploadPhotos">Images</h3>
                      <div class="form-group">
                          <label title="Upload photos to showcase your service/product" data-i18n="uploadPhotosHint">Upload photos (optional)</label>
                          <div class="image-upload-container">
@@ -491,7 +491,7 @@
                          </div>
                  </div>
                 
-                <button type="submit" class="submit-btn" title="Submit your info/offer">Submit your info</button>
+                <button type="submit" class="submit-btn" title="Submit your info/offer">माहिती जमा करा (Submit your info)</button>
             </form>
         </div>
         
@@ -640,19 +640,19 @@
                 </div>
                 
                 <div class="form-section">
-                    <h3>Your contact details</h3>
+                    <h3>तुमचा पत्ता व संपर्क (Your contact details)</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Your name</label>
+                            <label>तुमचे नाव (Your name)</label>
                             <input type="text" name="fullName" placeholder="Enter your full name" required>
                         </div>
                         <div class="form-group">
-                            <label>Mobile number</label>
+                            <label>मोबाईल नंबर (Mobile number)</label>
                             <input type="tel" name="phone" placeholder="Enter your mobile number" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label title="Email, if you have one">Email (if any)</label>
+                        <label title="Email, if you have one">ई-मेल, असल्यास (Email, if any)</label>
                         <input type="email" name="email" placeholder="Enter your email address" required>
                     </div>
                 </div>

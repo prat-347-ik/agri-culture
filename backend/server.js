@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 
 const { connectDB } = require('./config/database');
@@ -43,6 +45,14 @@ const mockData = {
 let dbConnected = false;
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 const PORT = process.env.PORT || 5000;
 
 // Security middleware
@@ -278,6 +288,29 @@ app.get('/api/config', (req, res) => {
   });
 });
 
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log(`🔌 User connected: ${socket.id}`);
+  
+  socket.on('disconnect', () => {
+    console.log(`🔌 User disconnected: ${socket.id}`);
+  });
+  
+  // Handle joining specific rooms (optional for future features)
+  socket.on('joinProduct', (productId) => {
+    socket.join(`product_${productId}`);
+    console.log(`🔌 User ${socket.id} joined product room: ${productId}`);
+  });
+  
+  socket.on('leaveProduct', (productId) => {
+    socket.leave(`product_${productId}`);
+    console.log(`🔌 User ${socket.id} left product room: ${productId}`);
+  });
+});
+
+// Make io available to routes (for bid notifications)
+app.set('io', io);
+
 // Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
@@ -297,11 +330,12 @@ const startServer = async () => {
       dbConnected = false;
     }
     
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server running on http://${process.env.HOST || 'localhost'}:${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🗄️  Database: ${dbConnected ? 'Connected' : 'Mock Mode'}`);
       console.log(`🌐 CORS: Enabled for ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+      console.log(`🔌 Socket.io: Enabled for real-time features`);
       
       if (!dbConnected) {
         console.log('\n📋 Available mock endpoints:');
@@ -315,6 +349,9 @@ const startServer = async () => {
         console.log('   POST /api/auth/login - User login');
         console.log('   GET  /api/admin/dashboard - Admin dashboard');
         console.log('\n💡 All endpoints work with mock data - no database required!');
+        console.log('\n🔌 Socket.io features:');
+        console.log('   Real-time bid notifications');
+        console.log('   Product room subscriptions');
       }
     });
   } catch (error) {
