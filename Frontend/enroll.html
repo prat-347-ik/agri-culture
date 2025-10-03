@@ -1195,40 +1195,25 @@
             });
         });
         
-        // Form submissions
+        // Form submissions - Updated to use FormData instead of Base64
         async function submitEnrollment(formData, type) {
             try {
-                // Get images for the specific form type
-                let images = [];
-                if (type === 'bidding' && window.biddingImageUploadImages) {
-                    images = window.biddingImageUploadImages;
-                } else if (type === 'selling' && window.sellingImageUploadImages) {
-                    images = window.sellingImageUploadImages;
-                } else if (type === 'renting' && window.rentingImageUploadImages) {
-                    images = window.rentingImageUploadImages;
-                }
+                // Images are now automatically included in the FormData object
+                // as long as the form is reset to correctly pick them up.
                 
-                // Convert images to base64 strings for submission
-                const imageData = images.map(img => ({
-                    name: img.file.name,
-                    type: img.file.type,
-                    size: img.file.size,
-                    data: img.src // This is already base64 from FileReader
-                }));
-                
-                const submissionData = {
-                    type: type,
-                    data: formData,
-                    images: imageData
-                };
+                // You may need to manually add the 'type' field to the FormData object
+                formData.append('type', type);
                 
                 const apiBase = (window && window.ENV && window.ENV.ENROLL_API_BASE) ? window.ENV.ENROLL_API_BASE : '';
+                
                 const response = await fetch(`${apiBase}/api/enroll`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(submissionData)
+                    // --- CHANGE 1: Remove 'Content-Type: application/json' header. 
+                    // This allows the browser to set the correct 'multipart/form-data' boundary.
+                    // headers: { 'Content-Type': 'application/json' }, 
+                    // --- CHANGE 2: Pass the FormData object directly as the body ---
+                    body: formData 
+                    // -------------------------------------------------------------
                 });
                 
                 const result = await response.json();
@@ -1237,7 +1222,7 @@
                     alert(`${type} request submitted successfully!`);
                     return true;
                 } else {
-                    alert(`Error: ${result.message}`);
+                    alert(`Error: ${result.message || 'An unknown error occurred.'}`);
                     return false;
                 }
             } catch (error) {
@@ -1247,13 +1232,18 @@
             }
         }
         
+        // --- CHANGE 3: Update Event Listeners to use FormData directly ---
         document.getElementById('biddingFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
+            // Use FormData to capture all form fields, including files, automatically
             const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            console.log('Bidding Form Data:', data);
+            // The data variable (Object.fromEntries(formData)) is no longer needed
+            // as we pass FormData directly to the fetch call
             
-            const success = await submitEnrollment(data, 'bidding');
+            // NOTE: The hidden input field name in HTML for images is `images`
+            // and must be used with the upload.array('images', 5) middleware.
+            
+            const success = await submitEnrollment(formData, 'bidding'); // Pass FormData
             if (success) {
                 this.reset();
                 // Clear image previews
@@ -1264,11 +1254,9 @@
         
         document.getElementById('sellingFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            console.log('Selling Form Data:', data);
+            const formData = new FormData(this); // Use FormData
             
-            const success = await submitEnrollment(data, 'selling');
+            const success = await submitEnrollment(formData, 'selling'); // Pass FormData
             if (success) {
                 this.reset();
                 categoryCards.forEach(c => c.classList.remove('selected'));
@@ -1280,11 +1268,9 @@
         
         document.getElementById('rentingFormElement').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            console.log('Renting Form Data:', data);
+            const formData = new FormData(this); // Use FormData
             
-            const success = await submitEnrollment(data, 'renting');
+            const success = await submitEnrollment(formData, 'renting'); // Pass FormData
             if (success) {
                 this.reset();
                 categoryCardsRent.forEach(c => c.classList.remove('selected'));
@@ -1295,6 +1281,9 @@
         });
         
                  // Image upload functionality
+         // NOTE: The `setupImageUpload` function still uses Base64 for previews,
+         // but the actual submission logic relies on the `<input type="file" name="images">` 
+         // which is now correctly picked up by `new FormData(this)` and handled by Multer.
          function setupImageUpload(uploadId, previewId, maxImages = 5) {
              const uploadArea = document.getElementById(uploadId);
              const previewContainer = document.getElementById(previewId);

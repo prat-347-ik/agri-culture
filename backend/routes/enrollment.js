@@ -2,35 +2,42 @@ const express = require('express');
 const { Enrollment, User, Image } = require('../models');
 const { auth, adminAuth } = require('../middleware/auth');
 const { Op } = require('sequelize');
+// --- CHANGE 1: Import Multer middleware ---
+const { upload, handleUploadError } = require('../middleware/upload');
+// ------------------------------------------
 const router = express.Router();
 
 // @route   POST /api/enroll
 // @desc    Submit enrollment form
 // @access  Public (for now, can be made private later)
-router.post('/', async (req, res) => {
-  try {
-    const {
-      type,
-      data,
-      images
-    } = req.body;
 
-    // Create enrollment record
+// --- CHANGE 2: Add Multer middleware to handle multipart form data ---
+router.post('/', upload.array('images', 5), handleUploadError, async (req, res) => {
+// ---------------------------------------------------------------------
+
+  try {
+    // Files are now in req.files, fields are in req.body
+    const { type, ...data } = req.body;
+    const images = req.files; // Use req.files array
+
+    // Create enrollment record (data is already parsed from form fields)
+    // NOTE: Frontend logic ensures we pass flat data for Enrollment model fields.
     const enrollment = await Enrollment.create({
-      type,
-      ...data,
+      type: type,
+      ...data, // This relies on form field names matching Enrollment model fields
       status: 'pending'
     });
 
-    // Handle image uploads if provided
+    // Handle image uploads (metadata only, files are saved on disk by Multer)
     if (images && images.length > 0) {
-      const imageRecords = images.map((img, index) => ({
-        filename: img.name,
-        originalName: img.name,
-        mimeType: img.type,
-        size: img.size,
-        path: `/uploads/enrollments/${enrollment.id}`,
-        url: img.data, // Base64 data for now
+      const imageRecords = images.map((file, index) => ({
+        filename: file.filename,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        size: file.size,
+        // Path saved relative to the server upload directory
+        path: file.path.replace(/\\/g, '/').replace('uploads', '/uploads'),
+        url: `${req.protocol}://${req.get('host')}/uploads/enrollments/${file.filename}`, // Construct a real URL
         enrollment_id: enrollment.id,
         isPrimary: index === 0,
         sortOrder: index
