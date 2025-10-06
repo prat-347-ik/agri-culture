@@ -9,12 +9,10 @@
   <meta name="theme-color" content="#2e7d32">
   <title>Agri-Culture - Farmers' Map</title>
   <link rel="stylesheet" href="style.css"/>
-  <script src="env.js"></script>
-  <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
-  <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
-  <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
-  <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
   <script>
     (function(){
       const p = new URLSearchParams(location.search);
@@ -22,6 +20,40 @@
       if (p.get('embed') === '1') document.documentElement.classList.add('embed');
     })();
   </script>
+
+  <style>
+    /* Ensure Leaflet map fills the available area */
+    #mapContainer { height: 100%; width: 100%; }
+    /* Hide loading shimmer/spinner once map is ready */
+    .map-iframe.loaded::before { content: none !important; }
+
+    /* Optional: nicer mobile controls spacing */
+    .leaflet-control-container .leaflet-top.leaflet-left { margin-top: 12px; margin-left: 12px; }
+    .leaflet-control-container .leaflet-top.leaflet-right { margin-top: 12px; margin-right: 12px; }
+
+    /* Simple div-icon styling for category markers (emoji based, no external images) */
+    .ac-marker {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      border: 2px solid rgba(255,255,255,0.8);
+      user-select: none;
+    }
+    .ac-marker.crops { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+    .ac-marker.equipment { background: linear-gradient(135deg, #FF9800, #F57C00); }
+    .ac-marker.weather { background: linear-gradient(135deg, #2196F3, #1976D2); }
+    .ac-marker.default { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
 <body>
   <!-- Main Content Area -->
@@ -43,119 +75,94 @@
     <div id="mapContainer" class="map-iframe"></div>
   </div>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
-    // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM loaded, initializing map...');
-      
-      // HERE API Key (loaded from env.js)
-      const apiKey = (window && window.ENV && window.ENV.MAPS_API_KEY) ? window.ENV.MAPS_API_KEY : '';
-      if (!apiKey) {
-        console.warn('HERE Maps API key is missing. Set MAPS_API_KEY in Frontend/env.js');
-      }
-      
       // MGM Kamothe coordinates (Navi Mumbai, Maharashtra)
-      const mgmKamothe = {
-        lat: 19.0330,
-        lng: 73.0297
+      const mgmKamothe = { lat: 19.0330, lng: 73.0297 };
+
+      // Initialize Leaflet map
+      const map = L.map('mapContainer', {
+        zoomControl: true,
+        preferCanvas: false
+      }).setView([mgmKamothe.lat, mgmKamothe.lng], 15);
+
+      // OSM tile layer (no API key required)
+      const base = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Mark container as loaded when tiles are ready
+      const container = document.getElementById('mapContainer');
+      if (container) {
+        map.whenReady(() => container.classList.add('loaded'));
+        base.on('load', () => container.classList.add('loaded'));
+      }
+
+      // Farm sample data
+      const farmData = [
+        {
+          id: 1,
+          name: 'Green Valley Farm',
+          type: 'crops',
+          lat: 19.0350,
+          lng: 73.0310,
+          description: 'Wheat and Rice cultivation',
+          status: 'active',
+          icon: '🌾'
+        },
+        {
+          id: 2,
+          name: 'Organic Paradise',
+          type: 'crops',
+          lat: 19.0310,
+          lng: 73.0280,
+          description: 'Organic vegetables and fruits',
+          status: 'active',
+          icon: '🥬'
+        },
+        {
+          id: 3,
+          name: 'Equipment Hub',
+          type: 'equipment',
+          lat: 19.0370,
+          lng: 73.0320,
+          description: 'Tractors and farming equipment available',
+          status: 'available',
+          icon: '🚜'
+        },
+        {
+          id: 4,
+          name: 'Weather Station',
+          type: 'weather',
+          lat: 19.0340,
+          lng: 73.0300,
+          description: 'Local weather monitoring station',
+          status: 'operational',
+          icon: '🌤️'
+        },
+        {
+          id: 5,
+          name: 'Dairy Farm',
+          type: 'all',
+          lat: 19.0360,
+          lng: 73.0270,
+          description: 'Milk production and cattle farming',
+          status: 'active',
+          icon: '🐄'
+        }
+      ];
+
+      // Create category layer groups
+      const groups = {
+        all: L.layerGroup().addTo(map),
+        crops: L.layerGroup(),
+        equipment: L.layerGroup(),
+        weather: L.layerGroup()
       };
-
-      // Enhanced mobile detection
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isTablet = /iPad|Android(?=.*\bMobile\b)(?=.*\bSafari\b)/i.test(navigator.userAgent);
-      const isSmallScreen = window.innerWidth <= 480;
-      
-      console.log('Device detected:', { isMobile, isTablet, isSmallScreen });
-
-      try {
-        // Check if HERE API is loaded
-        if (typeof H === 'undefined') {
-          console.error('HERE Maps API not loaded');
-          document.getElementById('mapContainer').innerHTML = `
-            <div style="
-              padding: 40px 20px; 
-              text-align: center; 
-              color: #d32f2f; 
-              background: rgba(255, 255, 255, 0.95);
-              border-radius: 12px;
-              margin: 20px;
-              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            ">
-              <div style="font-size: 48px; margin-bottom: 16px;">🗺️</div>
-              <h3 style="margin: 0 0 8px 0; color: #d32f2f;">Map Loading Error</h3>
-              <p style="margin: 0; color: #666;">HERE Maps API failed to load. Please check your internet connection and try again.</p>
-            </div>
-          `;
-          return;
-        }
-
-        console.log('HERE API loaded, creating platform...');
-
-        // Initialize the platform
-        const platform = new H.service.Platform({ apikey: apiKey });
-
-        console.log('Platform created, getting default layers...');
-
-        // Get the default map types from the platform object
-        const defaultLayers = platform.createDefaultLayers();
-
-        console.log('Default layers obtained, creating map...');
-
-        // Enhanced mobile-optimized map configuration
-        const mapConfig = {
-          zoom: isMobile ? 14 : 15,
-          center: mgmKamothe,
-          pixelRatio: window.devicePixelRatio || 1,
-          padding: { top: 60, right: 60, bottom: 60, left: 60 }
-        };
-
-        // Create a map instance
-        const map = new H.Map(
-          document.getElementById('mapContainer'),
-          defaultLayers.vector.normal.map,
-          mapConfig
-        );
-
-        console.log('Map created successfully');
-
-        // Enable the event system on the map instance
-        const mapEvents = new H.mapevents.MapEvents(map);
-
-        // Add the behavior for different map interactions
-        const behavior = new H.mapevents.Behavior(mapEvents);
-
-        // Enhanced mobile-optimized UI configuration
-        const uiConfig = {
-          zoom: {
-            slider: true,
-            mouseWheel: true,
-            keyboard: false
-          },
-          mapSettings: {
-            H: 'hidden'
-          },
-          scalebar: {
-            H: isMobile ? 'hidden' : 'visible'
-          }
-        };
-
-        // Create the default UI components with mobile optimizations
-        const ui = H.ui.UI.createDefault(map, defaultLayers, 'en-US', uiConfig);
-
-        // Enhanced UI adjustments for mobile
-        if (isMobile) {
-          // Move zoom controls to bottom right for easier thumb access
-          const zoomControl = ui.getControl('zoom');
-          if (zoomControl) {
-            zoomControl.setAlignment('bottom-right');
-          }
-          
-          // Adjust map settings control position
-          const mapSettingsControl = ui.getControl('mapsettings');
-          if (mapSettingsControl) {
-            mapSettingsControl.setAlignment('bottom-left');
-          }
-        }
 
         // Load farm data from API
         console.log('Loading farm data from API...');
@@ -357,198 +364,79 @@
                 border: 1px solid ${farm.status === 'active' ? 'rgba(46, 125, 50, 0.2)' : farm.status === 'available' ? 'rgba(245, 124, 0, 0.2)' : 'rgba(25, 118, 210, 0.2)'};
               ">${farm.status}</div>
             </div>
-          `;
-
-          const bubble = new H.ui.InfoBubble(
-            { lat: farm.lat, lng: farm.lng },
-            { content: bubbleContent }
-          );
-
-          // Add click/tap event to marker
-          marker.addEventListener('tap', function() {
-            ui.addBubble(bubble);
-          });
-
-          // Add marker to map
-          map.addObject(marker);
-          markers.push(marker);
-          markerGroups.all.push(marker);
-          
-          if (farm.type !== 'all') {
-            markerGroups[farm.type].push(marker);
-          }
-        });
-
-        // Enhanced MGM Kamothe marker
-        const mgmMarkerSize = isMobile ? 44 : 48;
-        const mgmMarker = new H.map.Marker(
-          mgmKamothe,
-          {
-            icon: new H.map.Icon('data:image/svg+xml;base64,' + btoa(`
-              <svg width="${mgmMarkerSize}" height="${mgmMarkerSize}" viewBox="0 0 ${mgmMarkerSize} ${mgmMarkerSize}" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="mgmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#E91E63;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#C2185B;stop-opacity:1" />
-                  </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                    <feMerge> 
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                  </filter>
-                </defs>
-                <circle cx="${mgmMarkerSize/2}" cy="${mgmMarkerSize/2}" r="${mgmMarkerSize/2-3}" fill="url(#mgmGrad)" stroke="#AD1457" stroke-width="3" filter="url(#glow)"/>
-                <text x="${mgmMarkerSize/2}" y="${mgmMarkerSize*5/8}" text-anchor="middle" fill="#fff" font-size="${isMobile ? '11' : '12'}" font-weight="bold" font-family="Arial, sans-serif">MGM</text>
-              </svg>
-            `), { size: { w: mgmMarkerSize, h: mgmMarkerSize } })
-          }
-        );
-
-        const mgmBubble = new H.ui.InfoBubble(
-          mgmKamothe,
-          { 
-            content: `
-              <div style="
-                padding: ${isMobile ? '16px' : '20px'}; 
-                max-width: ${isMobile ? '280px' : '320px'};
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              ">
-                <div style="
-                  display: flex;
-                  align-items: center;
-                  margin-bottom: 12px;
-                  gap: 10px;
-                ">
-                  <span style="font-size: ${isMobile ? '24px' : '28px'}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">🏫</span>
-                  <h3 style="
-                    margin: 0; 
-                    color: #E91E63; 
-                    font-size: ${isMobile ? '1.2rem' : '1.3rem'};
-                    font-weight: 700;
-                    line-height: 1.2;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
-                  ">MGM Kamothe</h3>
-                </div>
-                <p style="
-                  margin: 0 0 12px 0; 
-                  color: #555; 
-                  font-size: ${isMobile ? '1rem' : '1.1rem'};
-                  line-height: 1.5;
-                  font-weight: 400;
-                ">College Campus - Agri-Culture Project Center</p>
-                <div style="
-                  display: inline-block;
-                  padding: 6px 12px;
-                  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-                  color: #E91E63;
-                  border-radius: 16px;
-                  font-size: ${isMobile ? '0.9rem' : '0.95rem'};
-                  font-weight: 700;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                  border: 1px solid rgba(233, 25, 99, 0.2);
-                ">Project Center</div>
-    </div>
-            `
-          }
-        );
-
-        mgmMarker.addEventListener('tap', function() {
-          ui.addBubble(mgmBubble);
-        });
-
-        map.addObject(mgmMarker);
-
-        // Enhanced layer control functionality with mobile optimizations
-        let currentLayer = 'all';
-        
-        document.querySelectorAll('.map-btn').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            // Prevent double-tap zoom on mobile
-            e.preventDefault();
-            
-            // Add haptic feedback for mobile
-            if (navigator.vibrate) {
-              navigator.vibrate(50);
-            }
-            
-            // Remove active class from all buttons
-            document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const layer = this.getAttribute('data-layer');
-            currentLayer = layer;
-            
-            // Hide all markers
-            markers.forEach(marker => {
-              map.removeObject(marker);
-            });
-            
-            // Show markers for selected layer
-            markerGroups[layer].forEach(marker => {
-              map.addObject(marker);
-            });
-            
-            // Always show MGM marker
-            map.addObject(mgmMarker);
-          });
-        });
-
-        // Enhanced resize handling for mobile
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-          clearTimeout(resizeTimeout);
-          resizeTimeout = setTimeout(() => {
-            map.getViewModel().setLookAtData({
-              bounds: map.getViewModel().getLookAtData().bounds
-            });
-          }, 250);
-        });
-
-        // Enhanced mobile touch handling
-        if (isMobile) {
-          let lastTouchEnd = 0;
-          document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-              event.preventDefault();
-            }
-            lastTouchEnd = now;
-          }, false);
-          
-          // Prevent zoom on double-tap for map container
-          document.getElementById('mapContainer').addEventListener('touchend', function(event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-              event.preventDefault();
-            }
-            lastTouchEnd = now;
-          }, false);
-        }
-
-        console.log('Enhanced map initialization completed successfully');
-
-      } catch (error) {
-        console.error('Error initializing map:', error);
-        document.getElementById('mapContainer').innerHTML = `
-          <div style="
-            padding: 40px 20px; 
-            text-align: center; 
-            color: #d32f2f; 
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            margin: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-          ">
-            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
-            <h3 style="margin: 0 0 8px 0; color: #d32f2f;">Map Error</h3>
-            <p style="margin: 0; color: #666;">Failed to initialize map. Please try refreshing the page.</p>
-  </div>
+            <p style="margin:0 0 8px 0;color:#555;line-height:1.4">${farm.description}</p>
+            <div style="display:inline-block;padding:4px 10px;border-radius:14px;font-weight:700;font-size:0.85rem;` +
+              `background:${farm.status==='active' ? '#e8f5e9' : farm.status==='available' ? '#fff3e0' : '#e3f2fd'};` +
+              `color:${farm.status==='active' ? '#2e7d32' : farm.status==='available' ? '#f57c00' : '#1976d2'};` +
+              `border:1px solid rgba(0,0,0,0.06)">`+
+              `${farm.status}</div>
+          </div>
         `;
+        marker.bindPopup(popupHtml, { closeButton: true });
+
+        // Add to groups
+        marker.addTo(groups.all);
+        if (farm.type !== 'all' && groups[farm.type]) {
+          marker.addTo(groups[farm.type]);
+        }
+      });
+
+      // MGM Kamothe marker (always visible)
+      const mgmIcon = L.divIcon({
+        className: 'ac-div-icon',
+        html: '<div class="ac-marker default" style="background:linear-gradient(135deg,#E91E63,#C2185B);font-size:14px;font-weight:700">M</div>',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+        popupAnchor: [0, -20]
+      });
+      const mgmMarker = L.marker([mgmKamothe.lat, mgmKamothe.lng], { icon: mgmIcon }).addTo(map);
+      mgmMarker.bindPopup(`
+        <div style="max-width:300px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:1.4rem">🏫</span>
+            <h3 style="margin:0;color:#E91E63;font-size:1.1rem">MGM Kamothe</h3>
+          </div>
+          <p style="margin:0;color:#555;line-height:1.4">College Campus - Agri-Culture Project Center</p>
+        </div>
+      `);
+
+      // Filter controls
+      let currentLayer = 'all';
+      function showLayer(layerKey) {
+        // Remove all category groups first
+        Object.keys(groups).forEach(k => {
+          if (map.hasLayer(groups[k])) map.removeLayer(groups[k]);
+        });
+        // Add the selected group
+        if (groups[layerKey]) groups[layerKey].addTo(map);
+        // Ensure MGM marker always visible
+        if (!map.hasLayer(mgmMarker)) mgmMarker.addTo(map);
+        currentLayer = layerKey;
       }
+
+      document.querySelectorAll('.map-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const layer = btn.getAttribute('data-layer');
+          showLayer(layer);
+        });
+      });
+
+      // Initial layer
+      showLayer('all');
+
+      // Handle resizes (especially inside iframe)
+      let resizeT;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => map.invalidateSize(), 200);
+      });
+
+      // Defensive: ensure map sizes correctly shortly after load
+      setTimeout(() => map.invalidateSize(), 250);
     });
   </script>
 </body>
-</html> 
+</html>
