@@ -164,24 +164,205 @@
         weather: L.layerGroup()
       };
 
-      // Helper to build a simple emoji divIcon per type
-      const iconForType = (type, emoji) => L.divIcon({
-        className: 'ac-div-icon',
-        html: `<div class="ac-marker ${type || 'default'}">${emoji || '📍'}</div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -18]
-      });
+        // Load farm data from API
+        console.log('Loading farm data from API...');
+        await loadFarmData(map, ui, isMobile);
 
-      // Add farm markers
-      farmData.forEach(farm => {
-        const icon = iconForType(farm.type, farm.icon);
-        const marker = L.marker([farm.lat, farm.lng], { icon });
-        const popupHtml = `
-          <div style="max-width: 300px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-              <span style="font-size:1.4rem">${farm.icon}</span>
-              <h3 style="margin:0;color:#2e7d32;font-size:1.1rem">${farm.name}</h3>
+        // Function to load and display farm data from API
+        async function loadFarmData(map, ui, isMobile) {
+          try {
+            // Get API configuration
+            const configResponse = await fetch('/api/config');
+            const config = await configResponse.json();
+            const baseUrl = config.ENROLL_API_BASE || 'http://localhost:5000';
+            
+            // Fetch farm data from API
+            const response = await fetch(`${baseUrl}/api/map/farms`);
+            const data = await response.json();
+            
+            let farmData = [];
+            if (data.success && data.data.farms) {
+              // Transform API data to map format
+              farmData = data.data.farms.map(farm => ({
+                id: farm.id,
+                name: farm.name,
+                type: farm.type,
+                lat: parseFloat(farm.latitude),
+                lng: parseFloat(farm.longitude),
+                description: farm.description,
+                status: farm.status,
+                icon: farm.icon || '🌾',
+                address: farm.address,
+                contactPhone: farm.contactPhone,
+                contactEmail: farm.contactEmail,
+                operatingHours: farm.operatingHours,
+                facilities: farm.facilities,
+                crops: farm.crops,
+                equipment: farm.equipment,
+                services: farm.services
+              }));
+              console.log(`Loaded ${farmData.length} farms from API`);
+            } else {
+              console.warn('No farm data received from API, using fallback data');
+              // Fallback data in case API fails
+              farmData = [
+                {
+                  id: 1,
+                  name: "Green Valley Farm",
+                  type: "crops",
+                  lat: 19.0350,
+                  lng: 73.0310,
+                  description: "Wheat and Rice cultivation",
+                  status: "active",
+                  icon: "🌾"
+                },
+                {
+                  id: 2,
+                  name: "Equipment Hub",
+                  type: "equipment",
+                  lat: 19.0370,
+                  lng: 73.0320,
+                  description: "Tractors and farming equipment available",
+                  status: "available",
+                  icon: "🚜"
+                }
+              ];
+            }
+          } catch (error) {
+            console.error('Error loading farm data:', error);
+            // Use fallback data on error
+            farmData = [
+              {
+                id: 1,
+                name: "Green Valley Farm (Local)",
+                type: "crops",
+                lat: 19.0350,
+                lng: 73.0310,
+                description: "Sample farm - API connection failed",
+                status: "active",
+                icon: "🌾"
+              }
+            ];
+          }
+
+        // Create enhanced markers for each farm
+        const markers = [];
+        const markerGroups = {
+          all: [],
+          crops: [],
+          equipment: [],
+          weather: []
+        };
+
+        farmData.forEach(farm => {
+          // Enhanced custom marker icon based on type and device
+          let iconUrl = 'data:image/svg+xml;base64,';
+          let svg = '';
+          const markerSize = isMobile ? 36 : 40;
+          const strokeWidth = isMobile ? 2.5 : 3;
+          
+          switch(farm.type) {
+            case 'crops':
+              svg = `<svg width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="cropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <circle cx="${markerSize/2}" cy="${markerSize/2}" r="${markerSize/2-2}" fill="url(#cropGrad)" stroke="#1B5E20" stroke-width="${strokeWidth}"/>
+                <path d="M${markerSize/4} ${markerSize/4} L${markerSize*3/4} ${markerSize*3/4} M${markerSize*3/4} ${markerSize/4} L${markerSize/4} ${markerSize*3/4}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>`;
+              break;
+            case 'equipment':
+              svg = `<svg width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="equipGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <circle cx="${markerSize/2}" cy="${markerSize/2}" r="${markerSize/2-2}" fill="url(#equipGrad)" stroke="#E65100" stroke-width="${strokeWidth}"/>
+                <path d="M${markerSize/4} ${markerSize/2} L${markerSize*3/4} ${markerSize/2} M${markerSize/2} ${markerSize/4} L${markerSize/2} ${markerSize*3/4}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>`;
+              break;
+            case 'weather':
+              svg = `<svg width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="weatherGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <circle cx="${markerSize/2}" cy="${markerSize/2}" r="${markerSize/2-2}" fill="url(#weatherGrad)" stroke="#0D47A1" stroke-width="${strokeWidth}"/>
+                <path d="M${markerSize/4} ${markerSize*7/16} L${markerSize*3/4} ${markerSize*7/16} M${markerSize*7/16} ${markerSize*9/16} L${markerSize*9/16} ${markerSize*9/16}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>`;
+              break;
+            default:
+              svg = `<svg width="${markerSize}" height="${markerSize}" viewBox="0 0 ${markerSize} ${markerSize}" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="defaultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#7B1FA2;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <circle cx="${markerSize/2}" cy="${markerSize/2}" r="${markerSize/2-2}" fill="url(#defaultGrad)" stroke="#4A148C" stroke-width="${strokeWidth}"/>
+                <path d="M${markerSize/2} ${markerSize/4} L${markerSize/2} ${markerSize*3/4} M${markerSize/4} ${markerSize/2} L${markerSize*3/4} ${markerSize/2}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>`;
+          }
+          
+          iconUrl += btoa(svg);
+
+          // Create marker
+          const marker = new H.map.Marker(
+            { lat: farm.lat, lng: farm.lng },
+            {
+              icon: new H.map.Icon(iconUrl, { size: { w: markerSize, h: markerSize } })
+            }
+          );
+
+          // Enhanced info bubble with better mobile styling
+          const bubbleContent = `
+            <div style="
+              padding: ${isMobile ? '16px' : '20px'}; 
+              max-width: ${isMobile ? '280px' : '320px'};
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            ">
+              <div style="
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                gap: 10px;
+              ">
+                <span style="font-size: ${isMobile ? '24px' : '28px'}; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${farm.icon}</span>
+                <h3 style="
+                  margin: 0; 
+                  color: #2e7d32; 
+                  font-size: ${isMobile ? '1.2rem' : '1.3rem'};
+                  font-weight: 700;
+                  line-height: 1.2;
+                  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+                ">${farm.name}</h3>
+              </div>
+              <p style="
+                margin: 0 0 12px 0; 
+                color: #555; 
+                font-size: ${isMobile ? '1rem' : '1.1rem'};
+                line-height: 1.5;
+                font-weight: 400;
+              ">${farm.description}</p>
+              <div style="
+                display: inline-block;
+                padding: 6px 12px;
+                background: ${farm.status === 'active' ? 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)' : farm.status === 'available' ? 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)' : 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)'};
+                color: ${farm.status === 'active' ? '#2e7d32' : farm.status === 'available' ? '#f57c00' : '#1976d2'};
+                border-radius: 16px;
+                font-size: ${isMobile ? '0.9rem' : '0.95rem'};
+                font-weight: 700;
+                text-transform: capitalize;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                border: 1px solid ${farm.status === 'active' ? 'rgba(46, 125, 50, 0.2)' : farm.status === 'available' ? 'rgba(245, 124, 0, 0.2)' : 'rgba(25, 118, 210, 0.2)'};
+              ">${farm.status}</div>
             </div>
             <p style="margin:0 0 8px 0;color:#555;line-height:1.4">${farm.description}</p>
             <div style="display:inline-block;padding:4px 10px;border-radius:14px;font-weight:700;font-size:0.85rem;` +
