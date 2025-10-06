@@ -25,10 +25,31 @@
       </div>
       
       <div id="buy" class="tab-content" style="display:block;">
-        <div class="loading-indicator" id="buy-loading" style="display:none;text-align:center;padding:20px;">Loading products...</div>
-        <div class="error-message" id="buy-error" style="display:none;text-align:center;padding:20px;color:red;"></div>
-        <div class="market-items" id="buy-items">
-          <!-- Dynamic content will be loaded here -->
+        <div class="market-items">
+          <div class="market-item">
+            <h3>Tractor</h3>
+            <p class="price">$10,000</p>
+            <p class="description" data-i18n="tractorDesc">High-quality farming tractor</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="seeds">Seeds Package</h3>
+            <p class="price">$200</p>
+            <p class="description" data-i18n="seedsDesc">Premium quality seeds</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="fertilizer">Fertilizer</h3>
+            <p class="price">$150</p>
+            <p class="description" data-i18n="fertilizerDesc">Organic fertilizer blend</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
+          <div class="market-item">
+            <h3 data-i18n="irrigation">Irrigation System</h3>
+            <p class="price">$5,000</p>
+            <p class="description" data-i18n="irrigationDesc">Complete irrigation setup</p>
+            <button class="buy-btn" data-i18n="buyNow">Buy Now</button>
+          </div>
         </div>
       </div>
       
@@ -37,10 +58,55 @@
           <h3>Live Auctions</h3>
           <p>Place your bids on agricultural equipment and supplies</p>
         </div>
-        <div class="loading-indicator" id="bid-loading" style="display:none;text-align:center;padding:20px;">Loading auctions...</div>
-        <div class="error-message" id="bid-error" style="display:none;text-align:center;padding:20px;color:red;"></div>
-        <div class="market-items" id="bid-items">
-          <!-- Dynamic content will be loaded here -->
+        <div class="market-items">
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="pesticide">Pesticide</h3>
+            <p class="price" data-i18n="starting50">Starting: $50</p>
+            <p class="current-bid">Current Bid: $75</p>
+            <p class="description" data-i18n="pesticideDesc">Eco-friendly pesticide</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="76" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 2h 15m</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="harvester">Harvester</h3>
+            <p class="price" data-i18n="starting15000">Starting: $15,000</p>
+            <p class="current-bid">Current Bid: $18,500</p>
+            <p class="description" data-i18n="harvesterDesc">Advanced harvesting machine</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="18501" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 1d 8h</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status active">Live Auction</div>
+            <h3 data-i18n="greenhouse">Greenhouse</h3>
+            <p class="price" data-i18n="starting8000">Starting: $8,000</p>
+            <p class="current-bid">Current Bid: $9,200</p>
+            <p class="description" data-i18n="greenhouseDesc">Complete greenhouse setup</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="9201" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 5h 30m</p>
+          </div>
+          <div class="market-item bid-item">
+            <div class="bid-status ending">Ending Soon</div>
+            <h3>Tractor Parts</h3>
+            <p class="price">Starting: $500</p>
+            <p class="current-bid">Current Bid: $750</p>
+            <p class="description">Complete set of tractor replacement parts</p>
+            <div class="bid-input-group">
+              <input type="number" placeholder="Enter your bid" min="751" class="bid-input" />
+              <button class="bid-btn" onclick="placeBid(this)" data-i18n="placeBid">Place Bid</button>
+            </div>
+            <p class="auction-end">Ends in: 45m</p>
+          </div>
         </div>
       </div>
       
@@ -49,216 +115,76 @@
           <h3>Equipment Rental</h3>
           <p>Rent agricultural equipment for your farming needs</p>
         </div>
-        <div class="loading-indicator" id="rent-loading" style="display:none;text-align:center;padding:20px;">Loading rentals...</div>
-        <div class="error-message" id="rent-error" style="display:none;text-align:center;padding:20px;color:red;"></div>
-        <div class="market-items" id="rent-items">
-          <!-- Dynamic content will be loaded here -->
+        <div class="market-items">
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="irrigationPump">Irrigation Pump</h3>
+            <p class="price">$40/month</p>
+            <p class="rental-period">Minimum: 1 month</p>
+            <p class="description" data-i18n="pumpDesc">High-capacity pump</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Month</option>
+                <option value="3">3 Months</option>
+                <option value="6">6 Months</option>
+                <option value="12">1 Year</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Free delivery within 50km</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="tractor">Tractor</h3>
+            <p class="price">$200/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description" data-i18n="tractorRentDesc">Daily tractor rental</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Operator included</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3 data-i18n="harvester">Harvester</h3>
+            <p class="price">$500/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description" data-i18n="harvesterRentDesc">Professional harvester</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Professional operator included</p>
+          </div>
+          <div class="market-item rent-item">
+            <div class="rent-status available">Available</div>
+            <h3>Seed Drill</h3>
+            <p class="price">$80/day</p>
+            <p class="rental-period">Minimum: 1 day</p>
+            <p class="description">Precision seed drilling equipment</p>
+            <div class="rent-input-group">
+              <select class="rent-duration">
+                <option value="1">1 Day</option>
+                <option value="7">1 Week</option>
+                <option value="30">1 Month</option>
+              </select>
+              <button class="rent-btn" onclick="rentEquipment(this)" data-i18n="rentNow">Rent Now</button>
+            </div>
+            <p class="delivery-info">Setup assistance included</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   <script src="script.js"></script>
-  <script>
-    let socket;
-    
-    // Initialize Socket.io connection
-    function initializeSocket() {
-      socket = io('http://localhost:5000', {
-        transports: ['websocket', 'polling']
-      });
-      
-      socket.on('connect', () => {
-        console.log('🔌 Connected to Socket.io server');
-      });
-      
-      socket.on('disconnect', () => {
-        console.log('🔌 Disconnected from Socket.io server');
-      });
-      
-      // Listen for new bid notifications
-      socket.on('newBid', (bidData) => {
-        console.log('🔥 New bid received:', bidData);
-        handleNewBidNotification(bidData);
-      });
-      
-      socket.on('productBidUpdate', (bidData) => {
-        console.log('📈 Product bid update:', bidData);
-        updateProductBid(bidData);
-      });
-    }
-    
-    // Handle new bid notifications
-    function handleNewBidNotification(bidData) {
-      // Show a toast notification
-      showBidNotification(bidData);
-      
-      // Update the bid items if currently viewing bid tab
-      if (document.getElementById('bid').style.display !== 'none') {
-        updateBidItem(bidData);
-      }
-      
-      // Play a subtle notification sound (optional)
-      playNotificationSound();
-    }
-    
-    // Show toast notification for new bids
-    function showBidNotification(bidData) {
-      const notification = document.createElement('div');
-      notification.className = 'bid-notification';
-      notification.innerHTML = `
-        <div class="notification-content">
-          <span class="notification-icon">🔥</span>
-          <span class="notification-text">
-            New bid of ₹${bidData.amount} on ${bidData.productName}
-          </span>
-        </div>
-      `;
-      
-      // Add notification styles if not already present
-      if (!document.querySelector('style[data-notification-styles]')) {
-        const styles = document.createElement('style');
-        styles.setAttribute('data-notification-styles', 'true');
-        styles.textContent = `
-          .bid-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
-            animation-fill-mode: forwards;
-            max-width: 300px;
-          }
-          .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-          }
-          .notification-icon {
-            font-size: 18px;
-          }
-          .notification-text {
-            font-size: 14px;
-            font-weight: 500;
-          }
-          @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-          }
-          @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-          }
-        `;
-        document.head.appendChild(styles);
-      }
-      
-      document.body.appendChild(notification);
-      
-      // Remove notification after animation
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 3000);
-    }
-    
-    // Update specific bid item in the bid tab
-    function updateBidItem(bidData) {
-      const bidItems = document.getElementById('bid-items');
-      const productCards = bidItems.querySelectorAll('.market-item');
-      
-      productCards.forEach(card => {
-        const productId = card.getAttribute('data-product-id');
-        if (productId === bidData.productId) {
-          // Update the current bid display
-          const bidAmount = card.querySelector('.bid-amount');
-          if (bidAmount) {
-            bidAmount.textContent = `₹${bidData.amount}`;
-            bidAmount.style.animation = 'bidUpdate 0.5s ease-in-out';
-          }
-          
-          // Update bid count if available
-          const bidCount = card.querySelector('.bid-count');
-          if (bidCount) {
-            const currentCount = parseInt(bidCount.textContent.match(/\d+/)[0]) || 0;
-            bidCount.textContent = `${currentCount + 1} bids`;
-          }
-          
-          // Add visual highlight
-          card.style.animation = 'bidHighlight 1s ease-in-out';
-        }
-      });
-      
-      // Add bid animation styles if not present
-      if (!document.querySelector('style[data-bid-animations]')) {
-        const styles = document.createElement('style');
-        styles.setAttribute('data-bid-animations', 'true');
-        styles.textContent = `
-          @keyframes bidUpdate {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); color: #4CAF50; }
-            100% { transform: scale(1); }
-          }
-          @keyframes bidHighlight {
-            0% { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            50% { box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3); }
-            100% { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-          }
-        `;
-        document.head.appendChild(styles);
-      }
-    }
-    
-    // Update product bid details
-    function updateProductBid(bidData) {
-      updateBidItem(bidData);
-    }
-    
-    // Play notification sound (optional)
-    function playNotificationSound() {
-      // Create a subtle notification sound using Web Audio API
-      try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-        
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.2);
-      } catch (error) {
-        // Silently fail if audio context is not available
-        console.log('Audio notification not available');
-      }
-    }
-    
-    // Initialize marketplace data when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      loadProducts();
-      loadBiddingProducts();
-      loadRentals();
-      initializeSocket();
-    });
-    
-    // Clean up socket connection when page unloads
-    window.addEventListener('beforeunload', function() {
-      if (socket) {
-        socket.disconnect();
-      }
-    });
-  </script>
 </body>
 </html> 
