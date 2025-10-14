@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
+import logo from '../logo.svg'; // Imports the logo.svg file from the src folder
 
 const ProfileMenu = ({ user, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -8,7 +9,6 @@ const ProfileMenu = ({ user, onLogout }) => {
     return (
         <div className="profile-menu" onMouseLeave={() => setIsOpen(false)}>
             <button className="profile-btn" onMouseEnter={() => setIsOpen(true)}>
-                {/* Display the user's name, default to 'User' if not available */}
                 {user.name || 'User'}
             </button>
             {isOpen && (
@@ -25,32 +25,33 @@ const ProfileMenu = ({ user, onLogout }) => {
 const Header = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    const location = useLocation(); // Hook to get the current URL location
+    const location = useLocation();
 
-    // This effect will now re-run every time the page location changes
     useEffect(() => {
         const isLoggedIn = localStorage.getItem('auth_verified') === '1';
         if (isLoggedIn) {
-            // In a real app, you'd fetch user data. We'll use localStorage.
             const profile = JSON.parse(localStorage.getItem('profile'));
             setUser({ name: profile?.name });
         } else {
-            // If not logged in, ensure user state is null
             setUser(null);
         }
-    }, [location]); // The effect depends on the location now
+    }, [location]);
 
     const handleLogout = () => {
         localStorage.removeItem('auth_verified');
         localStorage.removeItem('profile');
         localStorage.removeItem('auth_phone');
         setUser(null);
-        navigate('/'); // Redirect to landing page on logout
+        navigate('/');
     };
 
     return (
         <header>
-            <Link to="/home" className="logo">Agri-Culture</Link>
+            {/* The text logo is now replaced with this image logo */}
+            <Link to="/home" className="logo-link">
+                <img src={logo} alt="Agri-Culture Logo" className="logo-img" />
+            </Link>
+            
             <div className="header-right">
                 <select id="langSelect" className="lang-select" aria-label="Language">
                     <option value="en">English</option>

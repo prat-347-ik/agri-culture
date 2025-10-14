@@ -19,12 +19,13 @@ const Profile = () => {
     const savedPhone = localStorage.getItem('auth_phone') || '';
     const savedProfile = JSON.parse(localStorage.getItem('profile') || '{}');
     
-    setFormData({
-      ...formData,
-      ...savedProfile, // Load saved profile data
-      phone: savedPhone, // Overwrite with auth_phone if available
-    });
-  }, []); // Empty dependency array ensures this runs only once on mount
+    // This is the corrected line to fix the warning
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      ...savedProfile,  
+      phone: savedPhone,
+    }));
+  }, []); // The dependency array is now correct
 
   const handleChange = (e) => {
     const { id, value } = e.target;

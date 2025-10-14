@@ -6,13 +6,14 @@ import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 
 // Import all page components
-import Landing from './pages/Landing'; // New
+import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Map from './pages/Map';
 import Marketplace from './pages/Marketplace';
 import Enroll from './pages/Enroll';
 import Contacts from './pages/Contacts';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings'; // <-- IMPORT SETTINGS
 import Etc from './pages/Etc';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
@@ -56,6 +57,7 @@ const AppContent = () => {
                 <Route path="/enroll" element={<Enroll />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<Settings />} /> {/* <-- ADD SETTINGS ROUTE */}
                 <Route path="/etc" element={<Etc />} />
                 <Route path="/admin" element={<Admin />} />
             </Routes>

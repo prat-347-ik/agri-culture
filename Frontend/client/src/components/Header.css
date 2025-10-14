@@ -44,3 +44,13 @@
 .logout-btn {
     cursor: pointer;
 }
+
+.logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 40px; /* You can adjust this height to fit your logo's design */
+    width: auto;
+}
