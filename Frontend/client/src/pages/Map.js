@@ -1,70 +1,11 @@
+// Frontend/client/src/pages/Map.js
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import './Map.css'; // Import the new CSS file
 
-// --- Custom CSS for the map page ---
-const customMapStyles = `
-  .map-page {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-  .map-overlay-controls {
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 8px;
-    border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
-  }
-  .map-btn {
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    color: #333;
-    transition: all 0.2s ease;
-  }
-  .map-btn:hover {
-    background: #e0e0e0;
-    border-color: #ccc;
-  }
-  .map-btn.active {
-    background: #2e7d32;
-    color: white;
-    border-color: #2e7d32;
-  }
-  .ac-marker {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 18px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    border: 2px solid rgba(255,255,255,0.8);
-    user-select: none;
-  }
-  .ac-marker.crops { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
-  .ac-marker.equipment { background: linear-gradient(135deg, #FF9800, #F57C00); }
-  .ac-marker.weather { background: linear-gradient(135deg, #2196F3, #1976D2); }
-  .ac-marker.default { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
-`;
-
+// ... (The rest of the Map.js component code remains the same)
 // --- Sample Data ---
 const farmData = [
     { id: 1, name: 'Green Valley Farm', type: 'crops', lat: 19.0350, lng: 73.0310, description: 'Wheat and Rice cultivation', status: 'active', icon: '🌾' },
@@ -137,24 +78,21 @@ const Map = () => {
     const [filter, setFilter] = useState('all');
 
     return (
-        <>
-            <style>{customMapStyles}</style>
-            <div className="map-page">
-                <div className="map-overlay-controls">
-                    <button className={`map-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}><span>🌾</span> All Farms</button>
-                    <button className={`map-btn ${filter === 'crops' ? 'active' : ''}`} onClick={() => setFilter('crops')}><span>🌱</span> Crops</button>
-                    <button className={`map-btn ${filter === 'equipment' ? 'active' : ''}`} onClick={() => setFilter('equipment')}><span>🚜</span> Equipment</button>
-                    <button className={`map-btn ${filter === 'weather' ? 'active' : ''}`} onClick={() => setFilter('weather')}><span>🌤️</span> Weather</button>
-                </div>
-                <MapContainer center={[mgmKamothe.lat, mgmKamothe.lng]} zoom={15} style={{ height: '100%', width: '100%' }}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                    <Markers filter={filter} />
-                </MapContainer>
+        <div className="map-page">
+            <div className="map-overlay-controls">
+                <button className={`map-btn ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}><span>🌾</span> All Farms</button>
+                <button className={`map-btn ${filter === 'crops' ? 'active' : ''}`} onClick={() => setFilter('crops')}><span>🌱</span> Crops</button>
+                <button className={`map-btn ${filter === 'equipment' ? 'active' : ''}`} onClick={() => setFilter('equipment')}><span>🚜</span> Equipment</button>
+                <button className={`map-btn ${filter === 'weather' ? 'active' : ''}`} onClick={() => setFilter('weather')}><span>🌤️</span> Weather</button>
             </div>
-        </>
+            <MapContainer center={[mgmKamothe.lat, mgmKamothe.lng]} zoom={15} style={{ height: '100%', width: '100%' }}>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                <Markers filter={filter} />
+            </MapContainer>
+        </div>
     );
 };
 

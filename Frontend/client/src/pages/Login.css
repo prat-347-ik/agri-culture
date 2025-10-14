@@ -93,3 +93,22 @@
         padding: 0.8rem 1.5rem;
     }
 }
+
+.login-background {
+    background: linear-gradient(135deg, #2e7d32, #81c784);
+}
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  color: #555;
+}
+
+.auth-switch span {
+  color: #2e7d32;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-switch span:hover {
+  text-decoration: underline;
+}

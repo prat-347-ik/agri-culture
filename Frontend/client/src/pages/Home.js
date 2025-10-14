@@ -1,34 +1,110 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link for internal navigation
+import { Link } from 'react-router-dom';
 
 const Home = () => {
+  // --- Inline Styles for an attractive layout ---
+
+  const pageStyle = {
+    padding: '40px',
+    backgroundColor: '#f9f9f9', // A slightly off-white background
+  };
+
+  const headerStyle = {
+    textAlign: 'center',
+    marginBottom: '40px',
+  };
+
+  const titleStyle = {
+    fontSize: '3rem', // Bigger font
+    color: '#2e7d32',
+    fontWeight: '700',
+    marginBottom: '10px',
+  };
+
+  const subtitleStyle = {
+    fontSize: '1.2rem',
+    color: '#555',
+  };
+
+  const gridContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)', // Strict 2x2 grid
+    gap: '30px', // Increased gap for better spacing
+  };
+
+  const cardStyle = {
+    background: '#fff',
+    padding: '30px',
+    borderRadius: '15px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.08)',
+    textAlign: 'center',
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  };
+  
+  // Note: Hover effects can't be done with inline styles. 
+  // For a real hover effect, a CSS file or a library like styled-components is needed.
+  // We'll rely on the transition to make it feel smooth if styles were external.
+
+  const cardIconStyle = {
+    fontSize: '3rem',
+    marginBottom: '15px',
+    color: '#2e7d32',
+  };
+
+  const cardTitleStyle = {
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    marginBottom: '10px',
+  };
+
+  const cardDescriptionStyle = {
+    color: '#666',
+    lineHeight: '1.6',
+  };
+
+
   return (
-    <div className="content-inner">
-      <div className="content-section">
-        <h2>Welcome to Agri-Culture</h2>
-        <p className="welcome-subtitle">Connecting Farmers for a Better Tomorrow</p>
-        <div className="welcome-cards">
-          <div className="welcome-card">
-            <h3>Map</h3>
-            <p>Explore local farms and agricultural areas</p>
-            <Link to="/map" className="card-link">View Map</Link>
-          </div>
-          <div className="welcome-card">
-            <h3>Market</h3>
-            <p>Buy, bid, and rent agricultural equipment</p>
-            <Link to="/marketplace" className="card-link">Visit Market</Link>
-          </div>
-          <div className="welcome-card">
-            <h3>Contacts</h3>
-            <p>Important contacts for farmers</p>
-            <Link to="/contacts" className="card-link">View Contacts</Link>
-          </div>
-          <div className="welcome-card">
-            <h3>Profile</h3>
-            <p>Create or update your profile to personalize the app</p>
-            <Link to="/login" className="card-link">Sign in</Link>
-          </div>
-        </div>
+    <div style={pageStyle}>
+      <header style={headerStyle}>
+        <h1 style={titleStyle}>Welcome to Agri-Culture</h1>
+        <p style={subtitleStyle}>Connecting Farmers for a Better Tomorrow</p>
+      </header>
+      
+      <div style={gridContainerStyle}>
+        {/* Card 1: Map */}
+        <Link to="/map" style={cardStyle}>
+          <div style={cardIconStyle}>🗺️</div>
+          <h3 style={cardTitleStyle}>Interactive Map</h3>
+          <p style={cardDescriptionStyle}>Explore local farms, services, and points of interest in your area.</p>
+        </Link>
+
+        {/* Card 2: Marketplace */}
+        <Link to="/marketplace" style={cardStyle}>
+          <div style={cardIconStyle}>🛒</div>
+          <h3 style={cardTitleStyle}>Marketplace</h3>
+          <p style={cardDescriptionStyle}>Buy, bid on, or rent agricultural equipment, seeds, and produce.</p>
+        </Link>
+        
+        {/* Card 3: Enroll Services (NEW) */}
+        <Link to="/enroll" style={cardStyle}>
+          <div style={cardIconStyle}>📝</div>
+          <h3 style={cardTitleStyle}>Enroll Services</h3>
+          <p style={cardDescriptionStyle}>Offer your own products or services to the community.</p>
+        </Link>
+
+        {/* Card 4: Weather (NEW) */}
+        <Link to="/etc" style={cardStyle}>
+          <div style={cardIconStyle}>☀️</div>
+          <h3 style={cardTitleStyle}>Weather & Services</h3>
+          <p style={cardDescriptionStyle}>Get the latest weather forecasts and access other essential services.</p>
+        </Link>
+
       </div>
     </div>
   );

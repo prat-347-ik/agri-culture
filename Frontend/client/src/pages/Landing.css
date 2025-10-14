@@ -1,0 +1,130 @@
+.landing-page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Header Styles */
+.landing-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 40px;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+}
+
+.landing-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+}
+
+.landing-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.landing-nav a:hover {
+  opacity: 0.8;
+}
+
+/* Hero Section Styles */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1499529112087-7cb3b78d1e8b?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 700;
+  margin-bottom: 0.25em;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  margin-bottom: 1.5em;
+  opacity: 0.9;
+}
+
+.hero-actions .hero-btn {
+  padding: 15px 35px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2e7d32;
+  border: 2px solid white;
+}
+
+.hero-actions .hero-btn:hover {
+  background: transparent;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.admin-login-link {
+  margin-top: 30px;
+}
+
+.admin-login-link a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+}
+
+.admin-login-link a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Content Sections */
+.landing-section {
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.landing-section h2 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+/* Footer Styles */
+.landing-footer {
+  background-color: #f8f9fa;
+  padding: 40px 20px;
+  text-align: center;
+  border-top: 1px solid #e9ecef;
+}
+
+.landing-footer h2 {
+  font-size: 2rem;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+.landing-footer p {
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+.copyright {
+  margin-top: 30px;
+  font-size: 0.9rem;
+}
