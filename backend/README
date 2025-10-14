@@ -1,0 +1,65 @@
+
+
+# Agri-Culture Project - Backend
+
+This is the backend server for the Agri-Culture project. It is built with Node.js, Express, and MongoDB. It handles API requests, manages the database, and provides file upload functionality using Cloudinary.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your local machine:
+
+  * [Node.js](https://nodejs.org/) (v14 or higher recommended)
+  * [npm](https://www.npmjs.com/) (comes with Node.js)
+  * [MongoDB](https://www.mongodb.com/try/download/community) (Make sure the MongoDB server is running on your machine)
+
+## Getting Started
+
+Follow these steps to get your local development environment set up and running.
+
+### 1\. Clone the Repository
+
+If you haven't already, clone the project repository to your local machine.
+
+```bash
+git clone <https://github.com/blueboi77/agri-culture>
+git checkout react-conversion/backend
+cd agri-culture/backend
+```
+
+### 2\. Install Dependencies
+
+Navigate to the `backend` directory and install the required npm packages.
+
+```bash
+npm install
+```
+
+
+3.  **Important:** Replace the placeholder values (`your_...`) with your actual credentials from MongoDB and Cloudinary.
+
+## Available Scripts
+
+In the `backend` directory, you can run the following commands:
+
+### `npm start`
+
+Runs the app in production mode.
+
+```bash
+npm start
+```
+
+The server will start, and you should see a confirmation message in the console: `🚀 Server running on port 5000`
+
+### `npm run dev`
+
+Runs the app in development mode using `nodemon`. This will automatically restart the server whenever you make changes to the code.
+
+
+npm run dev
+
+
+## API Endpoints
+
+The server currently provides the following API endpoints. The base URL is `http://localhost:5000`.
+
