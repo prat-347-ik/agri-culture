@@ -1,4 +1,5 @@
 import React from 'react';
+import Chatbot from '../components/Chatbot';
 
 const Etc = () => {
   return (
@@ -44,14 +45,8 @@ const Etc = () => {
 
           <div className="service-card">
             <h3>Expert Advice</h3>
-            <p>Connect with agricultural experts</p>
-            <div className="expert-widget">
-              <div className="expert-info">
-                <span className="expert-name">Dr. Sharma</span>
-                <span className="expert-specialty">Soil Expert</span>
-              </div>
-              <button className="service-btn">Chat Now</button>
-            </div>
+            <p>Connect with our AI agricultural expert</p>
+            <Chatbot />
           </div>
 
           <div className="service-card">

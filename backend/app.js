@@ -1,8 +1,9 @@
-import express from "express";
 import "dotenv/config";
+import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import uploadRoutes from "./routes/upload.js"; // Only import the upload routes
+import aiRoutes from './routes/ai.js'; // Use the AI route
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -13,7 +14,8 @@ app.use(express.json());
 
 // API Routes
 // Only the upload route is registered for now
-app.use("/api", uploadRoutes); 
+app.use("/api", uploadRoutes);
+app.use("/api/chat", aiRoutes);
 
 // Function to connect to MongoDB and start the server
 const connectDB = async () => {
