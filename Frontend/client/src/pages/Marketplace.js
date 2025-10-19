@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './Marketplace.css'; 
 const Marketplace = () => {
   const [activeTab, setActiveTab] = useState('buy');
 
