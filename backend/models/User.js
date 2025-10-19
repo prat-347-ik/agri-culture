@@ -27,6 +27,19 @@ const UserSchema = new mongoose.Schema({
       default: true,
     },
   },
+  // Add the new location field
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+  },
 }, { timestamps: true });
+
+// Add the 2dsphere index for geospatial queries
+UserSchema.index({ location: '2dsphere' });
 
 export default mongoose.model('User', UserSchema);

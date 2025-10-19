@@ -4,9 +4,12 @@ import cors from "cors";
 import mongoose from "mongoose";
 import uploadRoutes from "./routes/upload.js"; // Only import the upload routes
 import aiRoutes from './routes/ai.js'; // Use the AI route
+import userRoutes from './routes/user.js'; // Import user routes
+import authRoutes from './routes/auth.js'; // 1. Import auth routes
+import listingRoutes from './routes/listings.js'; // Import listing routes
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -16,6 +19,12 @@ app.use(express.json());
 // Only the upload route is registered for now
 app.use("/api", uploadRoutes);
 app.use("/api/chat", aiRoutes);
+app.use("/api/user", userRoutes); // Register user routes
+app.use("/api/auth", authRoutes); // 2. Register auth routes
+app.use('/api/listings', listingRoutes); // Register listing routes
+
+
+
 
 // Function to connect to MongoDB and start the server
 const connectDB = async () => {
