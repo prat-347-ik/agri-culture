@@ -4,7 +4,8 @@ import User from '../models/User.js';
 // @desc    Create a new listing
 export const createListing = async (req, res) => {
   try {
-    const { category, name, description, price } = req.body;
+    // Destructure all expected fields from the request body
+    const { category, name, description, price, listingType, images } = req.body;
     const user = await User.findOne({ phone: req.user.phoneNumber });
 
     if (!user) {
@@ -17,12 +18,64 @@ export const createListing = async (req, res) => {
       name,
       description,
       price,
+      listingType, // Add listingType
+      images,      // Add images
     });
 
     const savedListing = await newListing.save();
     res.status(201).json(savedListing);
   } catch (error) {
     console.error(error);
+    // Provide more specific error messages for validation issues
+    if (error.name === 'ValidationError') {
+        return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Update a listing
+export const updateListing = async (req, res) => {
+  // Destructure all updatable fields
+  const { category, name, description, price, isAvailable, listingType, images } = req.body;
+
+  try {
+    let listing = await Listing.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+
+    const user = await User.findOne({ phone: req.user.phoneNumber });
+    if (listing.user.toString() !== user._id.toString()) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
+    // Update fields if they are provided in the request
+    listing.category = category || listing.category;
+    listing.name = name || listing.name;
+    listing.description = description || listing.description;
+    listing.price = price || listing.price;
+    listing.isAvailable = isAvailable ?? listing.isAvailable;
+    listing.images = images || listing.images;
+
+    // Specifically handle listingType, as it can be intentionally set to null/undefined
+    // for categories other than 'Machineries'
+    if (category === 'Machineries') {
+        listing.listingType = listingType || listing.listingType;
+    } else {
+        listing.listingType = undefined;
+    }
+
+
+    listing = await listing.save();
+
+    res.json(listing);
+  } catch (error) {
+    console.error(error);
+     if (error.name === 'ValidationError') {
+        return res.status(400).json({ message: error.message });
+    }
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -66,37 +119,7 @@ export const getListingById = async (req, res) => {
   }
 };
 
-// @desc    Update a listing
-export const updateListing = async (req, res) => {
-  const { category, name, description, price, isAvailable } = req.body;
 
-  try {
-    let listing = await Listing.findById(req.params.id);
-
-    if (!listing) {
-      return res.status(404).json({ message: 'Listing not found' });
-    }
-
-    // Check if the user owns the listing
-    const user = await User.findOne({ phone: req.user.phoneNumber });
-    if (listing.user.toString() !== user._id.toString()) {
-      return res.status(401).json({ message: 'User not authorized' });
-    }
-
-    listing.category = category || listing.category;
-    listing.name = name || listing.name;
-    listing.description = description || listing.description;
-    listing.price = price || listing.price;
-    listing.isAvailable = isAvailable ?? listing.isAvailable;
-
-    listing = await listing.save();
-
-    res.json(listing);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
 // @desc    Delete a listing
 export const deleteListing = async (req, res) => {

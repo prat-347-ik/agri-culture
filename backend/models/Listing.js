@@ -11,6 +11,15 @@ const ListingSchema = new mongoose.Schema({
     required: true,
     enum: ['Machineries', 'Produces', 'Services'],
   },
+  // Add the new listingType field
+  listingType: {
+    type: String,
+    enum: ['Rent', 'Sale'],
+    // Only required if the category is 'Machineries'
+    required: function() {
+      return this.category === 'Machineries';
+    }
+  },
   name: {
     type: String,
     required: true,
@@ -21,6 +30,11 @@ const ListingSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: true,
+  },
+  // Add the new images field
+  images: {
+    type: [String],
+    default: []
   },
   isAvailable: {
     type: Boolean,
