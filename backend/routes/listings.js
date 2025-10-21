@@ -3,6 +3,7 @@ import {
   createListing,
   getListings,
   getListingById,
+  getMyListings,
   updateListing,
   deleteListing,
   getMapListings,
@@ -20,6 +21,11 @@ router.post('/', auth, createListing);
 // @desc    Get all available listings
 // @access  Public
 router.get('/', getListings);
+
+// @route   GET /api/listings/my-listings
+// @desc    Get current user's listings
+// @access  Private
+router.get('/my-listings', auth, getMyListings)
 
 // @route   GET /api/listings/map
 // @desc    Get all listings with location data for the map

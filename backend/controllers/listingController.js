@@ -5,7 +5,7 @@ import User from '../models/User.js';
 export const createListing = async (req, res) => {
   try {
     // Destructure all expected fields from the request body
-    const { category, name, description, price, listingType, images } = req.body;
+    const { category, name, description, price, listingType, images,rate_unit } = req.body;
     const user = await User.findOne({ phone: req.user.phoneNumber });
 
     if (!user) {
@@ -20,6 +20,7 @@ export const createListing = async (req, res) => {
       price,
       listingType, // Add listingType
       images,      // Add images
+      rate_unit // Add the new field
     });
 
     const savedListing = await newListing.save();
@@ -60,13 +61,17 @@ export const updateListing = async (req, res) => {
     listing.images = images || listing.images;
 
     // Specifically handle listingType, as it can be intentionally set to null/undefined
-    // for categories other than 'Machineries'
-    if (category === 'Machineries') {
+// Handle conditional fields
+    if (listing.category === 'Machineries') {
         listing.listingType = listingType || listing.listingType;
+        listing.rate_unit = undefined;
+    } else if (listing.category === 'Produces') {
+        listing.rate_unit = rate_unit || listing.rate_unit;
+        listing.listingType = undefined;
     } else {
         listing.listingType = undefined;
+        listing.rate_unit = undefined;
     }
-
 
     listing = await listing.save();
 
@@ -113,6 +118,24 @@ export const getListingById = async (req, res) => {
       return res.status(404).json({ message: 'Listing not found' });
     }
     res.json(listing);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// @desc    Get listings for the logged-in user
+// @route   GET /api/listings/my-listings
+// @access  Private
+export const getMyListings = async (req, res) => {
+  try {
+    const user = await User.findOne({ phone: req.user.phoneNumber });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const listings = await Listing.find({ user: user._id }).sort({ createdAt: -1 });
+    res.json(listings);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

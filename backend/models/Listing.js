@@ -20,6 +20,16 @@ const ListingSchema = new mongoose.Schema({
       return this.category === 'Machineries';
     }
   },
+  
+  // New field for Produce
+  rate_unit: {
+      type: String,
+      enum: ['kg', 'ton'],
+      required: function() {
+          // Required only for Produces
+          return this.category === 'Produces';
+      }
+  },
   name: {
     type: String,
     required: true,

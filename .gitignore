@@ -1,3 +1,5 @@
 /backend/.env
 /backend/node_modules
 /Frontend/node_modules
+/backend/Sample_uploads
+/Frontend/client/node_modules
