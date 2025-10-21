@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext'; 
+import { axiosPublic } from '../api/axios'; 
 import './Login.css';
 
 const Login = () => {
+  const { login } = useContext(AuthContext); 
   const [isLoginView, setIsLoginView] = useState(true);
-  const [step, setStep] = useState('credentials'); // 'credentials', 'otp', 'success'
-  
-  // Form fields state
+  const [step, setStep] = useState('credentials'); 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  
-  // OTP state
   const [otp, setOtp] = useState(new Array(6).fill(''));
-  const [generatedOtp, setGeneratedOtp] = useState('');
-  
   const navigate = useNavigate();
 
-  const handleSendOtp = () => {
-    // Validate inputs
+  const handleSendOtp = async () => {
     if (!isLoginView && !fullName.trim()) {
         alert('Please enter your full name');
         return;
@@ -27,36 +23,54 @@ const Login = () => {
       return;
     }
 
-    const newOtp = String(Math.floor(100000 + Math.random() * 900000));
-    setGeneratedOtp(newOtp);
-    alert(`DEBUG OTP: ${newOtp}`);
-    setStep('otp');
+    const endpoint = isLoginView ? '/api/auth/login' : '/api/auth/signup';
+    const payload = { phoneNumber: phone, ...(isLoginView ? {} : { fullName }) };
+
+    try {
+        const response = await axiosPublic.post(endpoint, JSON.stringify(payload));
+        alert(response.data.message);
+        setStep('otp');
+    } catch (error) {
+        console.error('Error sending OTP:', error);
+        alert(error.response?.data?.message || 'Failed to send OTP. Please try again.');
+    }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const enteredOtp = otp.join('');
-    if (enteredOtp !== generatedOtp) {
-      alert('Invalid OTP');
+    if (enteredOtp.length !== 6) {
+      alert('Please enter the 6-digit OTP.');
       return;
     }
-    
-    if (isLoginView) {
-      // --- LOGIN FLOW ---
-      localStorage.setItem('auth_verified', '1');
-      localStorage.setItem('auth_phone', phone);
-      // NOTE: In a real app, you would fetch user data here and save it.
-      // We assume the profile is already in localStorage from a previous session.
-      setStep('success');
-      setTimeout(() => navigate('/home'), 1500);
-    } else {
-      // --- SIGN UP FLOW ---
-      // In a real app, you would send fullName and phone to an API to create the user.
-      alert('Sign up successful! Please log in to continue.');
-      // After sign-up, we toggle back to the login view.
-      toggleView();
+
+    try {
+        // FINAL FIX: This 'withCredentials: true' option is absolutely
+        // essential. It tells the browser to accept the cookie from the backend.
+        const response = await axiosPublic.post('/api/auth/verify', 
+            JSON.stringify({ phoneNumber: phone, code: enteredOtp }),
+            {
+                withCredentials: true 
+            }
+        );
+
+        if (response.status === 200) {
+            if (isLoginView) {
+                const { accessToken, user } = response.data;
+                login(accessToken, user); 
+                
+                setStep('success');
+                setTimeout(() => navigate('/home'), 1500);
+            } else {
+                alert('Sign up successful! Please log in to continue.');
+                toggleView();
+            }
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        alert(error.response?.data?.message || 'Failed to verify OTP. Please try again.');
     }
   };
-  
+
   const handleOtpChange = (element, index) => {
     if (isNaN(element.value)) return false;
     const newOtp = [...otp];
@@ -70,7 +84,6 @@ const Login = () => {
 
   const toggleView = () => {
     setIsLoginView(!isLoginView);
-    // Reset all form fields and state when toggling
     setFullName('');
     setPhone('');
     setOtp(new Array(6).fill(''));
@@ -81,6 +94,8 @@ const Login = () => {
     <div className="auth-wrapper login-background">
       <div className="auth-card">
         <h2>{isLoginView ? 'Login' : 'Sign Up'}</h2>
+        
+        {/* The rest of your JSX remains the same */}
         
         {step === 'credentials' && (
           <div id="stepCredentials">

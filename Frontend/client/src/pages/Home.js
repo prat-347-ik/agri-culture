@@ -9,22 +9,10 @@ const Home = () => {
     backgroundColor: '#f9f9f9', // A slightly off-white background
   };
 
-  const headerStyle = {
-    textAlign: 'center',
-    marginBottom: '40px',
-  };
 
-  const titleStyle = {
-    fontSize: '3rem', // Bigger font
-    color: '#2e7d32',
-    fontWeight: '700',
-    marginBottom: '10px',
-  };
 
-  const subtitleStyle = {
-    fontSize: '1.2rem',
-    color: '#555',
-  };
+
+
 
   const gridContainerStyle = {
     display: 'grid',
@@ -71,10 +59,7 @@ const Home = () => {
 
   return (
     <div style={pageStyle}>
-      <header style={headerStyle}>
-        <h1 style={titleStyle}>Welcome to Agri-Culture</h1>
-        <p style={subtitleStyle}>Connecting Farmers for a Better Tomorrow</p>
-      </header>
+
       
       <div style={gridContainerStyle}>
         {/* Card 1: Map */}

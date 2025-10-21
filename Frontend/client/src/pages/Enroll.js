@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import './Enroll.css'; // Your existing CSS file
+import useAxiosPrivate from '../hooks/useAxiosPrivate'; // 1. Import the custom hook
+import './Enroll.css'; 
 
 // ImageUploader component remains the same
 const ImageUploader = ({ files, setFiles, maxImages = 5 }) => {
@@ -49,11 +50,12 @@ const ImageUploader = ({ files, setFiles, maxImages = 5 }) => {
 
 // Main Enroll Component
 const Enroll = () => {
+  const axiosPrivate = useAxiosPrivate(); // 2. Call the hook to get the configured axios instance
   const [formData, setFormData] = useState({
     category: '', name: '', description: '', price: '',
-    listingType: 'Rent', // For Machineries
-    rate_unit: 'kg',     // For Produces
-    serviceType: 'Labour' // For Services
+    listingType: 'Rent',
+    rate_unit: 'kg',
+    serviceType: 'Labour'
   });
 
   const [service_details, setServiceDetails] = useState([]);
@@ -80,7 +82,7 @@ const Enroll = () => {
 
   const handleServiceTypeChange = (e) => {
     setFormData({ ...formData, serviceType: e.target.value });
-    setServiceDetails([]); // Clear details when service type changes
+    setServiceDetails([]);
     setCurrentDetail('');
   };
 
@@ -88,7 +90,6 @@ const Enroll = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- Functions for handling service_details ---
   const handleAddDetail = () => {
     if (currentDetail.trim() && !service_details.includes(currentDetail.trim())) {
       setServiceDetails([...service_details, currentDetail.trim()]);
@@ -99,27 +100,17 @@ const Enroll = () => {
   const handleRemoveDetail = (detailToRemove) => {
     setServiceDetails(service_details.filter(detail => detail !== detailToRemove));
   };
-  // ------------------------------------
 
   const fetchMyListings = async () => {
-    // This function remains the same
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('You must be logged in to view your listings.');
-      return;
-    }
     try {
       setIsLoading(true);
-      const res = await fetch('/api/listings/my-listings', {
-        headers: { 'x-auth-token': token }
-      });
-      if (!res.ok) throw new Error('Failed to fetch your listings.');
-      const data = await res.json();
-      setMyListings(data);
+      // 3. Use the axiosPrivate instance from the hook
+      const response = await axiosPrivate.get('/api/listings/my-listings');
+      setMyListings(response.data);
       setShowMyListings(true);
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      alert(error.response?.data?.message || 'Failed to fetch your listings.');
     } finally {
       setIsLoading(false);
     }
@@ -127,10 +118,10 @@ const Enroll = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (!token || !category) {
-      alert('You must be logged in and select a category.');
-      return;
+    
+    if (!category) {
+        alert('Please select a category.');
+        return;
     }
 
     if (category === 'Services' && service_details.length === 0) {
@@ -144,15 +135,11 @@ const Enroll = () => {
         files.map(async (file) => {
           const uploadFormData = new FormData();
           uploadFormData.append('file', file);
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'x-auth-token': token },
-            body: uploadFormData,
+          
+          const res = await axiosPrivate.post('/api/upload', uploadFormData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
           });
-          if (!res.ok) throw new Error('Image upload failed');
-          const data = await res.json();
-          if (!data.url) throw new Error('URL not found in response');
-          return data.url;
+          return res.data.url;
         })
       );
 
@@ -164,14 +151,9 @@ const Enroll = () => {
           delete listingData.service_details;
       }
 
-      const res = await fetch('/api/listings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
-        body: JSON.stringify(listingData),
-      });
+      const response = await axiosPrivate.post('/api/listings', JSON.stringify(listingData));
 
-      const data = await res.json();
-      if (res.ok) {
+      if (response.status === 201 || response.status === 200) {
         alert('Listing created successfully!');
         setFormData({
           category: '', name: '', description: '', price: '', listingType: 'Rent', rate_unit: 'kg', serviceType: 'Labour'
@@ -179,12 +161,10 @@ const Enroll = () => {
         setFiles([]);
         setServiceDetails([]);
         setCurrentDetail('');
-      } else {
-        alert(`Error: ${data.message || 'Something went wrong'}`);
       }
     } catch (error) {
       console.error('Failed to create listing:', error);
-      alert('An error occurred. Please try again.');
+      alert(`An error occurred: ${error.response?.data?.message || error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -253,7 +233,6 @@ const Enroll = () => {
                 </div>
               )}
 
-              {/* --- New Conditional Section for Services --- */}
               {category === 'Services' && (
                 <div className='service-details-container'>
                     <div className="form-group">
@@ -290,7 +269,6 @@ const Enroll = () => {
                     </div>
                 </div>
               )}
-              {/* --- End Services Section --- */}
 
               <div className="form-group">
                 <label htmlFor="name">Title / Name</label>
@@ -327,7 +305,6 @@ const Enroll = () => {
         </div>
       </div>
       
-      {/* Modal JSX remains the same */}
       {showMyListings && (
         <div className="modal-overlay" onClick={() => setShowMyListings(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

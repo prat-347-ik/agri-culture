@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser"; // 1. Import cookie-parser
 import uploadRoutes from "./routes/upload.js"; // Only import the upload routes
 import aiRoutes from './routes/ai.js'; // Use the AI route
 import userRoutes from './routes/user.js'; // Import user routes
@@ -12,8 +13,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests ONLY from your React frontend
+  credentials: true                 // Allow cookies and authorization headers
+}));app.use(express.json());
+app.use(cookieParser()); // 2. Use cookie-parser middleware
 
 // API Routes
 // Only the upload route is registered for now

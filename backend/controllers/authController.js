@@ -2,18 +2,23 @@ import jwt from 'jsonwebtoken';
 import otpGenerator from 'otp-generator';
 import User from '../models/User.js';
 
-// import twilio from 'twilio';
-
-// Twilio credentials from environment variables (COMMENTED OUT)
-// const accountSid = process.env.TWILIO_ACCOUNT_SID;
-// const authToken = process.env.TWILIO_AUTH_TOKEN;
-// const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
-// const client = twilio(accountSid, authToken);
-
-// Temporary storage for OTPs. In a production app, use a database like Redis.
 const otpStorage = new Map();
 
-// @desc    Register a new user and send OTP
+// This function is for JWTs, not OTPs, and is correct.
+const generateTokens = (res, phoneNumber) => {
+    const accessToken = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ phoneNumber }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return accessToken;
+};
+
 export const signup = async (req, res) => {
   const { phoneNumber, fullName } = req.body;
 
@@ -27,23 +32,16 @@ export const signup = async (req, res) => {
       return res.status(409).json({ message: 'User with this phone number already exists.' });
     }
 
+    // CORRECTED: Added lowerCaseAlphabets: false to ensure a numeric OTP
     const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
       upperCaseAlphabets: false,
       specialChars: false,
     });
 
     otpStorage.set(phoneNumber, { otp, fullName });
-
-    // --- Twilio code commented out ---
-    // await client.messages.create({
-    //   body: `Your Agri-Culture verification code is: ${otp}`,
-    //   from: twilioPhoneNumber,
-    //   to: phoneNumber,
-    // });
-
-    // Log OTP to console for testing
     console.log(`[SIGNUP OTP] for ${phoneNumber}: ${otp}`);
-
     res.status(200).json({ message: 'OTP sent successfully for signup verification (check console).' });
   } catch (error) {
     console.error(error);
@@ -51,7 +49,6 @@ export const signup = async (req, res) => {
   }
 };
 
-// @desc    Login a user and send OTP
 export const login = async (req, res) => {
   const { phoneNumber } = req.body;
 
@@ -61,23 +58,16 @@ export const login = async (req, res) => {
         return res.status(404).json({ message: 'User not found. Please sign up first.' });
     }
 
+    // CORRECTED: Added lowerCaseAlphabets: false to ensure a numeric OTP
     const otp = otpGenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
       upperCaseAlphabets: false,
       specialChars: false,
     });
 
     otpStorage.set(phoneNumber, { otp });
-
-    // --- Twilio code commented out ---
-    // await client.messages.create({
-    //   body: `Your Agri-Culture login code is: ${otp}`,
-    //   from: twilioPhoneNumber,
-    //   to: phoneNumber,
-    // });
-
-    // Log OTP to console for testing
     console.log(`[LOGIN OTP] for ${phoneNumber}: ${otp}`);
-
     res.status(200).json({ message: 'OTP sent successfully for login (check console).' });
   } catch (error) {
     console.error(error);
@@ -85,25 +75,54 @@ export const login = async (req, res) => {
   }
 };
 
-// @desc    Verify OTP and return a JWT for authenticated sessions
 export const verifyOtp = async (req, res) => {
   const { phoneNumber, code } = req.body;
-
   const storedData = otpStorage.get(phoneNumber);
 
   if (storedData && storedData.otp === code) {
     otpStorage.delete(phoneNumber);
+    let user = await User.findOne({ phone: phoneNumber });
 
-    if (storedData.fullName) {
-        await User.create({
+    if (!user && storedData.fullName) {
+        user = await User.create({
             fullName: storedData.fullName,
             phone: phoneNumber
         });
     }
 
-    const token = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '3h' });
-    res.status(200).json({ message: 'OTP verified successfully', token });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const accessToken = generateTokens(res, phoneNumber);
+    // Send back some user info to the frontend if needed
+    res.status(200).json({ 
+        message: 'OTP verified successfully', 
+        accessToken, 
+        user: { fullName: user.fullName, phone: user.phone } 
+    });
+
   } else {
     res.status(400).json({ message: 'Invalid OTP' });
   }
+};
+
+export const refreshToken = (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ message: 'No refresh token provided.' });
+
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+        if (err) return res.status(403).json({ message: 'Invalid refresh token.' });
+        
+        const accessToken = jwt.sign({ phoneNumber: decoded.phoneNumber }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        res.json({ accessToken });
+    });
+};
+
+export const logout = (req, res) => {
+    res.cookie('refreshToken', '', {
+        httpOnly: true,
+        expires: new Date(0)
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
 };

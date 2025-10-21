@@ -1,70 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import './Header.css';
-import logo from '../logo.svg'; // Imports the logo.svg file from the src folder
-
-const ProfileMenu = ({ user, onLogout }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-        <div className="profile-menu" onMouseLeave={() => setIsOpen(false)}>
-            <button className="profile-btn" onMouseEnter={() => setIsOpen(true)}>
-                {user.name || 'User'}
-            </button>
-            {isOpen && (
-                <div className="profile-dropdown">
-                    <Link to="/profile" className="dropdown-item">Profile</Link>
-                    <Link to="/settings" className="dropdown-item">Settings</Link>
-                    <button onClick={onLogout} className="dropdown-item logout-btn">Logout</button>
-                </div>
-            )}
-        </div>
-    );
-};
 
 const Header = () => {
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
-    const location = useLocation();
+  // This state will be derived from localStorage on component mount
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-    useEffect(() => {
-        const isLoggedIn = localStorage.getItem('auth_verified') === '1';
-        if (isLoggedIn) {
-            const profile = JSON.parse(localStorage.getItem('profile'));
-            setUser({ name: profile?.name });
-        } else {
-            setUser(null);
-        }
-    }, [location]);
+  React.useEffect(() => {
+    // CORRECTED: Check for the 'isLoggedIn' flag instead of the token
+    const loggedInStatus = localStorage.getItem('isLoggedIn');
+    setIsLoggedIn(loggedInStatus === 'true');
+  }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('auth_verified');
-        localStorage.removeItem('profile');
-        localStorage.removeItem('auth_phone');
-        setUser(null);
-        navigate('/');
-    };
+  const handleLogout = async () => {
+    try {
+      // Call the backend logout endpoint to clear the httpOnly cookie
+      await fetch('http://localhost:5000/api/auth/logout', {
+        method: 'POST',
+        // IMPORTANT: This ensures the browser sends the cookie
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      // Always clear frontend session state regardless of backend response
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('auth_phone');
+      // Redirect to login and refresh the application state
+      window.location.href = '/login';
+    }
+  };
 
-    return (
-        <header>
-            {/* The text logo is now replaced with this image logo */}
-            <Link to="/home" className="logo-link">
-                <img src={logo} alt="Agri-Culture Logo" className="logo-img" />
-            </Link>
-            
-            <div className="header-right">
-                <select id="langSelect" className="lang-select" aria-label="Language">
-                    <option value="en">English</option>
-                    <option value="mr">मराठी</option>
-                </select>
-                {user ? (
-                    <ProfileMenu user={user} onLogout={handleLogout} />
-                ) : (
-                    <Link to="/login" className="login-btn">Login</Link>
-                )}
-            </div>
-        </header>
-    );
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  return (
+    <header className="header">
+      <div className="logo">
+        <Link to="/">Agri-Culture</Link>
+      </div>
+      
+      {/* Navigation can be added here if needed */}
+      {/* <nav>
+        <ul>
+          <li><Link to="/home">Home</Link></li>
+          ... other links
+        </ul>
+      </nav> 
+      */}
+
+      <div className="auth-links">
+        {isLoggedIn ? (
+          <div className="profile-menu">
+            <button onClick={toggleMenu} className="profile-btn">
+              Profile
+            </button>
+            {isMenuOpen && (
+              <ul className="dropdown-menu">
+                <li><Link to="/profile" onClick={() => setIsMenuOpen(false)}>My Profile</Link></li>
+                <li><Link to="/settings" onClick={() => setIsMenuOpen(false)}>Settings</Link></li>
+                <li><button onClick={handleLogout}>Logout</button></li>
+              </ul>
+            )}
+          </div>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            {/* The sign-up is now part of the login page, so this can be removed if desired */}
+            {/* <Link to="/signup">Sign Up</Link> */}
+          </>
+        )}
+      </div>
+    </header>
+  );
 };
 
 export default Header;
