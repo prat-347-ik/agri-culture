@@ -5,7 +5,7 @@ import User from '../models/User.js';
 export const createListing = async (req, res) => {
   try {
     // Destructure all expected fields from the request body
-    const { category, name, description, price, listingType, images,rate_unit } = req.body;
+    const { category, name, description, price, listingType, images,rate_unit,service_details,serviceType } = req.body;
     const user = await User.findOne({ phone: req.user.phoneNumber });
 
     if (!user) {
@@ -20,7 +20,9 @@ export const createListing = async (req, res) => {
       price,
       listingType, // Add listingType
       images,      // Add images
-      rate_unit // Add the new field
+      rate_unit,
+      serviceType, // Add the new field
+      service_details
     });
 
     const savedListing = await newListing.save();
@@ -38,7 +40,7 @@ export const createListing = async (req, res) => {
 // @desc    Update a listing
 export const updateListing = async (req, res) => {
   // Destructure all updatable fields
-  const { category, name, description, price, isAvailable, listingType, images } = req.body;
+  const { category, name, description, price, isAvailable, listingType, images, service_details, serviceType } = req.body;
 
   try {
     let listing = await Listing.findById(req.params.id);
@@ -62,15 +64,24 @@ export const updateListing = async (req, res) => {
 
     // Specifically handle listingType, as it can be intentionally set to null/undefined
 // Handle conditional fields
+// Handle conditional fields
     if (listing.category === 'Machineries') {
         listing.listingType = listingType || listing.listingType;
         listing.rate_unit = undefined;
+        listing.skills = undefined;
     } else if (listing.category === 'Produces') {
         listing.rate_unit = rate_unit || listing.rate_unit;
         listing.listingType = undefined;
+        listing.skills = undefined;
+} else if (listing.category === 'Services') {
+        listing.serviceType = serviceType || listing.serviceType;
+        listing.service_details = service_details || listing.service_details;
+        listing.listingType = undefined;
+        listing.rate_unit = undefined;
     } else {
         listing.listingType = undefined;
         listing.rate_unit = undefined;
+        listing.service_details = undefined;
     }
 
     listing = await listing.save();

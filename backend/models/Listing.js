@@ -30,6 +30,21 @@ const ListingSchema = new mongoose.Schema({
           return this.category === 'Produces';
       }
   },
+
+  serviceType: {
+    type: String,
+    enum: ['Labour', 'Drone', 'Soil Testing', 'Equipment Repair'],
+    required: function() {
+        return this.category === 'Services';
+    }
+  },
+// Renamed 'skills' to be more generic
+  service_details: {
+    type: [String],
+    required: function() {
+      return this.category === 'Services';
+    }
+  },
   name: {
     type: String,
     required: true,

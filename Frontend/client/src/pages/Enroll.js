@@ -46,36 +46,63 @@ const ImageUploader = ({ files, setFiles, maxImages = 5 }) => {
   );
 };
 
+
 // Main Enroll Component
 const Enroll = () => {
   const [formData, setFormData] = useState({
     category: '', name: '', description: '', price: '',
-    listingType: 'Rent', rate_unit: 'kg',
+    listingType: 'Rent', // For Machineries
+    rate_unit: 'kg',     // For Produces
+    serviceType: 'Labour' // For Services
   });
+
+  const [service_details, setServiceDetails] = useState([]);
+  const [currentDetail, setCurrentDetail] = useState('');
+
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // New state for the modal
   const [showMyListings, setShowMyListings] = useState(false);
   const [myListings, setMyListings] = useState([]);
 
-  const { category, name, description, price, listingType, rate_unit } = formData;
+  const { category, name, description, price, listingType, rate_unit, serviceType } = formData;
 
   const handleCategoryChange = (newCategory) => {
     setFormData({
       category: newCategory, name: '', description: '', price: '',
       listingType: newCategory === 'Machineries' ? 'Rent' : '',
       rate_unit: newCategory === 'Produces' ? 'kg' : '',
+      serviceType: newCategory === 'Services' ? 'Labour' : ''
     });
     setFiles([]);
+    setServiceDetails([]);
+    setCurrentDetail('');
+  };
+
+  const handleServiceTypeChange = (e) => {
+    setFormData({ ...formData, serviceType: e.target.value });
+    setServiceDetails([]); // Clear details when service type changes
+    setCurrentDetail('');
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Function to fetch and show the user's listings
+  // --- Functions for handling service_details ---
+  const handleAddDetail = () => {
+    if (currentDetail.trim() && !service_details.includes(currentDetail.trim())) {
+      setServiceDetails([...service_details, currentDetail.trim()]);
+      setCurrentDetail('');
+    }
+  };
+
+  const handleRemoveDetail = (detailToRemove) => {
+    setServiceDetails(service_details.filter(detail => detail !== detailToRemove));
+  };
+  // ------------------------------------
+
   const fetchMyListings = async () => {
+    // This function remains the same
     const token = localStorage.getItem('token');
     if (!token) {
       alert('You must be logged in to view your listings.');
@@ -106,6 +133,11 @@ const Enroll = () => {
       return;
     }
 
+    if (category === 'Services' && service_details.length === 0) {
+      alert('Please add at least one detail for the selected service.');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const imageUrls = await Promise.all(
@@ -124,9 +156,13 @@ const Enroll = () => {
         })
       );
 
-      const listingData = { ...formData, images: imageUrls };
+      const listingData = { ...formData, images: imageUrls, service_details };
       if (listingData.category !== 'Machineries') delete listingData.listingType;
       if (listingData.category !== 'Produces') delete listingData.rate_unit;
+      if (listingData.category !== 'Services') {
+          delete listingData.serviceType;
+          delete listingData.service_details;
+      }
 
       const res = await fetch('/api/listings', {
         method: 'POST',
@@ -138,9 +174,11 @@ const Enroll = () => {
       if (res.ok) {
         alert('Listing created successfully!');
         setFormData({
-          category: '', name: '', description: '', price: '', listingType: 'Rent', rate_unit: 'kg',
+          category: '', name: '', description: '', price: '', listingType: 'Rent', rate_unit: 'kg', serviceType: 'Labour'
         });
         setFiles([]);
+        setServiceDetails([]);
+        setCurrentDetail('');
       } else {
         alert(`Error: ${data.message || 'Something went wrong'}`);
       }
@@ -151,6 +189,26 @@ const Enroll = () => {
       setIsLoading(false);
     }
   };
+
+  const getServiceDetailLabel = () => {
+    switch(serviceType) {
+        case 'Labour': return 'Skills Offered';
+        case 'Drone': return 'Drone Capabilities';
+        case 'Soil Testing': return 'Tests Provided';
+        case 'Equipment Repair': return 'Specializations';
+        default: return 'Details';
+    }
+  };
+  
+  const getServiceDetailPlaceholder = () => {
+      switch(serviceType) {
+        case 'Labour': return 'e.g., Harvesting';
+        case 'Drone': return 'e.g., Pesticide Spraying';
+        case 'Soil Testing': return 'e.g., NPK Levels';
+        case 'Equipment Repair': return 'e.g., Tractor Engines';
+        default: return 'Add a detail';
+    }
+  }
 
   return (
     <>
@@ -166,11 +224,9 @@ const Enroll = () => {
           <button className={`service-type-btn ${category === 'Services' ? 'active' : ''}`} onClick={() => handleCategoryChange('Services')}>Service</button>
         </div>
         
-        {/* New Button Added Here */}
         <div className="service-type-selector" style={{ marginTop: '-20px' }}>
              <button className="service-type-btn my-listings-btn" onClick={fetchMyListings}>View My Listings</button>
         </div>
-
 
         <div className={`form-container ${category ? 'active' : ''}`}>
           <form onSubmit={handleSubmit}>
@@ -197,15 +253,57 @@ const Enroll = () => {
                 </div>
               )}
 
+              {/* --- New Conditional Section for Services --- */}
+              {category === 'Services' && (
+                <div className='service-details-container'>
+                    <div className="form-group">
+                        <label htmlFor="serviceType">Type of Service</label>
+                        <select id="serviceType" name="serviceType" value={serviceType} onChange={handleServiceTypeChange}>
+                            <option value="Labour">Labour</option>
+                            <option value="Drone">Drone</option>
+                            <option value="Soil Testing">Soil Testing</option>
+                            <option value="Equipment Repair">Equipment Repair</option>
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="details">{getServiceDetailLabel()}</label>
+                        <div className="skills-input-container">
+                            <input
+                                type="text"
+                                id="details"
+                                value={currentDetail}
+                                onChange={(e) => setCurrentDetail(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDetail())}
+                                placeholder={getServiceDetailPlaceholder()}
+                            />
+                            <button type="button" className="add-skill-btn" onClick={handleAddDetail}>Add</button>
+                        </div>
+                        <ul className="skills-list">
+                            {service_details.map(detail => (
+                                <li key={detail} className="skill-tag">
+                                    {detail}
+                                    <button type="button" className="remove-skill-btn" onClick={() => handleRemoveDetail(detail)}>×</button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+              )}
+              {/* --- End Services Section --- */}
+
               <div className="form-group">
-                <label htmlFor="name">Name</label>
-                <input type="text" id="name" name="name" value={name} onChange={handleChange} placeholder="e.g., Tractor, Wheat, Harvesting Labor" required />
+                <label htmlFor="name">Title / Name</label>
+                <input type="text" id="name" name="name" value={name} onChange={handleChange} placeholder={
+                    category === 'Services' ? "e.g., Experienced Farm Laborer" : "e.g., Tractor, Wheat"
+                } required />
               </div>
 
               <div className="form-group">
                 <label htmlFor="price">
                   {category === 'Machineries' && listingType === 'Rent' ? 'Price (per day/hour, in Rs)' :
                    category === 'Produces' ? `Price (in Rs per ${rate_unit})` :
+                   category === 'Services' ? 'Price (in Rs)' :
                    'Price (in Rs)'}
                 </label>
                 <input type="number" id="price" name="price" value={price} onChange={handleChange} placeholder="500" required />
@@ -228,8 +326,8 @@ const Enroll = () => {
           </form>
         </div>
       </div>
-
-      {/* Modal for displaying user's listings */}
+      
+      {/* Modal JSX remains the same */}
       {showMyListings && (
         <div className="modal-overlay" onClick={() => setShowMyListings(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -243,11 +341,15 @@ const Enroll = () => {
                   <img src={item.images[0] || 'https://via.placeholder.com/100'} alt={item.name} className="listed-item-img" />
                   <div className="listed-item-details">
                     <h4>{item.name}</h4>
-                    <p><strong>Category:</strong> {item.category.replace(/s$/, '')}</p>
+                    <p><strong>Category:</strong> {item.category.replace(/s$/, '')}{item.serviceType ? ` (${item.serviceType})` : ''}</p>
                     <p><strong>Price:</strong> ₹{item.price}
                        {item.rate_unit ? ` per ${item.rate_unit}`: ''}
                        {item.listingType ? ` (For ${item.listingType})`: ''}
+                       {item.category === 'Services' && !item.rate_unit ? ' (approx)' : ''}
                     </p>
+                    {item.service_details && item.service_details.length > 0 && (
+                        <p><strong>Details:</strong> {item.service_details.join(', ')}</p>
+                    )}
                   </div>
                 </div>
               ))

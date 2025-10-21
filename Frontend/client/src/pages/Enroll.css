@@ -346,3 +346,28 @@
   font-size: 0.9rem;
   color: #666;
 }
+
+/* Add these styles for the expanded Services section */
+
+.service-details-container {
+  margin-top: 1.5rem;
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
+}
+
+.service-details-container label {
+    font-weight: 600;
+    color: #34495e;
+}
+
+.add-skill-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
