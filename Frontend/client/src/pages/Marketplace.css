@@ -1,33 +1,196 @@
-.category-container {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 2rem;
+.marketplace-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
 }
 
-.category-card, .machine-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  text-decoration: none;
-  color: inherit;
-  width: 30%;
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
+.marketplace-header {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.category-card:hover, .machine-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.marketplace-header h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #2e7d32, #ffc107);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.machine-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin-top: 2rem;
+.marketplace-header p {
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+    color: #555;
 }
 
-.machine-card {
-  width: 18%;
-  margin-bottom: 1rem;
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 12px 28px;
+    font-size: 1.05rem;
+    border: 2px solid #2e7d32;
+    background: transparent;
+    color: #2e7d32;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: #2e7d32;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.25);
+}
+
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.listing-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.listing-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.listing-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.listing-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.listing-category {
+    font-size: 0.9rem;
+    color: #2e7d32;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.listing-description {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+    flex-grow: 1;
+    margin-bottom: 15px;
+}
+
+.listing-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 15px;
+}
+
+.listing-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.view-details-btn {
+    background: #ffc107;
+    color: #333;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.view-details-btn:hover {
+    background: #ffb300;
+}
+
+.loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2e7d32;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 50px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message,
+.no-listings-message {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #888;
+    margin-top: 50px;
+}
+
+@media (max-width: 768px) {
+    .marketplace-container {
+        padding: 15px;
+    }
+
+    .category-filters {
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Add these styles to the end of your Marketplace.css file */
+
+.near-me-btn {
+    border-color: #3498db; /* A nice blue color */
+    color: #3498db;
+}
+
+.near-me-btn:hover,
+.near-me-btn.active {
+    background: #3498db;
+    color: white;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.25);
 }

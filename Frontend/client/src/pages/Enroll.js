@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
-import useAxiosPrivate from '../hooks/useAxiosPrivate'; // 1. Import the custom hook
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import useAuth from '../hooks/useAuth'; // 2. Import useAuth
 import './Enroll.css'; 
 
 // ImageUploader component remains the same
@@ -50,7 +52,10 @@ const ImageUploader = ({ files, setFiles, maxImages = 5 }) => {
 
 // Main Enroll Component
 const Enroll = () => {
-  const axiosPrivate = useAxiosPrivate(); // 2. Call the hook to get the configured axios instance
+  const axiosPrivate = useAxiosPrivate();
+  const { auth } = useAuth(); // 3. Get the auth context
+  const navigate = useNavigate(); // 4. Initialize navigate
+
   const [formData, setFormData] = useState({
     category: '', name: '', description: '', price: '',
     listingType: 'Rent',
@@ -68,6 +73,7 @@ const Enroll = () => {
 
   const { category, name, description, price, listingType, rate_unit, serviceType } = formData;
 
+  // ... (All handler functions remain the same) ...
   const handleCategoryChange = (newCategory) => {
     setFormData({
       category: newCategory, name: '', description: '', price: '',
@@ -104,7 +110,6 @@ const Enroll = () => {
   const fetchMyListings = async () => {
     try {
       setIsLoading(true);
-      // 3. Use the axiosPrivate instance from the hook
       const response = await axiosPrivate.get('/api/listings/my-listings');
       setMyListings(response.data);
       setShowMyListings(true);
@@ -190,6 +195,28 @@ const Enroll = () => {
     }
   }
 
+  // 5. --- THE HARD CHECK ---
+  // This runs before rendering the form.
+  // It checks if the user (from auth context) has an address.
+  if (!auth.user?.address) {
+    return (
+      <div className="enroll-container">
+        <div className="enroll-header profile-blocker-message">
+          <h1>Complete Your Profile</h1>
+          <p>You must complete your profile with a valid address before you can enroll items or services.</p>
+          <button 
+            className="service-type-btn" 
+            style={{marginTop: '20px', backgroundColor: '#2e7d32', color: 'white', borderColor: '#2e7d32'}}
+            onClick={() => navigate('/profile')}
+          >
+            Go to Profile
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 6. If the check passes, render the normal enroll page
   return (
     <>
       <div className="enroll-container">

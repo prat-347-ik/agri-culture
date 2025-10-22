@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute'; // Correctly imported
 import PersistLogin from './components/PersistLogin'; // 1. Import PersistLogin
+import ProfileCompletionRoute from './components/ProfileCompletionRoute'; // 1. Import new component
 
 // Import all page components
 import Landing from './pages/Landing';
@@ -38,7 +39,6 @@ const MainLayout = ({ children }) => (
 
 const AppContent = () => {
     const location = useLocation();
-    // These pages should not have the main layout
     const isFullPage = location.pathname === '/' || location.pathname === '/login';
 
     return (
@@ -49,35 +49,38 @@ const AppContent = () => {
 
             {/* Routes Wrapped in Session Persistence */}
             <Route element={<PersistLogin />}>
+                <Route
+                    path="*"
+                    element={
+                        !isFullPage ? (
+                            <MainLayout>
+                                <Routes>
+                                    {/* Public Routes with Layout */}
+                                    <Route path="/home" element={<Home />} />
+                                    <Route path="/map" element={<Map />} />
+                                    <Route path="/contacts" element={<Contacts />} />
+                                    <Route path="/etc" element={<Etc />} />
 
-            
-
-            {/* Routes with Main Layout */}
-            <Route
-                path="*"
-                element={
-                    !isFullPage ? (
-                        <MainLayout>
-                            <Routes>
-                                {/* Public Routes */}
-                                <Route path="/home" element={<Home />} />
-                                <Route path="/map" element={<Map />} />
-                                <Route path="/marketplace" element={<Marketplace />} />
-                                <Route path="/contacts" element={<Contacts />} />
-                                <Route path="/etc" element={<Etc />} />
-
-                                {/* Protected Routes */}
-                                <Route element={<ProtectedRoute />}>
-                                    <Route path="/enroll" element={<Enroll />} />
-                                    <Route path="/profile" element={<Profile />} />
-                                    <Route path="/settings" element={<Settings />} />
-                                    <Route path="/admin" element={<Admin />} />
-                                </Route>
-                            </Routes>
-                        </MainLayout>
-                    ) : null
-                }
-            />
+                                    {/* 2. Routes that require login */}
+                                    <Route element={<ProtectedRoute />}>
+                                        
+                                        {/* --- THIS IS THE CHANGE --- */}
+                                        {/* Routes that ALSO require a COMPLETE profile */}
+                                        <Route element={<ProfileCompletionRoute />}>
+                                            <Route path="/enroll" element={<Enroll />} />
+                                            <Route path="/marketplace" element={<Marketplace />} />
+                                        </Route>
+                                        
+                                        {/* Routes that just need login, but not completion */}
+                                        <Route path="/profile" element={<Profile />} />
+                                        <Route path="/settings" element={<Settings />} />
+                                        <Route path="/admin" element={<Admin />} />
+                                    </Route>
+                                </Routes>
+                            </MainLayout>
+                        ) : null
+                    }
+                />
             </Route>
         </Routes>
     );

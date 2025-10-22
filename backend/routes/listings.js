@@ -21,6 +21,7 @@ router.post('/', auth, createListing);
 // @desc    Get all available listings
 // @access  Public
 router.get('/', getListings);
+router.put('/', getListings);
 
 // @route   GET /api/listings/my-listings
 // @desc    Get current user's listings

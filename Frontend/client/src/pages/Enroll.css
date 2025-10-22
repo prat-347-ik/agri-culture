@@ -371,3 +371,19 @@
   margin-top: 10px;
   transition: background 0.3s ease;
 }
+
+/* Add this to the end of Enroll.css */
+
+.profile-blocker-message {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-top: 20px;
+}
+
+.profile-blocker-message p {
+  font-size: 1.1rem;
+  color: #333;
+}
