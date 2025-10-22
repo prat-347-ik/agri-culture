@@ -58,12 +58,14 @@ export const updateUserProfile = async (req, res) => {
       }
     }
 
-    // 3. Atomically find the user and update them
-    const updatedUser = await User.findOneAndUpdate(
-      { phone: req.user.phoneNumber }, // Find user by their phone number
-      { $set: fieldsToUpdate },       // Set the new fields
-      { new: true, runValidators: true } // Options: return the updated document and run validators
-    ).select('-password');
+// Inside updateUserProfile, before findOneAndUpdate
+const phoneToFind = req.user?.phoneNumber;
+console.log(`Attempting findOneAndUpdate for phone: ${phoneToFind}`); // <-- ADD THIS
+const updatedUser = await User.findOneAndUpdate(
+  { phone: phoneToFind }, // Use the variable
+  { $set: fieldsToUpdate },
+  { new: true, runValidators: true }
+).select('-password');
 
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });

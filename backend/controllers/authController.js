@@ -2,141 +2,275 @@ import jwt from 'jsonwebtoken';
 import otpGenerator from 'otp-generator';
 import User from '../models/User.js';
 
+// Temporary storage for OTPs (In-memory, replace with DB/Redis in production)
 const otpStorage = new Map();
 
-// This function is for JWTs, not OTPs, and is correct.
-const generateTokens = (res, phoneNumber) => {
-    const accessToken = jwt.sign({ phoneNumber }, process.env.JWT_SECRET, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ phoneNumber }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+// --- Updated Function: generateTokens ---
+// Uses ACCESS_TOKEN_SECRET, consistent payload, accepts full user object
+const generateTokens = (res, user) => {
+    // Payload for the Access Token (Consistent)
+    const payload = {
+        phoneNumber: user.phone,
+        userId: user._id, // Include userId
+        role: user.role   // Include role
+    };
 
+    // Use ACCESS_TOKEN_SECRET for Access Token
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+
+    // Use REFRESH_TOKEN_SECRET for Refresh Token
+    const refreshToken = jwt.sign({ phoneNumber: user.phone }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+
+    // Set Refresh Token Cookie
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        secure: process.env.NODE_ENV === 'production', // Should be true in production (HTTPS)
+        sameSite: 'Strict', // Or 'None' if frontend/backend are diff domains
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
-    return accessToken;
+    return accessToken; // Return only the access token
 };
 
-export const signup = async (req, res) => {
-  const { phoneNumber, fullName } = req.body;
 
-  if (!phoneNumber || !fullName) {
-    return res.status(400).json({ message: 'Phone number and full name are required.' });
-  }
+// @desc    Register (request OTP for signup)
+// @route   POST /api/auth/register
+// @access  Public
+export const registerUser = async (req, res) => {
+    const { phoneNumber, fullName } = req.body;
 
-  try {
-    const userExists = await User.findOne({ phone: phoneNumber });
-    if (userExists) {
-      return res.status(409).json({ message: 'User with this phone number already exists.' });
+    if (!phoneNumber || !fullName) {
+        return res.status(400).json({ message: 'Phone number and full name are required.' });
     }
 
-    // CORRECTED: Added lowerCaseAlphabets: false to ensure a numeric OTP
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      lowerCaseAlphabets: false,
-      upperCaseAlphabets: false,
-      specialChars: false,
-    });
-
-    otpStorage.set(phoneNumber, { otp, fullName });
-    console.log(`[SIGNUP OTP] for ${phoneNumber}: ${otp}`);
-    res.status(200).json({ message: 'OTP sent successfully for signup verification (check console).' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to process signup request.' });
-  }
-};
-
-export const login = async (req, res) => {
-  const { phoneNumber } = req.body;
-
-  try {
-    const user = await User.findOne({ phone: phoneNumber });
-    if (!user) {
-        return res.status(404).json({ message: 'User not found. Please sign up first.' });
+    // Basic phone number validation (adjust regex as needed)
+    if (!/^\d{10}$/.test(phoneNumber)) {
+         return res.status(400).json({ message: 'Invalid phone number format (must be 10 digits).' });
     }
 
-    // CORRECTED: Added lowerCaseAlphabets: false to ensure a numeric OTP
-    const otp = otpGenerator.generate(6, {
-      digits: true,
-      lowerCaseAlphabets: false,
-      upperCaseAlphabets: false,
-      specialChars: false,
-    });
+    try {
+        const userExists = await User.findOne({ phone: phoneNumber });
+        if (userExists) {
+            return res.status(409).json({ message: 'User with this phone number already exists.' });
+        }
 
-    otpStorage.set(phoneNumber, { otp });
-    console.log(`[LOGIN OTP] for ${phoneNumber}: ${otp}`);
-    res.status(200).json({ message: 'OTP sent successfully for login (check console).' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to process login request.' });
-  }
-};
-
-export const verifyOtp = async (req, res) => {
-  const { phoneNumber, code } = req.body;
-  const storedData = otpStorage.get(phoneNumber);
-
-  if (storedData && storedData.otp === code) {
-    otpStorage.delete(phoneNumber);
-    let user = await User.findOne({ phone: phoneNumber });
-
-    if (!user && storedData.fullName) {
-        user = await User.create({
-            fullName: storedData.fullName,
-            phone: phoneNumber
+        // Generate a 6-digit numeric OTP
+        const otp = otpGenerator.generate(6, {
+            digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false
         });
+
+        // Store OTP and user data temporarily
+        otpStorage.set(phoneNumber, { otp, fullName, timestamp: Date.now() }); // Add timestamp for expiry
+
+        console.log(`[SIGNUP OTP] for ${phoneNumber}: ${otp}`); // Log OTP for development/testing
+
+        // In production, you would send the OTP via SMS here
+
+        res.status(200).json({ message: 'OTP sent successfully for signup verification (check console).' });
+
+    } catch (error) {
+        console.error("Error during signup OTP request:", error);
+        res.status(500).json({ message: 'Server error during signup request.' });
     }
-
-    if (!user) {
-        return res.status(404).json({ message: 'User not found.' });
-    }
-
-    const accessToken = generateTokens(res, phoneNumber);
-    // Send back some user info to the frontend if needed
-    res.status(200).json({ 
-        message: 'OTP verified successfully', 
-        accessToken, 
-        user: { fullName: user.fullName, phone: user.phone } 
-    });
-
-  } else {
-    res.status(400).json({ message: 'Invalid OTP' });
-  }
 };
 
+
+// @desc    Login (request OTP for login)
+// @route   POST /api/auth/login
+// @access  Public
+export const loginUser = async (req, res) => {
+    const { phoneNumber } = req.body;
+
+     if (!phoneNumber) {
+        return res.status(400).json({ message: 'Phone number is required.' });
+    }
+     if (!/^\d{10}$/.test(phoneNumber)) {
+         return res.status(400).json({ message: 'Invalid phone number format (must be 10 digits).' });
+    }
+
+    try {
+        const user = await User.findOne({ phone: phoneNumber });
+        if (!user) {
+            // User not found, prompt them to register instead
+            return res.status(404).json({ message: 'User not found. Please sign up first.' });
+        }
+
+        // Generate a 6-digit numeric OTP
+        const otp = otpGenerator.generate(6, {
+             digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false
+        });
+
+        // Store OTP temporarily (overwrite any previous for this number)
+        otpStorage.set(phoneNumber, { otp, timestamp: Date.now() }); // Add timestamp for expiry
+
+        console.log(`[LOGIN OTP] for ${phoneNumber}: ${otp}`); // Log OTP for development/testing
+
+        // In production, send OTP via SMS
+
+        res.status(200).json({ message: 'OTP sent successfully for login (check console).' });
+
+    } catch (error) {
+        console.error("Error during login OTP request:", error);
+        res.status(500).json({ message: 'Server error during login request.' });
+    }
+};
+
+
+// @desc    Verify OTP (for both signup and login)
+// @route   POST /api/auth/verify-otp
+// @access  Public
+export const verifyOTP = async (req, res) => { // Renamed from verifyOtp for consistency
+    const { phoneNumber, code } = req.body;
+
+    if (!phoneNumber || !code) {
+        return res.status(400).json({ message: 'Phone number and OTP code are required.' });
+    }
+
+    const storedData = otpStorage.get(phoneNumber);
+
+    // Basic check for OTP existence and expiry (e.g., 5 minutes)
+    if (!storedData || (Date.now() - storedData.timestamp > 5 * 60 * 1000)) {
+         otpStorage.delete(phoneNumber); // Clean up expired/non-existent entry
+        return res.status(400).json({ message: 'Invalid or expired OTP. Please request a new one.' });
+    }
+
+    // Verify the OTP code
+    if (storedData.otp === code) {
+        otpStorage.delete(phoneNumber); // OTP used, remove it
+
+        try {
+            let user = await User.findOne({ phone: phoneNumber });
+
+            // If user doesn't exist AND we have fullName from signup, create the user
+            if (!user && storedData.fullName) {
+                user = await User.create({
+                    fullName: storedData.fullName,
+                    phone: phoneNumber
+                    // Consider adding a default role: role: 'user'
+                });
+                console.log(`New user created: ${user.phone}`);
+            } else if (!user) {
+                // OTP was valid, but it was for login and user somehow disappeared
+                 console.error(`OTP verified for ${phoneNumber}, but user not found.`);
+                return res.status(404).json({ message: 'User verification failed. Please try signing up.' });
+            }
+
+            // --- Generate Tokens using updated function ---
+            const accessToken = generateTokens(res, user); // Pass the full user object
+
+            // Prepare user object to send back (exclude sensitive data)
+            const userResponse = {
+                _id: user._id,
+                fullName: user.fullName,
+                phone: user.phone,
+                role: user.role, // Make sure User model has 'role'
+                address: user.address // Include address if available
+                // Add other necessary fields (age, gender, etc.) if they exist on the User model
+            };
+
+            res.status(200).json({
+                message: 'OTP verified successfully',
+                accessToken,
+                user: userResponse // Send back the curated user object
+            });
+
+        } catch (dbError) {
+             console.error("Database error during OTP verification:", dbError);
+             res.status(500).json({ message: 'Server error during user processing.' });
+        }
+
+    } else {
+        // Invalid OTP code
+        res.status(400).json({ message: 'Invalid OTP code.' });
+    }
+};
+
+
+// @desc    Refresh access token
+// @route   GET /api/auth/refresh
+// @access  Public (requires httpOnly cookie)
 export const refreshToken = (req, res) => {
-    const token = req.cookies.refreshToken;
-    if (!token) return res.status(401).json({ message: 'No refresh token provided.' });
+    const cookies = req.cookies;
+    if (!cookies?.refreshToken) {
+        return res.status(401).json({ message: 'Unauthorized - No refresh token cookie' });
+    }
+    const receivedRefreshToken = cookies.refreshToken;
 
-    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-        if (err) return res.status(403).json({ message: 'Invalid refresh token.' });
-        
-        const accessToken = jwt.sign({ phoneNumber: decoded.phoneNumber }, process.env.JWT_SECRET, { expiresIn: '15m' });
-        res.json({ accessToken });
-    });
+    jwt.verify(
+        receivedRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET, // Verify using REFRESH secret
+        async (err, decoded) => {
+            if (err) {
+                console.error("Refresh token verification failed:", err.message);
+                // Clear the potentially invalid cookie on verification failure
+                res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Strict' });
+                return res.status(403).json({ message: 'Forbidden - Invalid refresh token' });
+            }
+
+            // Ensure decoded payload contains expected identifier (phoneNumber)
+            if (!decoded || !decoded.phoneNumber) {
+                 console.error("Invalid refresh token payload:", decoded);
+                 res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Strict' });
+                return res.status(403).json({ message: 'Forbidden - Malformed refresh token' });
+            }
+
+            try {
+                // Find user based on decoded token's phoneNumber
+                const user = await User.findOne({ phone: decoded.phoneNumber }).select('-password'); // Exclude password
+
+                if (!user) {
+                    console.error(`User not found for refresh token (phone: ${decoded.phoneNumber})`);
+                    res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Strict' });
+                    return res.status(401).json({ message: 'Unauthorized - User associated with token not found' });
+                }
+
+                // Generate a new access token (using ACCESS secret and consistent payload)
+                const newAccessToken = jwt.sign(
+                    { phoneNumber: user.phone, userId: user._id, role: user.role },
+                    process.env.ACCESS_TOKEN_SECRET, // Use ACCESS secret
+                    { expiresIn: '15m' } // Standard expiry for access token
+                );
+
+                // Prepare user object to send back
+                 const userResponse = {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    phone: user.phone,
+                    role: user.role,
+                    address: user.address
+                };
+
+                // Send back the new access token AND the updated user object
+                res.json({ accessToken: newAccessToken, user: userResponse });
+
+            } catch (dbError) {
+                console.error("Error finding user during refresh:", dbError);
+                return res.status(500).json({ message: 'Server error during token refresh' });
+            }
+        }
+    );
 };
 
-export const logout = (req, res) => {
-    res.cookie('refreshToken', '', {
-        httpOnly: true,
-        expires: new Date(0)
-    });
-    res.status(200).json({ message: 'Logged out successfully' });
-};
-
-// ... (at the end of the file, after your other functions)
 
 // @desc    Logout user and clear cookie
 // @route   POST /api/auth/logout
-// @access  Public
+// @access  Public (doesn't need auth middleware, relies on cookie presence)
 export const logoutUser = (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.refreshToken) {
+        // No cookie, so nothing to clear, effectively already logged out server-side
+        return res.sendStatus(204); // No Content
+    }
+
+    // Clear the refresh token cookie
     res.clearCookie('refreshToken', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use 'secure: true' in production
-        sameSite: 'Strict'
+        secure: process.env.NODE_ENV === 'production', // Match settings used when setting cookie
+        sameSite: 'Strict' // Match settings used when setting cookie
     });
+
     return res.status(200).json({ message: 'Logged out successfully' });
 };
+
+// Note: Removed the older, duplicate 'logout' function. 'logoutUser' is the correct one.
+// Note: Removed 'requestOTP' as its logic is covered by 'registerUser' and 'loginUser'.
