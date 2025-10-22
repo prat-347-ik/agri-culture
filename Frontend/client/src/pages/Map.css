@@ -1,59 +1,129 @@
-/* Frontend/client/src/pages/Map.css */
-.map-page {
-  position: relative;
-  height: 100%;
+/* Map.css */
+
+.map-page-container {
   width: 100%;
-  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 }
-.map-overlay-controls {
-  position: absolute;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: flex;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 8px;
-  border-radius: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  backdrop-filter: blur(10px);
-}
-.map-btn {
-  background: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
+
+.map-page-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
   color: #333;
-  transition: all 0.2s ease;
 }
-.map-btn:hover {
-  background: #e0e0e0;
-  border-color: #ccc;
+
+/* This is the most important style. 
+  The map container *must* have a defined height.
+*/
+.map-container {
+  height: 600px; /* You can adjust this, e.g., 70vh */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* z-index: 0 fixes potential overlap issues with other elements */
+  z-index: 0; 
 }
-.map-btn.active {
-  background: #2e7d32;
-  color: white;
-  border-color: #2e7d32;
+
+.map-loading,
+.map-error {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  height: 600px; /* Match map height for consistent layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
 }
-.ac-marker {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+
+.map-error {
+  color: #d9534f;
+  border-color: #d9534f;
+}
+
+/* Styles for the content inside the marker popup */
+.map-popup {
+  font-family: Arial, sans-serif;
+}
+
+.map-popup h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #0056b3;
+}
+
+.map-popup p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.map-popup p strong {
+  color: #111;
+}
+
+.map-popup-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.map-popup-link:hover {
+  background-color: #0056b3;
+  color: #ffffff;
+}
+
+
+/* --- (!!!) NEW RULE FOR CLUSTERING (!!!) --- */
+/* This makes your custom 30x30 icons 
+   center nicely inside the cluster */
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  line-height: 30px !important;
+}
+/* --- Add this to the end of Map.css --- */
+
+/* * Style for the SMALL cluster
+ * (e.g., 2-9 markers) 
+ */
+.marker-cluster-small {
+  background-color: rgba(110, 204, 57, 0.6); /* Semi-transparent green */
+}
+.marker-cluster-small div {
+  background-color: rgba(51, 153, 0, 0.9); /* Opaque green */
   color: #fff;
-  font-size: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  border: 2px solid rgba(255,255,255,0.8);
-  user-select: none;
+  font-weight: bold;
 }
-.ac-marker.crops { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
-.ac-marker.equipment { background: linear-gradient(135deg, #FF9800, #F57C00); }
-.ac-marker.weather { background: linear-gradient(135deg, #2196F3, #1976D2); }
-.ac-marker.default { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+
+/* * Style for the MEDIUM cluster
+ * (e.g., 10-99 markers) 
+ */
+.marker-cluster-medium {
+  background-color: rgba(241, 211, 87, 0.6); /* Semi-transparent yellow */
+}
+.marker-cluster-medium div {
+  background-color: rgba(240, 194, 12, 0.9); /* Opaque yellow */
+  color: #333; /* Dark text for light background */
+  font-weight: bold;
+}
+
+/* * Style for the LARGE cluster
+ * (e.g., 100+ markers) 
+ */
+.marker-cluster-large {
+  background-color: rgba(253, 156, 115, 0.6); /* Semi-transparent red/orange */
+}
+.marker-cluster-large div {
+  background-color: rgba(241, 128, 23, 0.9); /* Opaque red/orange */
+  color: #fff;
+  font-weight: bold;
+}
