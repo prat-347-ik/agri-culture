@@ -65,6 +65,18 @@ const ListingSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+
+  location: {
+    type: {
+        type: String,
+        enum: ['Point'],
+    },
+    coordinates: {
+        type: [Number],
+        index: '2dsphere',
+    },
+    formattedAddress: String,
+},
 }, { timestamps: true });
 
 export default mongoose.model('Listing', ListingSchema);

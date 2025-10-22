@@ -14,6 +14,8 @@ export const createListing = async (req, res) => {
 
     const newListing = new Listing({
       user: user._id,
+      address: user.address, // --- THIS IS THE NEW LINE ---
+      location: user.location, // <-- Add this line
       category,
       name,
       description,
@@ -96,10 +98,32 @@ export const updateListing = async (req, res) => {
   }
 };
 
-// @desc    Get all available listings
+
+// @desc    Get all available listings (with optional location filter)
 export const getListings = async (req, res) => {
+  // Get lat/lon from the query string if they exist
+  const { lat, lon, radius = 25 } = req.query; // Default radius of 25km
+
   try {
-    const listings = await Listing.find({ isAvailable: true }).populate('user', 'fullName');
+    // Start with the base query to find available listings
+    let query = { isAvailable: true };
+
+    // --- THIS IS THE CONDITIONAL LOGIC ---
+    // If latitude and longitude are provided in the request, add the geospatial filter
+    if (lat && lon) {
+      query.location = {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [parseFloat(lon), parseFloat(lat)], // [longitude, latitude]
+          },
+          $maxDistance: parseInt(radius) * 1000, // Convert km to meters
+        },
+      };
+    }
+
+    // Execute the query
+    const listings = await Listing.find(query).populate('user', 'fullName');
     res.json(listings);
   } catch (error) {
     console.error(error);
@@ -145,6 +169,9 @@ export const getMyListings = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // --- ADD THIS LINE FOR DEBUGGING ---
+    console.log(`[DEBUG] Fetching listings for user ID: ${user._id}`);
+    
     const listings = await Listing.find({ user: user._id }).sort({ createdAt: -1 });
     res.json(listings);
   } catch (error) {
@@ -152,7 +179,6 @@ export const getMyListings = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 
 
 // @desc    Delete a listing

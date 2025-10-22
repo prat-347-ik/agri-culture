@@ -1,5 +1,5 @@
 import express from 'express';
-import { signup, login, verifyOtp, refreshToken, logout } from '../controllers/authController.js';
+import { signup, login, verifyOtp, refreshToken, logoutUser } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -13,6 +13,5 @@ router.post('/refresh', refreshToken);
 
 // @route   POST /api/auth/logout
 // @desc    Log the user out by clearing the cookie
-router.post('/logout', logout);
-
+router.post('/logout', logoutUser);
 export default router;

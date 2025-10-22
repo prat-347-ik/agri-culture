@@ -126,3 +126,17 @@ export const logout = (req, res) => {
     });
     res.status(200).json({ message: 'Logged out successfully' });
 };
+
+// ... (at the end of the file, after your other functions)
+
+// @desc    Logout user and clear cookie
+// @route   POST /api/auth/logout
+// @access  Public
+export const logoutUser = (req, res) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use 'secure: true' in production
+        sameSite: 'Strict'
+    });
+    return res.status(200).json({ message: 'Logged out successfully' });
+};
