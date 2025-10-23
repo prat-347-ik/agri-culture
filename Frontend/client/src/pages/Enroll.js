@@ -58,6 +58,7 @@ const Enroll = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
   const [myListings, setMyListings] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false); // <-- ADDED: State for delete loading
 
   const { category, name, description, price, listingType, rate_unit, serviceType } = formData;
 
@@ -104,6 +105,31 @@ const Enroll = () => {
       setIsLoading(false);
     }
   };
+
+  // --- ADDED: Handle Delete Listing Function ---
+  const handleDeleteListing = async (listingId) => {
+    if (!window.confirm(t('enroll.alert_delete_confirm', 'Are you sure you want to delete this listing?'))) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const response = await axiosPrivate.delete(`/api/listings/${listingId}`);
+      
+      if (response.status === 200) {
+        alert(t('enroll.alert_delete_success', 'Listing removed successfully.'));
+        // Update the state to remove the item from the list
+        setMyListings(prevListings => 
+          prevListings.filter(item => item._id !== listingId)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete listing:', error);
+      alert(t('enroll.alert_delete_fail', error.response?.data?.message || 'Failed to remove listing.'));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  // ---------------------------------------------
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -313,6 +339,17 @@ const Enroll = () => {
                         <p><strong>{t('enroll.modal_details')}</strong> {item.service_details.join(', ')}</p> // Translate
                     )}
                   </div>
+                  
+                  {/* --- ADDED DELETE BUTTON --- */}
+                  <button 
+                    className="listed-item-delete-btn" 
+                    onClick={() => handleDeleteListing(item._id)}
+                    disabled={isDeleting}
+                  >
+                    {t('enroll.modal_delete', 'Remove')}
+                  </button>
+                  {/* --------------------------- */}
+                  
                 </div>
               ))
             ) : (

@@ -26,7 +26,7 @@ export async function getAIResponse(userInput) {
       {
         model: 'deepseek/deepseek-chat', // Using the standard chat model
         messages: [
-          { role: 'system', content: 'You are a helpful agriculture expert in India particularly knowledgeable about local farming practices in Maharashtra.Keep your response as brief as possible.' },
+          { role: 'system', content: 'You are a helpful agriculture expert in India particularly knowledgeable about local farming practices in Maharashtra.Keep your response as brief as possible.Give responses in Marathi Language.' },
           { role: 'user', content: userInput }
         ]
       },

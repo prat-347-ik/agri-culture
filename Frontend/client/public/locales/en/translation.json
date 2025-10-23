@@ -207,5 +207,24 @@
     "popup_price": "Price:",
     "popup_per_unit": "/ {{unit}}",
     "popup_unit": "unit" 
-  }
+  },
+  "etc": {
+    "title": "Additional Services",
+    "weather_title": "Weather Forecast",
+    "weather_desc": "Get daily weather updates for your location",
+    "calendar_title": "Crop Calendar",
+    "calendar_desc": "Plan your farming activities",
+    "calendar_button": "View Calendar",
+    "price_title": "Price Updates",
+    "price_desc": "Latest market prices for crops",
+    "price_button": "View Prices",
+    "expert_title": "Expert Advice",
+    "expert_desc": "Connect with our AI agricultural expert",
+    "training_title": "Training Programs",
+    "training_desc": "Learn modern farming techniques",
+    "training_button": "Enroll Now",
+    "insurance_title": "Insurance Services",
+    "insurance_desc": "Protect your crops and equipment",
+    "insurance_button": "Get Quotes"
+}
 }

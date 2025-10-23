@@ -387,3 +387,36 @@
   font-size: 1.1rem;
   color: #333;
 }
+
+/* In Enroll.css */
+.listed-item {
+  /* ... existing styles ... */
+  position: relative; /* Makes positioning the button easier */
+  display: flex; /* Helps align button */
+  align-items: flex-start;
+}
+
+.listed-item-details {
+  flex-grow: 1; /* Allows details to take up available space */
+}
+
+.listed-item-delete-btn {
+  background-color: #f44336; /* Red */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-left: 10px; /* Space it from the details */
+  align-self: center; /* Center it vertically */
+}
+
+.listed-item-delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.listed-item-delete-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

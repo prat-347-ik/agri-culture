@@ -166,19 +166,19 @@ export const getMyListings = async (req, res) => {
 export const deleteListing = async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
+    
 
     if (!listing) {
       return res.status(404).json({ message: 'Listing not found' });
     }
 
     // Check if the user owns the listing
-    const user = await User.findOne({ phone: req.user.phoneNumber });
+   const user = await User.findById(req.user.userId).select('-password');        
     if (listing.user.toString() !== user._id.toString()) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
-    await listing.remove();
-
+       await listing.deleteOne();
     res.json({ message: 'Listing removed' });
   } catch (error) {
     console.error(error);

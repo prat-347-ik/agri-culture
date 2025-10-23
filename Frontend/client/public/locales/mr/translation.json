@@ -206,5 +206,25 @@
     "popup_price": "किंमत:",
     "popup_per_unit": "/ {{unit}}",
     "popup_unit": "युनिट"
+  },
+
+  "etc": {
+    "title": "अतिरिक्त सेवा",
+    "weather_title": "हवामान अंदाज",
+    "weather_desc": "तुमच्या स्थानासाठी दररोज हवामान अद्यतने मिळवा",
+    "calendar_title": "पीक कॅलेंडर",
+    "calendar_desc": "तुमच्या शेतीच्या कामांचे नियोजन करा",
+    "calendar_button": "कॅलेंडर पहा",
+    "price_title": "किंमत अद्यतने",
+    "price_desc": "पिकांच्या नवीनतम बाजार किमती",
+    "price_button": "किंमती पहा",
+    "expert_title": "तज्ञांचा सल्ला",
+    "expert_desc": "आमच्या AI कृषी तज्ञाशी संपर्क साधा",
+    "training_title": "प्रशिक्षण कार्यक्रम",
+    "training_desc": "आधुनिक शेती तंत्र शिका",
+    "training_button": "आता नोंदणी करा",
+    "insurance_title": "विमा सेवा",
+    "insurance_desc": "तुमची पिके आणि उपकरणे संरक्षित करा",
+    "insurance_button": "कोट मिळवा"
   }
 }
