@@ -226,5 +226,12 @@
     "insurance_title": "Insurance Services",
     "insurance_desc": "Protect your crops and equipment",
     "insurance_button": "Get Quotes"
-}
+},
+"chatbot": {
+    "title": "Agri-Culture AI",
+    "greeting": "Hello! How can I help you with your farming questions today?",
+    "placeholder": "Type your message...",
+    "send_button": "Send",
+    "error": "Sorry, I am having trouble connecting. Please try again later."
+  }
 }

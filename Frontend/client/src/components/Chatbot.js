@@ -1,61 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import './Chatbot.css';
+import { useTranslation } from 'react-i18next'; 
 
 const Chatbot = () => {
+  const { t, i18n } = useTranslation(); 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const axiosPrivate = useAxiosPrivate();
+  const messagesEndRef = useRef(null);
 
-  const handleSend = async () => {
-    if (input.trim() === '') return;
+  // Set greeting on initial load and when language changes
+  useEffect(() => {
+    setMessages([
+      { sender: 'bot', text: t('chatbot.greeting', "Hello! How can I help you with your farming questions today?") }
+    ]);
+  }, [t]); // Re-runs when 't' function changes (language change)
 
-    const newMessages = [...messages, { text: input, sender: 'user' }];
-    setMessages(newMessages);
-    const userInput = input; // Save input before clearing
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (input.trim() === '' || isLoading) return;
+
+    const userMessage = { sender: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
     setInput('');
-    setLoading(true);
 
     try {
-      // ✅ CORRECT: Call your own backend endpoint
-      const response = await fetch('http://localhost:5000/api/chat', { // Adjust port if necessary
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userInput }), // Send message in the correct format
+      // Call the /api/chat endpoint
+      const res = await axiosPrivate.post('/api/chat', {
+        message: input, 
+        language: i18n.language 
       });
 
-      const data = await response.json();
-      const botMessage = data.reply; // Get the reply from your backend's response
-
-      setMessages([...newMessages, { text: botMessage, sender: 'bot' }]);
+      // Expect 'res.data.reply'
+      if (res.data && res.data.reply) {
+        setMessages(prev => [...prev, { sender: 'bot', text: res.data.reply }]);
+      } else {
+        throw new Error('No reply from AI');
+      }
     } catch (error) {
-      console.error('Error fetching from your backend:', error);
-      setMessages([...newMessages, { text: 'Sorry, something went wrong.', sender: 'bot' }]);
+      console.error('Chatbot error:', error);
+      setMessages(prev => [...prev, { 
+        sender: 'bot', 
+        text: t('chatbot.error', 'Sorry, I am having trouble connecting. Please try again later.') 
+      }]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
+  // Using the embedded structure from your old file
   return (
     <div className="chatbot-container">
-      <div className="chatbot-messages">
+      <div className="chat-messages">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
             {msg.text}
           </div>
         ))}
-        {loading && <div className="message bot">Thinking...</div>}
+        {isLoading && (
+          <div className="message bot">
+            <div className="typing-indicator">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
-      <div className="chatbot-input">
+      <div className="chat-input-area">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Ask an expert..."
+          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+          placeholder={t('chatbot.placeholder', 'Type your message...')}
+          disabled={isLoading}
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={handleSendMessage} disabled={isLoading}>
+          {t('chatbot.send_button', 'Send')}
+        </button>
       </div>
     </div>
   );
