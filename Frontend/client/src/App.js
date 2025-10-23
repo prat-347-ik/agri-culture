@@ -22,6 +22,8 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Listing from './pages/Listing';
 
+// (We no longer import CropCalendar)
+
 import './App.css';
 
 // This is the main layout for the app.
@@ -57,6 +59,19 @@ const AppContent = () => {
                     <Route path="/etc" element={<Etc />} />
                     <Route path="/listing/:id" element={<Listing />} />
 
+                    {/* --- CROP CALENDAR ROUTE REMOVED --- */}
+                    
+                    {/* Placeholder route for Weather Widget */}
+                    <Route 
+                        path="/weather-details" 
+                        element={
+                            <div style={{ padding: '50px', textAlign: 'center' }}>
+                                <h2>Detailed 5-Day Forecast</h2>
+                                <p>This page is coming soon!</p>
+                            </div>
+                        } 
+                    />
+
                     {/* Routes that require login */}
                     <Route element={<ProtectedRoute />}>
                         
@@ -64,7 +79,6 @@ const AppContent = () => {
                         <Route element={<ProfileCompletionRoute />}>
                             <Route path="/enroll" element={<Enroll />} />
                             <Route path="/marketplace" element={<Marketplace />} />
-                            {/* You can add /my-listings here if you create it */}
                         </Route>
                         
                         {/* Routes that just need login, but not completion */}
@@ -82,7 +96,6 @@ const AppContent = () => {
     );
 };
 
-// We remove the extra <Router> from here
 const App = () => (
     <AppContent />
 );

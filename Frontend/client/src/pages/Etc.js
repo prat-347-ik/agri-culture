@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; 
 import Chatbot from '../components/Chatbot';
+import WeatherWidget from '../components/WeatherWidget'; 
 
 const Etc = () => {
   return (
@@ -7,16 +9,12 @@ const Etc = () => {
       <div className="content-section">
         <h2>Additional Services</h2>
         <div className="services-grid">
-          <div className="service-card">
+          
+           <div className="service-card">
             <h3>Weather Forecast</h3>
-            <p>Get daily weather updates for your area</p>
-            <div className="weather-widget">
-              <div className="weather-info">
-                <span className="temp">28°C</span>
-                <span className="condition">Sunny</span>
-              </div>
-              <button className="service-btn">View Details</button>
-            </div>
+            {/* --- UPDATED TEXT --- */}
+            <p>Get daily weather updates for your location</p>
+            <WeatherWidget />
           </div>
 
           <div className="service-card">
@@ -27,7 +25,10 @@ const Etc = () => {
                 <span className="month">December</span>
                 <span className="crop">Wheat Season</span>
               </div>
-              <button className="service-btn">View Calendar</button>
+              {/* --- CORRECTED LINK --- */}
+              <Link to="/contacts?service=calendar" className="service-btn">
+                View Calendar
+              </Link>
             </div>
           </div>
 
@@ -53,11 +54,8 @@ const Etc = () => {
             <h3>Training Programs</h3>
             <p>Learn modern farming techniques</p>
             <div className="training-widget">
-              <div className="training-info">
-                <span className="course">Organic Farming</span>
-                <span className="duration">2 weeks</span>
-              </div>
-              <button className="service-btn">Enroll Now</button>
+              {/* ... widget info ... */}
+              <Link to="/contacts?service=training" className="service-btn">Enroll Now</Link>
             </div>
           </div>
 
@@ -65,11 +63,8 @@ const Etc = () => {
             <h3>Insurance Services</h3>
             <p>Protect your crops and equipment</p>
             <div className="insurance-widget">
-              <div className="insurance-info">
-                <span className="coverage">Crop Insurance</span>
-                <span className="premium">₹500/year</span>
-              </div>
-              <button className="service-btn">Get Quote</button>
+              {/* ... widget info ... */}
+              <Link to="/contacts?service=insurance" className="service-btn">Get Quote</Link>
             </div>
           </div>
         </div>
