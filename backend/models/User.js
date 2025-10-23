@@ -27,6 +27,16 @@ const UserSchema = new mongoose.Schema({
       default: true,
     },
   },
+
+  // --- ADD THIS ---
+  settings: {
+    language: {
+      type: String,
+      default: 'en',
+      enum: ['en', 'mr']
+    }
+  },
+  // --- END ADD ---
   // Add the new location field
   location: {
     type: {

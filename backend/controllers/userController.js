@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import geocoder from '../utils/geocoder.js';
+import Listing from '../models/Listing.js'; // --- 1. Import Listing model ---
 
 // @desc    Get user profile
 // @route   GET /api/user/profile
@@ -79,44 +80,63 @@ const updatedUser = await User.findOneAndUpdate(
   }
 };
 
+// --- Add this function ---
 // @desc    Update user settings
-// @route   PUT /api/user/settings
+// @route   PUT /api/users/settings
 // @access  Private
 export const updateUserSettings = async (req, res) => {
-  const { language, notifications } = req.body;
-
   try {
-    const user = await User.findOne({ phone: req.user.phoneNumber });
+    const { language } = req.body;
 
-    if (user) {
-      user.settings.language = language ?? user.settings.language;
-      user.settings.notifications = notifications ?? user.settings.notifications;
-
-      const updatedUser = await user.save();
-      res.json(updatedUser.settings);
-    } else {
-      res.status(404).json({ message: 'User not found' });
+    if (!language || !['en', 'mr'].includes(language)) {
+      return res.status(400).json({ message: 'Invalid language specified' });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
-// @desc    Delete user account
-// @route   DELETE /api/user/account
-// @access  Private
-export const deleteUserAccount = async (req, res) => {
-  try {
-    const user = await User.findOneAndDelete({ phone: req.user.phoneNumber });
+    const user = await User.findOne({ phone: req.user.phoneNumber });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({ message: 'User account deleted successfully' });
+    user.settings.language = language;
+    await user.save();
+
+    res.status(200).json(user); // Return the updated user
   } catch (error) {
-    console.error(error);
+    console.error('Error updating settings:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// @desc    Delete user account and all their data
+// @route   DELETE /api/users/account
+// @access  Private
+export const deleteUserAccount = async (req, res) => {
+  try {
+    // 1. Get the user's ID directly from the authenticated token.
+    // The 'protect' middleware already verified the user.
+    const userIdToDelete = req.user._id;
+
+    // 2. Delete all listings created by this user
+    await Listing.deleteMany({ user: userIdToDelete });
+
+    // 3. (Optional) Delete any other related data (e.g., enrollments)
+    // await Enrollment.deleteMany({ user: userIdToDelete });
+
+    // 4. Delete the user
+    await User.findByIdAndDelete(userIdToDelete);
+
+    // 5. Clear the refresh token cookie
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+    });
+
+    res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting account:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };

@@ -1,74 +1,335 @@
+/* Contacts.css */
+/* Uses styles from content-inner and content-section defined elsewhere (e.g., App.css) */
+
+.contacts-page-container {
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.contacts-page-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2a8a4a; /* Green */
+}
+
 .contact-search {
-    display: flex;
-    margin-bottom: 20px;
-    gap: 10px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 .search-input {
-    flex-grow: 1;
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-}
-
-.search-btn {
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: none;
-    background-color: var(--primary);
-    color: white;
-    cursor: pointer;
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .contact-categories {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
-.contact-categories .category-btn {
-    padding: 8px 16px;
-    border-radius: 18px;
-    border: 1px solid var(--primary);
-    background-color: transparent;
-    color: var(--primary);
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+.contact-categories button {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.contact-categories .category-btn:hover,
-.contact-categories .category-btn.active {
-    background-color: var(--primary);
-    color: white;
+.contact-categories button:hover {
+  background-color: #e0e0e0;
+}
+
+.contact-categories button.active {
+  background-color: #2a8a4a; /* Green */
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(42, 138, 74, 0.3);
 }
 
 .contacts-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden; /* Ensures border-radius applies to table */
 }
 
-.contacts-table th, .contacts-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+.contacts-table th,
+.contacts-table td {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
 .contacts-table th {
-    background-color: #f8f8f8;
+  background-color: #e9f5ec; /* Light green */
+  color: #1e6b37; /* Dark green */
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contacts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.contacts-table tbody tr:hover {
+  background-color: #f9f9f9;
 }
 
 .call-btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 15px;
-    background-color: var(--secondary);
-    color: white;
-    cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #2a8a4a; /* Green */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.call-btn:hover {
+  background-color: #1e6b37; /* Darker green */
 }
 
 .call-btn.emergency {
-    background-color: #d32f2f; /* Red for emergency */
+  background-color: #d9534f; /* Red for emergency */
+}
+
+.call-btn.emergency:hover {
+  background-color: #c9302c; /* Darker red */
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .contacts-table thead {
+    display: none; /* Hide table headers */
+  }
+
+  .contacts-table,
+  .contacts-table tbody,
+  .contacts-table tr,
+  .contacts-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .contacts-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #eee;
+    border-radius: 5px;
+  }
+
+  .contacts-table td {
+    text-align: right; /* Align content to the right */
+    padding-left: 50%; /* Make space for the label */
+    position: relative;
+    border-bottom: none; /* Remove default bottom border */
+    border-top: 1px solid #eee; /* Add top border for separation */
+  }
+   .contacts-table tr td:first-child {
+       border-top: none; /* No top border for the first cell */
+   }
+
+  .contacts-table td::before {
+    content: attr(data-label); /* Use data-label for the heading */
+    position: absolute;
+    left: 10px;
+    width: calc(50% - 20px); /* Adjust width */
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Add data-label attributes in the JS/JSX for this to work */
+  /* Example for the first column in JSX: <td data-label={t('contacts.table_header_role')}>{...}</td> */
+
+  /* Ensure the last cell (button) looks okay */
+  .contacts-table td:last-child {
+    text-align: center; /* Center the button */
+    padding-left: 0; /* No need for label space */
+  }
+   .contacts-table td:last-child::before {
+       content: ""; /* Hide label for action button */
+   }
+   .call-btn {
+       width: 80%; /* Make button wider */
+       margin: 0.5rem auto;
+   }
+}
+
+/* ... (existing styles for search, categories, table header) ... */
+
+.table-responsive-container {
+  overflow-x: auto; /* Allow horizontal scrolling on small screens if needed */
+}
+
+.contacts-table td {
+  padding: 0.8rem 1rem; /* Adjust padding slightly */
+  vertical-align: top; /* Align content to top */
+  /* border-bottom: 1px solid #eee; */ /* Keep or remove based on preference */
+}
+
+/* Style for the details column content */
+.contacts-table td div {
+  margin-bottom: 0.3rem; /* Space between lines */
+  font-size: 0.9rem; /* Slightly smaller text for details */
+}
+.contacts-table td div:last-child {
+  margin-bottom: 0;
+}
+.contacts-table td div strong {
+  color: #333;
+  margin-right: 5px;
+  display: inline-block; /* Helps with alignment */
+  min-width: 60px; /* Give labels some minimum width */
+}
+.contacts-table td a {
+  color: #2a8a4a; /* Green */
+  text-decoration: none;
+}
+.contacts-table td a:hover {
+  text-decoration: underline;
+}
+
+
+/* Styles for the action buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 0.5rem; /* Space between buttons */
+  align-items: flex-start; /* Align buttons left */
+}
+
+.call-btn,
+.map-btn {
+  padding: 0.4rem 0.8rem; /* Smaller buttons */
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex; /* Align icon and text */
+  align-items: center;
+  gap: 0.3rem; /* Space between icon and text */
+}
+
+.call-btn {
+  background-color: #2a8a4a; /* Green */
+}
+.call-btn:hover {
+  background-color: #1e6b37; /* Darker green */
+}
+.call-btn.emergency {
+  background-color: #d9534f; /* Red for emergency */
+}
+.call-btn.emergency:hover {
+  background-color: #c9302c; /* Darker red */
+}
+
+.map-btn {
+  background-color: #5bc0de; /* Info blue */
+}
+.map-btn:hover {
+  background-color: #31b0d5; /* Darker info blue */
+}
+
+
+/* Responsive Table (Updated for new structure) */
+@media (max-width: 900px) { /* Adjust breakpoint if needed */
+  .contacts-table thead {
+    display: none;
+  }
+
+  .contacts-table,
+  .contacts-table tbody,
+  .contacts-table tr,
+  .contacts-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .contacts-table tr {
+    margin-bottom: 1.5rem; /* More space between cards */
+    border: 1px solid #eee;
+    border-radius: 8px; /* Rounded corners for card look */
+    padding: 1rem; /* Add padding inside the card */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .contacts-table td {
+    text-align: left; /* Align content left */
+    padding: 0.5rem 0; /* Adjust padding */
+    position: relative;
+    border: none; /* Remove table borders */
+    display: flex; /* Use flex for label/content */
+    align-items: baseline; /* Align label and content nicely */
+  }
+
+  .contacts-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #333;
+    width: 100px; /* Fixed width for labels */
+    min-width: 100px;
+    margin-right: 10px;
+    display: inline-block; /* Or flex-shrink: 0 */
+  }
+
+  /* Adjustments for the details column */
+   .contacts-table td[data-label*="Details"] {
+      flex-direction: column; /* Stack details vertically */
+      align-items: flex-start;
+   }
+    .contacts-table td[data-label*="Details"]::before {
+       margin-bottom: 0.5rem; /* Space below label */
+   }
+   .contacts-table td[data-label*="Details"] div {
+       padding-left: 0; /* No indent needed */
+       width: 100%;
+   }
+    .contacts-table td[data-label*="Details"] div strong {
+        display: inline; /* Keep strong inline */
+        min-width: auto;
+    }
+
+
+  /* Adjust action buttons layout */
+  .contacts-table td[data-label*="Action"] {
+     padding-top: 1rem;
+     justify-content: center; /* Center buttons */
+     flex-direction: row; /* Buttons side-by-side */
+     gap: 1rem;
+  }
+   .contacts-table td[data-label*="Action"]::before {
+       display: none; /* Hide label for actions */
+   }
+   .action-buttons {
+       width: 100%;
+       flex-direction: row; /* Side-by-side */
+       justify-content: center;
+       align-items: center;
+   }
+    .call-btn, .map-btn {
+        padding: 0.6rem 1rem; /* Slightly larger buttons */
+    }
 }

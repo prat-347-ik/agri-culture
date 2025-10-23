@@ -28,8 +28,8 @@ const useRefreshToken = () => {
             });
 
             // Return only the new access token for useAxiosPrivate
-            return response.data.accessToken;
-
+            return response.data;
+            
         } catch (error) {
             console.error('Refresh token request failed:', error);
             // If refresh fails, clear the auth state completely

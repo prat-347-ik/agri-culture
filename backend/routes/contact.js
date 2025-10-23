@@ -1,8 +1,12 @@
 import express from 'express';
+import { getContacts, seedContacts } from '../controllers/contactController.js';
+import auth from '../middleware/auth.js';
+
 const router = express.Router();
 
-// @route   GET /api/contacts
-// @desc    Get all important contacts
-router.get('/', /* ... Controller logic here ... */);
+router.get('/', auth, getContacts);
+
+// Route to seed initial data (optional, maybe protect it further or remove after use)
+router.post('/seed', auth, seedContacts);
 
 export default router;

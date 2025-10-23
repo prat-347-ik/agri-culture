@@ -1,12 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate, Outlet } from 'react-router-dom';
 
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
-import ProtectedRoute from './components/ProtectedRoute'; // Correctly imported
-import PersistLogin from './components/PersistLogin'; // 1. Import PersistLogin
-import ProfileCompletionRoute from './components/ProfileCompletionRoute'; // 1. Import new component
+import ProtectedRoute from './components/ProtectedRoute';
+import PersistLogin from './components/PersistLogin';
+import ProfileCompletionRoute from './components/ProfileCompletionRoute';
 
 // Import all page components
 import Landing from './pages/Landing';
@@ -20,17 +20,19 @@ import Settings from './pages/Settings';
 import Etc from './pages/Etc';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+import Listing from './pages/Listing';
 
 import './App.css';
 
-// This component contains the main layout with sidebar and header
-const MainLayout = ({ children }) => (
+// This is the main layout for the app.
+// It uses <Outlet /> to render the child routes (e.g., Home, Map, etc.)
+const MainLayout = () => (
     <div className="container">
         <Header />
         <div className="main-layout">
             <Sidebar />
             <main className="content">
-                {children}
+                <Outlet /> {/* Child routes will render here */}
             </main>
         </div>
         <Footer />
@@ -38,58 +40,51 @@ const MainLayout = ({ children }) => (
 );
 
 const AppContent = () => {
-    const location = useLocation();
-    const isFullPage = location.pathname === '/' || location.pathname === '/login';
-
     return (
         <Routes>
             {/* Full Page Routes - No Layout */}
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
 
-            {/* Routes Wrapped in Session Persistence */}
+            {/* --- All other routes are wrapped in the MainLayout --- */}
             <Route element={<PersistLogin />}>
-                <Route
-                    path="*"
-                    element={
-                        !isFullPage ? (
-                            <MainLayout>
-                                <Routes>
-                                    {/* Public Routes with Layout */}
-                                    <Route path="/home" element={<Home />} />
-                                    <Route path="/map" element={<Map />} />
-                                    <Route path="/contacts" element={<Contacts />} />
-                                    <Route path="/etc" element={<Etc />} />
+                <Route element={<MainLayout />}>
+                    
+                    {/* Public Routes */}
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/map" element={<Map />} />
+                    <Route path="/contacts" element={<Contacts />} />
+                    <Route path="/etc" element={<Etc />} />
+                    <Route path="/listing/:id" element={<Listing />} />
 
-                                    {/* 2. Routes that require login */}
-                                    <Route element={<ProtectedRoute />}>
-                                        
-                                        {/* --- THIS IS THE CHANGE --- */}
-                                        {/* Routes that ALSO require a COMPLETE profile */}
-                                        <Route element={<ProfileCompletionRoute />}>
-                                            <Route path="/enroll" element={<Enroll />} />
-                                            <Route path="/marketplace" element={<Marketplace />} />
-                                        </Route>
-                                        
-                                        {/* Routes that just need login, but not completion */}
-                                        <Route path="/profile" element={<Profile />} />
-                                        <Route path="/settings" element={<Settings />} />
-                                        <Route path="/admin" element={<Admin />} />
-                                    </Route>
-                                </Routes>
-                            </MainLayout>
-                        ) : null
-                    }
-                />
+                    {/* Routes that require login */}
+                    <Route element={<ProtectedRoute />}>
+                        
+                        {/* Routes that ALSO require a COMPLETE profile */}
+                        <Route element={<ProfileCompletionRoute />}>
+                            <Route path="/enroll" element={<Enroll />} />
+                            <Route path="/marketplace" element={<Marketplace />} />
+                            {/* You can add /my-listings here if you create it */}
+                        </Route>
+                        
+                        {/* Routes that just need login, but not completion */}
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/admin" element={<Admin />} />
+                    </Route>
+                    
+                    {/* Default route to redirect to home */}
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+
+                </Route>
             </Route>
         </Routes>
     );
 };
 
+// We remove the extra <Router> from here
 const App = () => (
-    <Router>
-        <AppContent />
-    </Router>
+    <AppContent />
 );
 
 export default App;

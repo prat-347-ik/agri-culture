@@ -1,0 +1,118 @@
+/* Profile.css */
+
+/* Inherits .auth-wrapper and .auth-card styles */
+.profile-page .auth-card {
+  max-width: 800px; /* Wider card for profile */
+}
+
+.profile-page h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2a8a4a; /* Green */
+}
+
+.redirect-message {
+  color: #d9534f !important; /* Red */
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 1.5rem; /* Spacing between fields */
+}
+
+/* Address field spans both columns */
+.address-field {
+  grid-column: 1 / -1;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box; /* Include padding and border in width */
+}
+
+.form-field input[readonly] {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+
+.form-field textarea {
+  resize: vertical; /* Allow vertical resizing */
+  min-height: 80px;
+}
+
+.profile-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 1rem;
+}
+
+/* Assuming .btn styles are defined globally */
+.btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.btn.secondary {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+}
+.btn.secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.btn:not(.secondary) {
+  background-color: #2a8a4a; /* Green */
+  color: white;
+}
+.btn:not(.secondary):hover {
+  background-color: #1e6b37; /* Darker Green */
+}
+
+.message-area {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .profile-grid {
+    grid-template-columns: 1fr; /* Single column on small screens */
+  }
+
+  .address-field {
+    grid-column: 1 / 1; /* Reset span */
+  }
+
+  .profile-buttons {
+     justify-content: center; /* Center buttons */
+  }
+}

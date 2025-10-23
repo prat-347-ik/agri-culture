@@ -2,46 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAxiosPrivate from '../hooks/useAxiosPrivate'; // For secure API calls
 import useAuth from '../hooks/useAuth'; // To get/set user data
+import { useTranslation } from 'react-i18next'; // 1. Import hook
+import './Profile.css'; // Import the CSS
 
 const Profile = () => {
+  const { t } = useTranslation(); // 2. Initialize hook
   const axiosPrivate = useAxiosPrivate();
   const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Get the redirect message from ProfileCompletionRoute, if it exists
+
   const redirectMessage = location.state?.message;
 
   const [formData, setFormData] = useState({
-    fullName: '', // Changed from 'name' to match backend
-    age: '',
-    gender: 'male',
-    phone: auth.user?.phone || '', // Get phone from auth context
-    address: '',
-    district: '',
-    taluka: '',
-    village: '',
-    pincode: ''
+    fullName: '', age: '', gender: 'male', phone: auth.user?.phone || '',
+    address: '', district: '', taluka: '', village: '', pincode: ''
   });
-  
+
   const [saveMsg, setSaveMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1. Fetch user data from backend when component mounts
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
     const getUserProfile = async () => {
       try {
+        // --- CORRECTED ENDPOINT ---
         const response = await axiosPrivate.get('/api/user/profile', {
           signal: controller.signal
         });
-        
+
         if (isMounted) {
           const userData = response.data;
-          // Populate form with existing data from the database
           setFormData({
             fullName: userData.fullName || '',
             age: userData.age || '',
@@ -53,13 +47,12 @@ const Profile = () => {
             village: userData.village || '',
             pincode: userData.pincode || ''
           });
-          // Also update the global auth state with the full user object
           setAuth(prev => ({ ...prev, user: userData }));
         }
       } catch (err) {
         console.error(err);
         if (err.name !== 'CanceledError') {
-          setErrorMsg('Failed to load profile. Please try again.');
+          setErrorMsg(t('profile.load_fail_msg')); // Translate error
         }
       } finally {
         if (isMounted) {
@@ -74,7 +67,8 @@ const Profile = () => {
       isMounted = false;
       controller.abort();
     };
-  }, [axiosPrivate, setAuth, auth.user?.phone]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [axiosPrivate, setAuth, auth.user?.phone, t]); // Added t
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -84,110 +78,97 @@ const Profile = () => {
     }));
   };
 
-  // 2. Save data to backend on submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSaveMsg('');
 
     try {
-      // Send a PUT request to the backend with all form data
+      // --- CORRECTED ENDPOINT ---
       const response = await axiosPrivate.put('/api/user/profile', formData);
-      
-      // Update the global auth state with the new user data
       setAuth(prev => ({ ...prev, user: response.data }));
-      
-      setSaveMsg('Profile saved successfully!');
+      setSaveMsg(t('profile.save_success_msg')); // Translate success
       setTimeout(() => setSaveMsg(''), 3000);
 
-      // Navigate the user back to where they came from (or to home)
       const from = location.state?.from?.pathname || '/home';
       navigate(from, { replace: true });
 
     } catch (err) {
       console.error(err);
-      setErrorMsg(err.response?.data?.message || 'Failed to save profile. Please try again.');
+      setErrorMsg(err.response?.data?.message || t('profile.save_fail_msg')); // Translate error
     }
   };
 
-  // 3. Reset clears the form (phone number remains)
   const handleReset = () => {
     setFormData({
-      fullName: '',
-      age: '',
-      gender: 'male',
-      phone: auth.user?.phone || '',
-      address: '',
-      district: '',
-      taluka: '',
-      village: '',
-      pincode: ''
+      fullName: '', age: '', gender: 'male', phone: auth.user?.phone || '',
+      address: '', district: '', taluka: '', village: '', pincode: ''
     });
     setErrorMsg('');
     setSaveMsg('');
   };
 
   if (isLoading) {
-    return <div className="auth-wrapper"><p>Loading profile...</p></div>;
+    return <div className="auth-wrapper profile-page"><p>{t('profile.loading')}</p></div>; // Translate loading
   }
 
   return (
-    <div className="auth-wrapper">
+    <div className="auth-wrapper profile-page"> {/* Added profile-page class */}
       <form id="profileForm" className="auth-card" onSubmit={handleSubmit} onReset={handleReset}>
-        <h2>Profile</h2>
-        
-        {/* Show redirect message if user was forced here */}
-        {redirectMessage && <p className="helper" style={{ color: 'red', textAlign: 'center' }}>{redirectMessage}</p>}
+        <h2>{t('profile.title')}</h2> {/* Translate title */}
+
+        {redirectMessage && <p className="helper redirect-message">
+          {t('profile.redirect_message_prefix', 'Please complete your profile to continue:')} {redirectMessage}
+        </p>}
 
         <div className="profile-grid">
           <div className="form-field">
-            <label htmlFor="fullName">Full Name</label>
+            <label htmlFor="fullName">{t('profile.full_name_label')}</label> {/* Translate label */}
             <input id="fullName" type="text" required value={formData.fullName} onChange={handleChange} />
           </div>
           <div className="form-field">
-            <label htmlFor="age">Age</label>
+            <label htmlFor="age">{t('profile.age_label')}</label> {/* Translate label */}
             <input id="age" type="number" min="10" max="120" required value={formData.age} onChange={handleChange} />
           </div>
           <div className="form-field">
-            <label htmlFor="gender">Gender</label>
+            <label htmlFor="gender">{t('profile.gender_label')}</label> {/* Translate label */}
             <select id="gender" required value={formData.gender} onChange={handleChange}>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="male">{t('profile.gender_male')}</option> {/* Translate option */}
+              <option value="female">{t('profile.gender_female')}</option> {/* Translate option */}
+              <option value="other">{t('profile.gender_other')}</option> {/* Translate option */}
             </select>
           </div>
           <div className="form-field">
-            <label htmlFor="phone">Phone Number</label>
+            <label htmlFor="phone">{t('profile.phone_label')}</label> {/* Translate label */}
             <input id="phone" type="tel" maxLength="10" value={formData.phone} onChange={handleChange} readOnly />
           </div>
-          <div className="form-field" style={{ gridColumn: '1 / -1' }}>
-            <label htmlFor="address">Address</label>
+          <div className="form-field address-field"> {/* Added class */}
+            <label htmlFor="address">{t('profile.address_label')}</label> {/* Translate label */}
             <textarea id="address" rows="3" required value={formData.address} onChange={handleChange}></textarea>
           </div>
           <div className="form-field">
-            <label htmlFor="district">District</label>
+            <label htmlFor="district">{t('profile.district_label')}</label> {/* Translate label */}
             <input id="district" type="text" required value={formData.district} onChange={handleChange} />
           </div>
           <div className="form-field">
-            <label htmlFor="taluka">Taluka</label>
+            <label htmlFor="taluka">{t('profile.taluka_label')}</label> {/* Translate label */}
             <input id="taluka" type="text" required value={formData.taluka} onChange={handleChange} />
           </div>
           <div className="form-field">
-            <label htmlFor="village">Village</label>
+            <label htmlFor="village">{t('profile.village_label')}</label> {/* Translate label */}
             <input id="village" type="text" required value={formData.village} onChange={handleChange} />
           </div>
           <div className="form-field">
-            <label htmlFor="pincode">Pincode</label>
+            <label htmlFor="pincode">{t('profile.pincode_label')}</label> {/* Translate label */}
             <input id="pincode" type="text" maxLength="6" required value={formData.pincode} onChange={handleChange} />
           </div>
         </div>
-        <div className="form-row" style={{ marginTop: '1rem', justifyContent: 'flex-end' }}>
-          <button className="btn secondary" type="reset">Reset</button>
-          <button className="btn" type="submit">Save</button>
+        <div className="form-row profile-buttons"> {/* Added class */}
+          <button className="btn secondary" type="reset">{t('profile.reset_button')}</button> {/* Translate button */}
+          <button className="btn" type="submit">{t('profile.save_button')}</button> {/* Translate button */}
         </div>
-        
-        {/* Show Save or Error Messages */}
-        <div id="saveMsg" className="helper" style={{ marginTop: '0.5rem', color: saveMsg ? 'green' : 'red' }}>
+
+        <div id="saveMsg" className="helper message-area" style={{ color: saveMsg ? 'green' : 'red' }}> {/* Added class */}
           {saveMsg || errorMsg}
         </div>
       </form>

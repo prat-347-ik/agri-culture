@@ -274,3 +274,42 @@ export const logoutUser = (req, res) => {
 
 // Note: Removed the older, duplicate 'logout' function. 'logoutUser' is the correct one.
 // Note: Removed 'requestOTP' as its logic is covered by 'registerUser' and 'loginUser'.
+
+// @desc    Request an OTP for a user
+// @route   POST /api/auth/request-otp
+// @access  Public
+export const requestOtp = async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) {
+    return res.status(400).json({ message: 'Phone number is required' });
+  }
+
+  try {
+    // --- THIS IS THE FIX ---
+    // 1. Find the user by phone number
+    let user = await User.findOne({ phone });
+
+    // 2. If the user does not exist, return an error.
+    //    Do NOT create a new user.
+    if (!user) {
+      return res.status(404).json({ message: 'User not registered.' });
+    }
+    // --- END OF FIX ---
+
+    // 3. If user exists, generate and save the OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    user.otp = otp;
+    user.otpExpires = expiry;
+    await user.save();
+
+    // TODO: Implement actual SMS sending logic here
+    console.log(`OTP for ${phone} is: ${otp}`);
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

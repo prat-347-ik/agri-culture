@@ -1,68 +1,110 @@
+/* Frontend/client/src/pages/Marketplace.css */
+
 .marketplace-container {
+    padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
     font-family: 'Arial', sans-serif;
+    color: #333;
 }
 
 .marketplace-header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
 }
 
 .marketplace-header h1 {
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #2e7d32, #ffc107);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 2.5rem;
+    color: #2a8a4a; /* Main green color */
+    margin-bottom: 0.5rem;
 }
 
 .marketplace-header p {
-    font-size: clamp(1rem, 3.5vw, 1.2rem);
+    font-size: 1.1rem;
     color: #555;
 }
 
 .category-filters {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 40px;
+    gap: 1rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
 }
 
 .filter-btn {
-    padding: 12px 28px;
-    font-size: 1.05rem;
-    border: 2px solid #2e7d32;
-    background: transparent;
-    color: #2e7d32;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #444;
+    background-color: #f0f0f0;
+    border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.filter-btn:hover,
+.filter-btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
 .filter-btn.active {
-    background: #2e7d32;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.25);
+    background-color: #2a8a4a; /* Main green color */
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(42, 138, 74, 0.3);
+}
+
+/* Specific style for Near Me button */
+.near-me-btn {
+    background-color: #e9f5ec; /* Light green */
+    color: #1e6b37; /* Dark green */
+}
+
+.near-me-btn.active {
+    background-color: #1e6b37; /* Dark green */
+    color: #ffffff;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #2a8a4a; /* Main green */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 4rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    color: #d9534f; /* Red for errors */
+    background: #f2dede;
+    border: 1px solid #ebccd1;
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+    margin: 2rem;
 }
 
 .listings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    gap: 1.5rem;
 }
 
 .listing-card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    border-radius: 8px;
     overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -70,127 +112,101 @@
 
 .listing-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .listing-image {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
 }
 
 .listing-details {
-    padding: 20px;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    flex-grow: 1; /* Allows footer to stick to bottom */
 }
 
 .listing-title {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 700;
+    margin: 0 0 0.5rem 0;
     color: #333;
-    margin: 0 0 8px 0;
 }
 
 .listing-category {
-    font-size: 0.9rem;
-    color: #2e7d32;
-    font-weight: 600;
-    margin-bottom: 12px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.7rem;
+    background-color: #e9f5ec; /* Light green */
+    color: #1e6b37; /* Dark green */
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: inline-block;
 }
 
 .listing-description {
     font-size: 0.95rem;
-    color: #666;
+    color: #555;
     line-height: 1.5;
-    flex-grow: 1;
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
+    flex-grow: 1; /* Pushes footer down */
 }
 
 .listing-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto;
+    margin-top: auto; /* Sticks to bottom */
     border-top: 1px solid #f0f0f0;
-    padding-top: 15px;
+    padding-top: 0.8rem;
 }
 
 .listing-price {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #333;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2a8a4a; /* Main green */
 }
 
 .view-details-btn {
-    background: #ffc107;
-    color: #333;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 20px;
-    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    color: #ffffff;
+    background-color: #2a8a4a; /* Main green */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease;
 }
 
 .view-details-btn:hover {
-    background: #ffb300;
+    background-color: #1e6b37; /* Darker green */
 }
 
-.loading-spinner {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #2e7d32;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 50px auto;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.error-message,
 .no-listings-message {
+    grid-column: 1 / -1; /* Span across all grid columns */
     text-align: center;
     font-size: 1.1rem;
-    color: #888;
-    margin-top: 50px;
+    color: #777;
+    margin-top: 2rem;
 }
 
-@media (max-width: 768px) {
+/* Responsive adjustments */
+@media (max-width: 600px) {
     .marketplace-container {
-        padding: 15px;
+        padding: 1rem;
     }
-
     .category-filters {
-        gap: 10px;
+        gap: 0.5rem;
     }
-
     .filter-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
     }
-}
-
-/* Add these styles to the end of your Marketplace.css file */
-
-.near-me-btn {
-    border-color: #3498db; /* A nice blue color */
-    color: #3498db;
-}
-
-.near-me-btn:hover,
-.near-me-btn.active {
-    background: #3498db;
-    color: white;
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.25);
+    .listings-grid {
+        grid-template-columns: 1fr; /* Stack cards on small screens */
+    }
 }

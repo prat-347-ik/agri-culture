@@ -4,6 +4,7 @@ import {
     registerUser, // Renamed from signup in controller
     loginUser,    // Renamed from login in controller
     verifyOTP,    // Renamed from verifyOtp in controller
+    requestOtp,   // If needed in future
     refreshToken,
     logoutUser
 } from '../controllers/authController.js';
@@ -29,6 +30,8 @@ router.post('/verify', verifyOTP); // Use verifyOTP, changed path
 // @desc    Refresh the access token using the httpOnly refresh token cookie
 // @access  Public (requires cookie)
 // Changed to GET as it retrieves a new token based on existing cookie state
+
+router.post('/request-otp', requestOtp); // If needed in future
 router.get('/refresh', refreshToken);
 
 // @route   POST /api/auth/logout

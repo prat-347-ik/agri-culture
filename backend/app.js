@@ -8,6 +8,7 @@ import aiRoutes from './routes/ai.js'; // Use the AI route
 import userRoutes from './routes/user.js'; // Import user routes
 import authRoutes from './routes/auth.js'; // 1. Import auth routes
 import listingRoutes from './routes/listings.js'; // Import listing routes
+import contactRoutes from './routes/contact.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,7 +27,7 @@ app.use("/api/chat", aiRoutes);
 app.use("/api/user", userRoutes); // Register user routes
 app.use("/api/auth", authRoutes); // 2. Register auth routes
 app.use('/api/listings', listingRoutes); // Register listing routes
-
+app.use('/api/contacts', contactRoutes); // 2. Add this line
 
 
 

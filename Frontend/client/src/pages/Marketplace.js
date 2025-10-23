@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { axiosPublic } from '../api/axios';
+import { Link } from 'react-router-dom';
 import './Marketplace.css';
+import { useTranslation } from 'react-i18next'; // 1. Import hook
 
 const Marketplace = () => {
+    const { t } = useTranslation(); // 2. Initialize hook
     const [listings, setListings] = useState([]);
     const [filteredListings, setFilteredListings] = useState([]);
     const [activeCategory, setActiveCategory] = useState('All');
@@ -11,64 +14,27 @@ const Marketplace = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch listings from the API, now aware of the "Near Me" filter
     const fetchListings = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
-
-            let url = '/api/listings'; // The endpoint is /api/listings
-
-            // If "Near Me" is active and we have the user's location, add coordinates to the URL
+            let url = '/api/listings';
             if (isNearMeActive && userLocation) {
                 url += `?lat=${userLocation.latitude}&lon=${userLocation.longitude}&radius=50`; // 50km radius
             }
-            
             const response = await axiosPublic.get(url);
             setListings(response.data);
-            // After fetching, apply the current category filter to the results
-            applyFilters(response.data, activeCategory);
-
+            applyFilters(response.data, activeCategory); // Apply filter after fetch
         } catch (err) {
             console.error('Failed to fetch listings:', err);
-            setError(err.response?.data?.message || 'An unexpected error occurred while fetching listings.');
+            // Translate error message
+            setError(err.response?.data?.message || t('marketplace.error', { message: 'An unexpected error occurred while fetching listings.' }));
         } finally {
             setIsLoading(false);
         }
-    }, [isNearMeActive, userLocation, activeCategory]); // Dependencies for refetching
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isNearMeActive, userLocation, t]); // Removed activeCategory from here, applyFilters handles it
 
-    // Function to handle the "Near Me" button click
-    const handleNearMeClick = () => {
-        // If the filter is being activated
-        if (!isNearMeActive) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        // On success, save location and activate the filter
-                        setUserLocation({
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                        });
-                        setIsNearMeActive(true);
-                    },
-                    (geoError) => {
-                        // On error, show a message to the user
-                        console.error('Geolocation error:', geoError);
-                        setError('Could not get your location. Please enable location services in your browser.');
-                        setIsNearMeActive(false);
-                    }
-                );
-            } else {
-                setError('Geolocation is not supported by this browser.');
-            }
-        } else {
-            // If the filter is being deactivated, reset location and turn it off
-            setUserLocation(null);
-            setIsNearMeActive(false);
-        }
-    };
-
-    // Applies category filters to the currently held list of items
     const applyFilters = (listingsToFilter, category) => {
         if (category === 'All') {
             setFilteredListings(listingsToFilter);
@@ -79,29 +45,59 @@ const Marketplace = () => {
             setFilteredListings(filtered);
         }
     };
-    
-    // This effect triggers the API call whenever a dependency changes
-    useEffect(() => {
-        fetchListings();
-    }, [fetchListings]);
 
-    // This handles clicks on the category buttons
-    const handleCategoryFilter = (category) => {
-        setActiveCategory(category);
-        // This applies the filter instantly on the client-side without a new API call
-        applyFilters(listings, category); 
+    const handleNearMeClick = () => {
+        if (!isNearMeActive) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        setUserLocation({
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                        });
+                        setIsNearMeActive(true); // This will trigger fetchListings via useEffect
+                    },
+                    (geoError) => {
+                        console.error('Geolocation error:', geoError);
+                        setError(t('marketplace.error_location')); // Translate error
+                        setIsNearMeActive(false);
+                    }
+                );
+            } else {
+                setError(t('marketplace.error_geolocation_unsupported')); // Translate error
+            }
+        } else {
+            setUserLocation(null);
+            setIsNearMeActive(false); // This will trigger fetchListings via useEffect
+        }
     };
 
+    useEffect(() => {
+        fetchListings();
+    }, [fetchListings]); // Fetch when near me status or location changes
+
+    useEffect(() => {
+        // Apply category filter whenever the active category changes or listings data updates
+        applyFilters(listings, activeCategory);
+    }, [activeCategory, listings]);
+
+
+    const handleCategoryFilter = (category) => {
+        setActiveCategory(category);
+        // Filter is applied via the useEffect above
+    };
+
+    // Price rendering function (can also be translated if needed)
     const renderPrice = (item) => {
         const price = `₹${item.price}`;
         if (item.category === 'Machineries') {
-            return `${price} ${item.listingType === 'Rent' ? '/day' : '(For Sale)'}`;
+            return `${price} ${item.listingType === 'Rent' ? t('listing.price_per_day', '/day') : t('listing.price_for_sale', '(For Sale)')}`;
         }
         if (item.category === 'Produces') {
-            return `${price} per ${item.rate_unit}`;
+            return `${price} ${t('listing.price_per_unit_prefix', 'per')} ${item.rate_unit}`;
         }
         if (item.category === 'Services') {
-            return `${price} (approx)`;
+            return `${price} ${t('listing.price_approx', '(approx)')}`;
         }
         return price;
     };
@@ -109,30 +105,36 @@ const Marketplace = () => {
     return (
         <div className="marketplace-container">
             <div className="marketplace-header">
-                <h1>Marketplace</h1>
-                <p>Browse and find the best agricultural products and services</p>
+                <h1>{t('marketplace.title')}</h1> {/* Translate */}
+                <p>{t('marketplace.description')}</p> {/* Translate */}
             </div>
 
             <div className="category-filters">
-                {/* --- NEW BUTTON --- */}
                 <button
                     className={`filter-btn near-me-btn ${isNearMeActive ? 'active' : ''}`}
                     onClick={handleNearMeClick}
                 >
-                    Near Me
+                    {t('marketplace.near_me_button')} {/* Translate */}
                 </button>
-                
-                {/* Category Filter Buttons */}
-                <button className={`filter-btn ${activeCategory === 'All' ? 'active' : ''}`} onClick={() => handleCategoryFilter('All')}>All</button>
-                <button className={`filter-btn ${activeCategory === 'Machineries' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Machineries')}>Machinery</button>
-                <button className={`filter-btn ${activeCategory === 'Produces' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Produces')}>Produce</button>
-                <button className={`filter-btn ${activeCategory === 'Services' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Services')}>Service</button>
+
+                <button className={`filter-btn ${activeCategory === 'All' ? 'active' : ''}`} onClick={() => handleCategoryFilter('All')}>
+                    {t('marketplace.all_filter')} {/* Translate */}
+                </button>
+                <button className={`filter-btn ${activeCategory === 'Machineries' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Machineries')}>
+                    {t('marketplace.machinery_filter')} {/* Translate */}
+                </button>
+                <button className={`filter-btn ${activeCategory === 'Produces' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Produces')}>
+                    {t('marketplace.produce_filter')} {/* Translate */}
+                </button>
+                <button className={`filter-btn ${activeCategory === 'Services' ? 'active' : ''}`} onClick={() => handleCategoryFilter('Services')}>
+                    {t('marketplace.service_filter')} {/* Translate */}
+                </button>
             </div>
 
             {isLoading ? (
-                <div className="loading-spinner"></div>
+                <div className="loading-spinner"></div> // Use CSS class for spinner
             ) : error ? (
-                <div className="error-message">{error}</div>
+                <div className="error-message">{error}</div> // Display translated error
             ) : (
                 <div className="listings-grid">
                     {filteredListings.length > 0 ? (
@@ -142,21 +144,23 @@ const Marketplace = () => {
                                 <div className="listing-details">
                                     <h3 className="listing-title">{item.name}</h3>
                                     <p className="listing-category">
-                                        {item.category.replace(/s$/, '')}
-                                        {item.serviceType ? ` (${item.serviceType})` : ''}
+                                        {t(`enroll.category_${item.category.toLowerCase()}`, item.category.replace(/s$/, ''))} {/* Translate Category */}
+                                        {item.serviceType ? ` (${t(`enroll.${item.serviceType.toLowerCase().replace(' ','_')}`, item.serviceType)})` : ''} {/* Translate Service Type */}
                                     </p>
                                     <p className="listing-description">
                                         {item.description && `${item.description.substring(0, 70)}...`}
                                     </p>
                                     <div className="listing-footer">
                                         <span className="listing-price">{renderPrice(item)}</span>
-                                        <button className="view-details-btn">View</button>
+                                        <Link to={`/listing/${item._id}`} className="view-details-btn">
+                                            {t('marketplace.view_button')} {/* Translate */}
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="no-listings-message">No items found. Try adjusting your filters.</p>
+                        <p className="no-listings-message">{t('marketplace.no_listings_filtered')}</p> // Translate
                     )}
                 </div>
             )}
