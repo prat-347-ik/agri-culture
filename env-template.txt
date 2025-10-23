@@ -1,17 +1,21 @@
-# Environment Variables for Agri-Culture Project
-# Copy this content to a file named .env in your project root
+# environment variable template
+# replace with your own stuff, then save the file as .env in ./backend
 
-# HERE Maps API Configuration
-HERE_MAPS_API_KEY=your_actual_here_maps_api_key_here
+PORT=5000
+MONGODB_URI=[mongodb_url_here] # for online server
+CLOUDINARY_CLOUD_NAME = [cloud_name_here]
+CLOUDINARY_API_KEY= [api_key_here]
+CLOUDINARY_API_SECRET=[api_secret_here]
+OPENROUTER_API_KEY=[api_key_here]
 
-# API Configuration
-ENROLL_API_BASE=http://localhost:5000
+TWILIO_ACCOUNT_SID=[account_sid_here] # obtained from twilio dashboard
+TWILIO_AUTH_TOKEN=[auth_token_here] # also from twilio dashboard
+TWILIO_SERVICE_SID=[service_sid_here] # obtained from your created service on twilio
 
-# Server Configuration
-PORT=3000
+GEOCODER_PROVIDER=openstreetmap
 
-# Database Configuration (if needed later)
-# DATABASE_URL=your_database_url_here
+JWT_SECRET='your_super_secret_key'
+REFRESH_TOKEN_SECRET='your_refresh_token_secret_key'        # are these used?
+ACCESS_TOKEN_SECRET='your_access_token_secret_key'
 
-# JWT Secret (if needed later)
-# JWT_SECRET=your_jwt_secret_here
+OPENWEATHER_API_KEY=[api_key_here]

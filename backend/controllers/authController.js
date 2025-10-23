@@ -1,6 +1,13 @@
 import jwt from 'jsonwebtoken';
 import otpGenerator from 'otp-generator';
 import User from '../models/User.js';
+import twilio from 'twilio';
+
+// twilio things i think
+const twilioAccSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(twilioAccSid, twilioAuthToken);
+const twilioServiceSid = process.env.TWILIO_SERVICE_SID;
 
 // Temporary storage for OTPs (In-memory, replace with DB/Redis in production)
 const otpStorage = new Map();
@@ -65,8 +72,13 @@ export const registerUser = async (req, res) => {
         console.log(`[SIGNUP OTP] for ${phoneNumber}: ${otp}`); // Log OTP for development/testing
 
         // In production, you would send the OTP via SMS here
+        client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+            .verifications
+            .create({ to:'+91'+phoneNumber, channel: 'sms', code: otp})
+            .then(verification => console.log(verification.status))
+            .catch(error => console.error("Twilio verification error:", error));
 
-        res.status(200).json({ message: 'OTP sent successfully for signup verification (check console).' });
+        res.status(200).json({ message: 'OTP sent successfully for signup verification (SMS or check console).' });
 
     } catch (error) {
         console.error("Error during signup OTP request:", error);
@@ -92,7 +104,7 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ phone: phoneNumber });
         if (!user) {
             // User not found, prompt them to register instead
-            return res.status(404).json({ message: 'User not found. Please sign up first.' });
+            return res.status(404).json({ message: 'User not found. Please sign up first. upper' });
         }
 
         // Generate a 6-digit numeric OTP
@@ -103,11 +115,18 @@ export const loginUser = async (req, res) => {
         // Store OTP temporarily (overwrite any previous for this number)
         otpStorage.set(phoneNumber, { otp, timestamp: Date.now() }); // Add timestamp for expiry
 
+
+
         console.log(`[LOGIN OTP] for ${phoneNumber}: ${otp}`); // Log OTP for development/testing
 
         // In production, send OTP via SMS
+        client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+            .verifications
+            .create({ to:'+91'+phoneNumber, channel: 'sms', code: otp})
+            .then(verification => console.log(verification.status))
+            .catch(error => console.error("Twilio verification error:", error));
 
-        res.status(200).json({ message: 'OTP sent successfully for login (check console).' });
+        res.status(200).json({ message: 'OTP sent successfully for login (SMS or check console).' });
 
     } catch (error) {
         console.error("Error during login OTP request:", error);
@@ -119,69 +138,94 @@ export const loginUser = async (req, res) => {
 // @desc    Verify OTP (for both signup and login)
 // @route   POST /api/auth/verify-otp
 // @access  Public
-export const verifyOTP = async (req, res) => { // Renamed from verifyOtp for consistency
+export const verifyOTP = async (req, res) => {
     const { phoneNumber, code } = req.body;
 
     if (!phoneNumber || !code) {
         return res.status(400).json({ message: 'Phone number and OTP code are required.' });
     }
 
-    const storedData = otpStorage.get(phoneNumber);
+    try {
+        let isVerified = false;
 
-    // Basic check for OTP existence and expiry (e.g., 5 minutes)
-    if (!storedData || (Date.now() - storedData.timestamp > 5 * 60 * 1000)) {
-         otpStorage.delete(phoneNumber); // Clean up expired/non-existent entry
-        return res.status(400).json({ message: 'Invalid or expired OTP. Please request a new one.' });
-    }
-
-    // Verify the OTP code
-    if (storedData.otp === code) {
-        otpStorage.delete(phoneNumber); // OTP used, remove it
-
+        // First, try verifying the OTP with Twilio
         try {
-            let user = await User.findOne({ phone: phoneNumber });
+            const verificationCheck = await client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
+                .verificationChecks
+                .create({ to: '+91'+phoneNumber, code });
 
-            // If user doesn't exist AND we have fullName from signup, create the user
-            if (!user && storedData.fullName) {
-                user = await User.create({
-                    fullName: storedData.fullName,
-                    phone: phoneNumber
-                    // Consider adding a default role: role: 'user'
-                });
-                console.log(`New user created: ${user.phone}`);
-            } else if (!user) {
-                // OTP was valid, but it was for login and user somehow disappeared
-                 console.error(`OTP verified for ${phoneNumber}, but user not found.`);
-                return res.status(404).json({ message: 'User verification failed. Please try signing up.' });
+            if (verificationCheck.status === 'approved') {
+                isVerified = true;
             }
-
-            // --- Generate Tokens using updated function ---
-            const accessToken = generateTokens(res, user); // Pass the full user object
-
-            // Prepare user object to send back (exclude sensitive data)
-            const userResponse = {
-                _id: user._id,
-                fullName: user.fullName,
-                phone: user.phone,
-                role: user.role, // Make sure User model has 'role'
-                address: user.address // Include address if available
-                // Add other necessary fields (age, gender, etc.) if they exist on the User model
-            };
-
-            res.status(200).json({
-                message: 'OTP verified successfully',
-                accessToken,
-                user: userResponse // Send back the curated user object
-            });
-
-        } catch (dbError) {
-             console.error("Database error during OTP verification:", dbError);
-             res.status(500).json({ message: 'Server error during user processing.' });
+        } catch (twilioError) {
+            console.warn("Twilio verification failed, falling back to local OTP:", twilioError.message);
         }
 
-    } else {
-        // Invalid OTP code
-        res.status(400).json({ message: 'Invalid OTP code.' });
+        // If Twilio verification fails, fall back to locally stored OTP
+        if (!isVerified) {
+            const storedData = otpStorage.get(phoneNumber);
+
+            // Check if the locally stored OTP exists and is not expired
+            if (storedData && storedData.otp === code && (Date.now() - storedData.timestamp <= 5 * 60 * 1000)) {
+                isVerified = true;
+                // used to delete otp here, fails catastrophically if this is done
+            } else {
+                return res.status(400).json({ message: 'Invalid or expired OTP. Please try again.' });
+            }
+        }
+
+        let user = await User.findOne({ phone: phoneNumber });
+
+        // If user doesn't exist AND we have fullName from signup, create the user
+        if (!user && otpStorage.has(phoneNumber)) {
+            const storedData = otpStorage.get(phoneNumber);
+            console.log("Stored data for user creation:", storedData);
+            if (!storedData.fullName) {
+                console.error("Full name is missing in stored data:", storedData);
+            }
+            if (storedData.fullName) {
+                try {
+                    user = await User.create({
+                        fullName: storedData.fullName,
+                        phone: phoneNumber
+                        // Consider adding a default role: role: 'user'
+                    });
+                    console.log(`New user created: ${user.phone}`);
+                } catch (creationError) {
+                    console.error("Error creating user:", creationError);
+                    return res.status(500).json({ message: 'Server error during user creation.' });
+                }
+            } else {
+                return res.status(404).json({ message: 'User verification failed. Please try signing up.' });
+            }
+        } else if (!user) {
+            return res.status(404).json({ message: 'User not found. Please sign up first. lower' });
+        }
+
+        otpStorage.delete(phoneNumber); //remove otp after all these shenanigans
+
+        // --- Generate Tokens using updated function ---
+        const accessToken = generateTokens(res, user); // Pass the full user object
+
+        // Prepare user object to send back (exclude sensitive data)
+        const userResponse = {
+            _id: user._id,
+            fullName: user.fullName,
+            phone: user.phone,
+            role: user.role, // Make sure User model has 'role'
+            address: user.address // Include address if available
+            // Add other necessary fields (age, gender, etc.) if they exist on the User model
+        };
+
+        res.status(200).json({
+            message: 'OTP verified successfully',
+            accessToken,
+            user: userResponse // Send back the curated user object
+        });
+
+    } catch (error) {
+        console.error("Error during OTP verification:", error);
+        res.status(500).json({ message: 'Server error during OTP verification.' });
     }
 };
 
