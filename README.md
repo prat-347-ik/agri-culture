@@ -70,7 +70,7 @@ You’ll need to install dependencies and run each part in separate terminal win
 #### **Navigate to the Backend Directory**
 ```bash
 cd blueboi77/agri-culture/agri-culture-feature-react-conversion/backend
-'''
+```
 
 #### **Create Environment File**
 
@@ -94,3 +94,69 @@ JWT_SECRET=your_super_secret_key
 REFRESH_TOKEN_SECRET=your_refresh_token_secret_key
 ACCESS_TOKEN_SECRET=your_access_token_secret_key
 OPENWEATHER_API_KEY=[your_api_key_here]
+```
+#### **Install Dependencies**
+```bash
+npm install
+```
+
+#### **Run the Server**
+For development (with automatic restarts):
+```bash
+npm run dev
+```
+For production or a standard start:
+```bash
+npm start
+```
+The backend server will run at http://localhost:5000 (or the port specified in your .env file).
+
+---
+
+### 💻 2. Frontend Setup
+
+Navigate to the Frontend Directory
+```bash
+cd blueboi77/agri-culture/agri-culture-feature-react-conversion/Frontend/client
+```
+Install Dependencies
+```bash
+npm install
+```
+Run the Client
+```bash
+npm start
+```
+The React development server will start, and your application will be accessible at:
+👉 http://localhost:3000
+
+The frontend is configured to proxy API requests to your backend server running on port 5000.
+
+---
+
+### 🌱 Summary
+
+Agri-Culture provides an integrated digital platform for farmers and agricultural enthusiasts.
+
+It combines AI assistance, weather forecasting, geolocation services, and a marketplace — all within a modern, user-friendly interface.
+
+### License
+
+This project is intended for educational and development purposes.
+
+Feel free to use, modify, and expand it as needed.
+
+### 💡 Contributors
+
+* **blueboi77** - [github.com/blueboi77](https://github.com/blueboi77)
+* **prat-37-ik**- [github.com/prat-347-ik](https://github.com/prat-347-ik)
+* **Patrick-ayo**-[github.com/Patrick-ayo](https://github.com/Patrick-ayo)
+
+
+
+
+
+
+
+
+
