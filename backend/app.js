@@ -10,6 +10,8 @@ import authRoutes from './routes/auth.js'; // 1. Import auth routes
 import listingRoutes from './routes/listings.js'; // Import listing routes
 import contactRoutes from './routes/contact.js';
 import weatherRoutes from './routes/weather.js'; // Import weather routes
+import trainingRoutes from './routes/training.js'; // Import training routes
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,7 +32,7 @@ app.use("/api/auth", authRoutes); // 2. Register auth routes
 app.use('/api/listings', listingRoutes); // Register listing routes
 app.use('/api/contacts', contactRoutes); // 2. Add this line
 app.use('/api/weather', weatherRoutes); // Register weather routes
-
+app.use('/api/training', trainingRoutes); // Register training routes
 
 
 // Function to connect to MongoDB and start the server

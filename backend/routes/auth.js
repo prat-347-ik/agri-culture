@@ -6,7 +6,8 @@ import {
     verifyOTP,    // Renamed from verifyOtp in controller
     requestOtp,   // If needed in future
     refreshToken,
-    logoutUser
+    logoutUser,
+    adminLogin
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -38,5 +39,7 @@ router.get('/refresh', refreshToken);
 // @desc    Log the user out by clearing the refresh token cookie
 // @access  Public
 router.post('/logout', logoutUser);
+
+router.post('/admin/login', adminLogin);
 
 export default router;

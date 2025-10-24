@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import otpGenerator from 'otp-generator';
 import User from '../models/User.js';
 import twilio from 'twilio';
+import bcrypt from 'bcryptjs'; // <--- 1. IMPORT BCRYPT
 
 // twilio things i think
 const twilioAccSid = process.env.TWILIO_ACCOUNT_SID;
@@ -354,6 +355,60 @@ export const requestOtp = async (req, res) => {
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// @desc    Login for Admin
+// @route   POST /api/auth/admin/login
+// @access  Public
+export const adminLogin = async (req, res) => {
+  const { phoneNumber, password } = req.body;
+
+  if (!phoneNumber || !password) {
+    return res.status(400).json({ message: 'Phone number and password are required.' });
+  }
+
+  try {
+    // 1. Find the user and explicitly select the password
+    const user = await User.findOne({ phone: phoneNumber }).select('+password');
+
+    // 2. Check if user exists and is an admin
+    if (!user || user.role !== 'admin') {
+      return res.status(401).json({ message: 'Unauthorized: Access is denied.' });
+    }
+
+    // 3. Check if password field is set (it shouldn't be for OTP users)
+    if (!user.password) {
+        return res.status(401).json({ message: 'Unauthorized: Admin account not set up.' });
+    }
+
+    // 4. Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid credentials.' });
+    }
+
+    // 5. Success! Generate tokens.
+    const accessToken = generateTokens(res, user); // Pass the full user object
+
+    const userResponse = {
+      _id: user._id,
+      fullName: user.fullName,
+      phone: user.phone,
+      role: user.role,
+      address: user.address
+    };
+
+    res.status(200).json({
+      message: 'Admin login successful',
+      accessToken,
+      user: userResponse
+    });
+
+  } catch (error) {
+    console.error("Error during Admin login:", error);
     res.status(500).json({ message: 'Server error' });
   }
 };

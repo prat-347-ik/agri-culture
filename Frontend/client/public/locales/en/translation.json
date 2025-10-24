@@ -233,5 +233,13 @@
     "placeholder": "Type your message...",
     "send_button": "Send",
     "error": "Sorry, I am having trouble connecting. Please try again later."
+  },
+
+  "trainingPrograms": {
+    "title": "Training Programs",
+    "description": "Browse government and private courses to enhance your agricultural skills.",
+    "error": "Failed to load training programs. Please try again later.",
+    "noCourses": "No training programs are available at this time. Please check back later.",
+    "applyNow": "Apply Now"
   }
 }

@@ -53,16 +53,18 @@ const Etc = () => {
             <Chatbot />
           </div>
 
+          {/* --- THIS BLOCK IS UPDATED --- */}
           <div className="service-card">
             <h3>{t('etc.training_title', 'Training Programs')}</h3> {/* 3. Translate */}
             <p>{t('etc.training_desc', 'Learn modern farming techniques')}</p> {/* 3. Translate */}
             <div className="training-widget">
               {/* ... widget info ... */}
-              <Link to="/contacts?service=training" className="service-btn">
-                {t('etc.training_button', 'Enroll Now')} {/* 3. Translate */}
+              <Link to="/training-programs" className="service-btn"> {/* <-- 1. LINK UPDATED */}
+                {t('etc.training_button', 'Browse Courses')} {/* <-- 2. DEFAULT TEXT UPDATED */}
               </Link>
             </div>
           </div>
+          {/* --- END OF UPDATE --- */}
 
           <div className="service-card">
             <h3>{t('etc.insurance_title', 'Insurance Services')}</h3> {/* 3. Translate */}

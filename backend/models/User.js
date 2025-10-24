@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs'; // <--- 1. IMPORT BCRYPT
 
 const UserSchema = new mongoose.Schema({
   fullName: {
@@ -17,6 +18,17 @@ const UserSchema = new mongoose.Schema({
   taluka: String,
   village: String,
   pincode: String,
+
+  role: {
+    type: String,
+    enum: ['user', 'admin'], // Restricts role to one of these two values
+    default: 'user',        // All new users will be 'user' by default
+  },
+  password: {
+    type: String,
+    select: false, // Hides password from default query results
+  },
+  
   settings: {
     language: {
       type: String,

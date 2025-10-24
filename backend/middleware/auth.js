@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js'; // Optional: if you need to attach the full user object
 
+// YOUR ORIGINAL FUNCTION, UNCHANGED
 const auth = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization; // Check both cases
 
@@ -46,10 +47,26 @@ const auth = (req, res, next) => {
                 role: decoded.role // Include role if present in token
             };
 
-            console.log(`[Auth Middleware] Success: User authenticated - Phone: ${req.user.phoneNumber}, ID: ${req.user.userId}`); // Debug log
+            console.log(`[Auth Middleware] Success: User authenticated - Phone: ${req.user.phoneNumber}, ID: ${req.user.userId}, Role: ${req.user.role}`); // Debug log
             next(); // Proceed to the next middleware or controller
         }
     );
 };
 
+// --- NEW FUNCTION ---
+// 5. Add the 'admin' middleware
+const admin = (req, res, next) => {
+    // This middleware MUST run *after* auth()
+    if (req.user && req.user.role === 'admin') {
+        console.log(`[Admin Middleware] Success: User ${req.user.phoneNumber} is admin.`);
+        next();
+    } else {
+        console.warn(`[Admin Middleware] Failed: User ${req.user?.phoneNumber} is not an admin.`);
+        return res.status(403).json({ message: 'Not authorized as an admin' });
+    }
+};
+
+// --- MODIFIED EXPORTS ---
+// 6. Export 'admin' as named and 'auth' as default
+export { admin };
 export default auth;
