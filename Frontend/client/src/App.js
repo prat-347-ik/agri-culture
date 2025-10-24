@@ -21,7 +21,8 @@ import Etc from './pages/Etc';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Listing from './pages/Listing';
-import TrainingPrograms from './pages/TrainingPrograms'; // <--- 1. IMPORT THE NEW PAGE
+import TrainingPrograms from './pages/TrainingPrograms'; 
+import CropCalendar from './pages/CropCalendar'; 
 
 // (We no longer import CropCalendar)
 
@@ -58,7 +59,8 @@ const AppContent = () => {
                     <Route path="/map" element={<Map />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/etc" element={<Etc />} />
-                    <Route path="/training-programs" element={<TrainingPrograms />} /> {/* <--- 2. ADD THE NEW ROUTE */}
+                    <Route path="/training-programs" element={<TrainingPrograms />} /> 
+                    <Route path="/crop-calendar" element={<CropCalendar />} /> {/* <--- 2. ADD THE NEW ROUTE */}
                     <Route path="/listing/:id" element={<Listing />} />
 
                     {/* --- CROP CALENDAR ROUTE REMOVED --- */}

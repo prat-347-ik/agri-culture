@@ -11,6 +11,7 @@ import listingRoutes from './routes/listings.js'; // Import listing routes
 import contactRoutes from './routes/contact.js';
 import weatherRoutes from './routes/weather.js'; // Import weather routes
 import trainingRoutes from './routes/training.js'; // Import training routes
+import calendarRoutes from './routes/cropCalendar.js';
 
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/listings', listingRoutes); // Register listing routes
 app.use('/api/contacts', contactRoutes); // 2. Add this line
 app.use('/api/weather', weatherRoutes); // Register weather routes
 app.use('/api/training', trainingRoutes); // Register training routes
+app.use('/api/calendar', calendarRoutes); // <--- 2. REGISTER YOUR NEW CALENDAR ROUTES
 
 
 // Function to connect to MongoDB and start the server

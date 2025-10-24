@@ -19,6 +19,7 @@ const Etc = () => {
               <WeatherWidget />
             </div>
 
+          {/* --- CROP CALENDAR CARD UPDATED --- */}
           <div className="service-card">
             <h3>{t('etc.calendar_title', 'Crop Calendar')}</h3> {/* 3. Translate */}
             <p>{t('etc.calendar_desc', 'Plan your farming activities')}</p> {/* 3. Translate */}
@@ -28,11 +29,12 @@ const Etc = () => {
                 <span className="month">December</span>
                 <span className="crop">Wheat Season</span>
               </div>
-              <Link to="/contacts?service=calendar" className="service-btn">
+              <Link to="/crop-calendar" className="service-btn"> {/* <-- LINK UPDATED */}
                 {t('etc.calendar_button', 'View Calendar')} {/* 3. Translate */}
               </Link>
             </div>
           </div>
+          {/* --- END OF UPDATE --- */}
 
           <div className="service-card">
             <h3>{t('etc.price_title', 'Price Updates')}</h3> {/* 3. Translate */}
@@ -53,14 +55,14 @@ const Etc = () => {
             <Chatbot />
           </div>
 
-          {/* --- THIS BLOCK IS UPDATED --- */}
+          {/* --- TRAINING PROGRAMS CARD (already updated in your code) --- */}
           <div className="service-card">
             <h3>{t('etc.training_title', 'Training Programs')}</h3> {/* 3. Translate */}
             <p>{t('etc.training_desc', 'Learn modern farming techniques')}</p> {/* 3. Translate */}
             <div className="training-widget">
               {/* ... widget info ... */}
-              <Link to="/training-programs" className="service-btn"> {/* <-- 1. LINK UPDATED */}
-                {t('etc.training_button', 'Browse Courses')} {/* <-- 2. DEFAULT TEXT UPDATED */}
+              <Link to="/training-programs" className="service-btn">
+                {t('etc.training_button', 'Browse Courses')}
               </Link>
             </div>
           </div>
