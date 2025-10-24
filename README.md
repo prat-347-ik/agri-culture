@@ -70,6 +70,7 @@ You’ll need to install dependencies and run each part in separate terminal win
 #### **Navigate to the Backend Directory**
 ```bash
 cd blueboi77/agri-culture/agri-culture-feature-react-conversion/backend
+'''
 
 #### **Create Environment File**
 
