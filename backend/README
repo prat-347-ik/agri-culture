@@ -63,3 +63,10 @@ npm run dev
 
 The server currently provides the following API endpoints. The base URL is `http://localhost:5000`.
 
+### Getting the DATA_GOV_API
+
+Collect the requirec api fromt the given link
+https://www.data.gov.in/resource/variety-wise-daily-market-prices-data-commodity
+
+
+

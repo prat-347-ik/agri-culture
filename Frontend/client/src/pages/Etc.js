@@ -19,33 +19,36 @@ const Etc = () => {
               <WeatherWidget />
             </div>
 
-          {/* --- CROP CALENDAR CARD UPDATED --- */}
+          {/* --- CROP CALENDAR CARD: Link correct --- */}
           <div className="service-card">
             <h3>{t('etc.calendar_title', 'Crop Calendar')}</h3> {/* 3. Translate */}
             <p>{t('etc.calendar_desc', 'Plan your farming activities')}</p> {/* 3. Translate */}
             <div className="calendar-widget">
               <div className="calendar-info">
-                {/* These are just placeholders, but you could translate them too if needed */}
-                <span className="month">December</span>
-                <span className="crop">Wheat Season</span>
+                <span className="month">{t('etc.calendar_placeholder_month', 'December')}</span>
+                <span className="crop">{t('etc.calendar_placeholder_crop', 'Wheat Season')}</span>
               </div>
-              <Link to="/crop-calendar" className="service-btn"> {/* <-- LINK UPDATED */}
+              <Link to="/crop-calendar" className="service-btn"> 
                 {t('etc.calendar_button', 'View Calendar')} {/* 3. Translate */}
               </Link>
             </div>
           </div>
-          {/* --- END OF UPDATE --- */}
 
+          {/* --- PRICE UPDATES CARD: MODIFIED --- */}
           <div className="service-card">
             <h3>{t('etc.price_title', 'Price Updates')}</h3> {/* 3. Translate */}
             <p>{t('etc.price_desc', 'Latest market prices for crops')}</p> {/* 3. Translate */}
             <div className="price-widget">
               <div className="price-info">
                 {/* These are just placeholders */}
-                <span className="crop-price">Wheat: ₹2,100/qt</span>
-                <span className="trend">↑ +5%</span>
+                <span className="crop-price">{t('etc.price_placeholder_crop', 'Wheat: ₹2,100/qt')}</span>
+                <span className="trend">{t('etc.price_placeholder_trend', '↑ +5%')}</span>
               </div>
-              <button className="service-btn">{t('etc.price_button', 'View Prices')}</button> {/* 3. Translate */}
+              {/* --- THIS IS THE CHANGED LINE --- */}
+              <Link to="/price-updates" className="service-btn">
+                {t('etc.price_button', 'View Prices')}
+              </Link>
+              {/* --- END OF CHANGE --- */}
             </div>
           </div>
 
@@ -55,29 +58,35 @@ const Etc = () => {
             <Chatbot />
           </div>
 
-          {/* --- TRAINING PROGRAMS CARD (already updated in your code) --- */}
-          <div className="service-card">
-            <h3>{t('etc.training_title', 'Training Programs')}</h3> {/* 3. Translate */}
-            <p>{t('etc.training_desc', 'Learn modern farming techniques')}</p> {/* 3. Translate */}
-            <div className="training-widget">
-              {/* ... widget info ... */}
+          {/* --- TRAINING PROGRAMS CARD: Re-added based on your code structure --- */}
+           <div className="service-card">
+            <h3>{t('sidebar_training', 'Training Programs')}</h3> 
+            <p>{t('etc.training_desc', 'Browse and enroll in courses')}</p> 
+            <div className="price-widget"> {/* You can rename this class if needed */ }
+              <div className="price-info">
+                <span className="crop-price">{t('etc.training_placeholder', 'New: Drip Irrigation')}</span>
+              </div>
               <Link to="/training-programs" className="service-btn">
-                {t('etc.training_button', 'Browse Courses')}
+                {t('etc.training_button', 'View Programs')}
+              </Link>
+            </div>
+          </div>
+
+          {/* --- INSURANCE CARD: Link updated --- */}
+          <div className="service-card">
+            <h3>{t('etc.insurance_title', 'Insurance Services')}</h3> {/* 3. Translate */}
+            <p>{t('etc.insurance_desc', 'Protect your crops and equipment')}</p> {/* 3. Translate */}
+            <div className="insurance-widget">
+              <div className="insurance-info" style={{ paddingBottom: '10px', fontSize: '0.9rem', color: '#34495e' }}>
+                {t('etc.insurance_placeholder', 'PM Fasal Bima Yojana')}
+              </div>
+              <Link to="/insurance" className="service-btn"> {/* <-- LINK UPDATED */}
+                {t('etc.insurance_button', 'Browse Plans')} {/* <-- Text updated */}
               </Link>
             </div>
           </div>
           {/* --- END OF UPDATE --- */}
 
-          <div className="service-card">
-            <h3>{t('etc.insurance_title', 'Insurance Services')}</h3> {/* 3. Translate */}
-            <p>{t('etc.insurance_desc', 'Protect your crops and equipment')}</p> {/* 3. Translate */}
-            <div className="insurance-widget">
-              {/* ... widget info ... */}
-              <Link to="/contacts?service=insurance" className="service-btn">
-                {t('etc.insurance_button', 'Get Quote')} {/* 3. Translate */}
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>

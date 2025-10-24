@@ -1,3 +1,4 @@
+
 {
 "sidebar": {
     "menu": "Menu",
@@ -241,5 +242,60 @@
     "error": "Failed to load training programs. Please try again later.",
     "noCourses": "No training programs are available at this time. Please check back later.",
     "applyNow": "Apply Now"
+  },
+  "cropCalendar": {
+    "title": "Crop Calendar",
+    "description": "Plan your farming activities with our regional crop calendar.",
+    "error": "Failed to load calendar events.",
+    "noEvents": "No upcoming calendar events found. Please check back later.",
+    "to": "to"
+  },
+  "insurancePage": {
+    "title": "Insurance Services",
+    "description": "Find government and private insurance plans to protect your crops and machinery.",
+    "error": "Failed to load insurance plans.",
+    "noPlansInitial": "No insurance plans available at the moment.",
+    "noPlansFiltered": "No insurance plans found for this category.",
+    "applyButton": "Get Quote / Apply",
+    "typeGovernment": "Government",
+    "typePrivate": "Private",
+    "categoryCrop": "Crop",
+    "categoryMachinery": "Machinery",
+    "categoryOther": "Other",
+    "filterAll": "All",
+    "filterCrop": "Crop",
+    "filterMachinery": "Machinery",
+    "filterOther": "Other"
+  },
+"priceUpdates": {
+    "market_prices_title": "Market Prices",
+    "filter_state": "State",
+    "filter_district": "District",
+    "filter_market": "Market",
+    "filter_commodity": "Commodity",
+    "select_state": "Select State",
+    "select_district": "Select District",
+    "select_market": "Select Market",
+    "select_commodity": "Select Commodity (Optional)",
+    "search": "Search",
+    "searching": "Searching...",
+    "clear_filters": "Clear",
+    "loading_prices": "Loading price data...",
+    "no_prices_found": "No price data found for the selected filters.",
+    "error_fetching_states": "Error fetching states.",
+    "error_fetching_districts": "Error fetching districts.",
+    "error_fetching_markets": "Error fetching markets.",
+    "error_fetching_commodities": "Error fetching commodities.",
+    "error_searching_prices": "An error occurred while searching for prices.",
+    "table_arrival_date": "Arrival Date",
+    "table_commodity": "Commodity",
+    "table_variety": "Variety",
+    "table_market": "Market",
+    "table_min_price": "Min Price",
+    "table_max_price": "Max Price",
+    "table_modal_price": "Modal Price",
+    "etc.training_desc": "Browse and enroll in courses",
+    "etc.training_placeholder": "New: Drip Irrigation",
+    "etc.training_button": "View Programs"
   }
 }

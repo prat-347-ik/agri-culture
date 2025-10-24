@@ -1,0 +1,183 @@
+/* Main container for the price updates page */
+.price-updates-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.price-updates-container h2 {
+  text-align: center;
+  color: #2c5e2e; /* Dark green */
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+/* Styling for the filter form */
+.price-filters-form {
+  background-color: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.filter-item select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-item select:focus {
+  outline: none;
+  border-color: #4CAF50; /* Green focus */
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.filter-item select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+/* Action buttons */
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-actions button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.search-button {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+.search-button:hover {
+  background-color: #45a049;
+}
+
+.search-button:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+.clear-button {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+.clear-button:hover {
+  background-color: #e53935;
+}
+
+/* Results section */
+.price-results {
+  margin-top: 2rem;
+}
+
+.loading-message,
+.no-results-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.price-error-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #d9534f; /* Red for error */
+  padding: 1.5rem;
+  background-color: #f2dede;
+  border: 1px solid #ebccd1;
+  border-radius: 8px;
+}
+
+/* --- NEW & IMPROVED TABLE STYLES --- */
+
+/* Container for the table to allow horizontal scroll on small screens */
+.results-table-container {
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.price-results table {
+  width: 100%;
+  border-collapse: collapse; /* Removes double borders */
+  min-width: 800px; 
+}
+
+/* Table Header Styles */
+.price-results th {
+  background-color: #2c5e2e; /* Dark green header */
+  color: #ffffff; /* White text */
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase; /* Makes headers stand out */
+  white-space: nowrap;
+  border-bottom: 2px solid #254f27; /* Slightly darker border */
+}
+
+/* Table Body Cell Styles */
+.price-results td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e0e0e0; /* Light line between rows */
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* Table Row Styles */
+.price-results tr:last-child td {
+  border-bottom: none; /* No line under the last row */
+}
+
+/* Add a hover effect for better readability */
+.price-results tr:nth-child(even) {
+  background-color: #f9f9f9; /* Subtle zebra striping */
+}
+
+.price-results tr:hover {
+  background-color: #e8f5e9; /* Light green hover */
+}

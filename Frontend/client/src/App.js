@@ -23,6 +23,8 @@ import Admin from './pages/Admin';
 import Listing from './pages/Listing';
 import TrainingPrograms from './pages/TrainingPrograms'; 
 import CropCalendar from './pages/CropCalendar'; 
+import Insurance from './pages/Insurance';
+import PriceUpdates from './pages/PriceUpdates'; // <--- 1. IMPORT THE NEW PAGE
 
 // (We no longer import CropCalendar)
 
@@ -61,6 +63,8 @@ const AppContent = () => {
                     <Route path="/etc" element={<Etc />} />
                     <Route path="/training-programs" element={<TrainingPrograms />} /> 
                     <Route path="/crop-calendar" element={<CropCalendar />} /> {/* <--- 2. ADD THE NEW ROUTE */}
+                    <Route path="/insurance" element={<Insurance />} />
+                    <Route path="/price-updates" element={<PriceUpdates />} /> {/* <--- 2. ADD THE NEW ROUTE */}
                     <Route path="/listing/:id" element={<Listing />} />
 
                     {/* --- CROP CALENDAR ROUTE REMOVED --- */}
