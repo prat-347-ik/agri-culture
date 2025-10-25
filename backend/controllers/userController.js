@@ -140,3 +140,18 @@ export const deleteUserAccount = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// --- ADD THIS NEW FUNCTION ---
+// @desc    Get all user profiles (for admin)
+// @route   GET /api/user
+// @access  Admin
+export const getAllUsers = async (req, res) => {
+  try {
+    // Find all users and select only their name and phone number
+    const users = await User.find({}).select('fullName phone');
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+  };

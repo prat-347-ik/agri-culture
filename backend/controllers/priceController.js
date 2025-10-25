@@ -5,13 +5,12 @@ import MarketPrice from '../models/MarketPrice.js';
  */
 export const getPrices = async (req, res) => {
   try {
-    const { state, district, market, commodity } = req.query;
+    const { state, district, market, commodity, modalPrice } = req.query;
 
     // Build the filter object dynamically
     const filter = {};
     if (state) {
-      // Use regex for case-insensitive partial matching
-      filter.state = { $regex: new RegExp(`^${state}$`, 'i') }; // Exact match, case-insensitive
+      filter.state = { $regex: new RegExp(`^${state}$`, 'i') }; 
     }
     if (district) {
       filter.district = { $regex: new RegExp(`^${district}$`, 'i') };
@@ -22,29 +21,33 @@ export const getPrices = async (req, res) => {
     if (commodity) {
       filter.commodity = { $regex: new RegExp(`^${commodity}$`, 'i') };
     }
+    
+    // --- FIX #1: ADD modalPrice TO THE FILTER ---
+    if (modalPrice) {
+      // Assumes modalPrice is a number. 
+      // Add validation if needed, e.g., if (!isNaN(parseFloat(modalPrice)))
+      filter.modalPrice = parseFloat(modalPrice);
+    }
 
-    // Find prices, sort by most recent, and limit results
+    // --- FIX #2: USE THE 'filter' OBJECT IN find() AND CLEAN UP SYNTAX ---
     const prices = await MarketPrice.find(filter)
-      .sort({ arrivalDate: -1 }) // Sort by date descending
+      .sort({ arrivalDate: -1 })
       .limit(500); // Limit to 500 results for performance
 
     if (!prices || prices.length === 0) {
-      // Send 200 with empty array instead of 404, as it's a valid query with no results
       return res.status(200).json([]);
     }
 
     res.status(200).json(prices);
+
   } catch (error) {
-    console.error("Error fetching prices from DB:", error);
-    res.status(500).json({ message: "Server error while fetching prices.", error: error.message });
+    // This console.log is how you found the error. Good practice!
+    console.error("Error fetching prices from DB:", error); 
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// --- NEW FUNCTIONS FOR FILTERS ---
 
-/**
- * Get a distinct list of all states.
- */
 export const getDistinctStates = async (req, res) => {
   try {
     const states = await MarketPrice.distinct("state");

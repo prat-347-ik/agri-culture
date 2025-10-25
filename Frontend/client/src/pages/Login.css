@@ -112,3 +112,20 @@
 .auth-switch span:hover {
   text-decoration: underline;
 }
+
+/* --- ADD THIS TO THE END OF Login.css --- */
+
+.toggle-mode-btn {
+    background: none;
+    border: none;
+    color: #2e7d32; /* Use theme color */
+    cursor: pointer;
+    text-decoration: underline;
+    margin-top: 15px;
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+.toggle-mode-btn:hover {
+    color: #1b5e20; /* Darker green on hover */
+}

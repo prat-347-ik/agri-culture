@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import PersistLogin from './components/PersistLogin';
 import ProfileCompletionRoute from './components/ProfileCompletionRoute';
+import AdminRoute from './components/AdminRoute'; // <-- 1. IMPORT THE NEW ADMIN ROUTE
 
 // Import all page components
 import Landing from './pages/Landing';
@@ -19,12 +20,12 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Etc from './pages/Etc';
 import Login from './pages/Login';
-import Admin from './pages/Admin';
+import Admin from './pages/Admin'; // <-- 2. Duplicate import removed, this is the only one
 import Listing from './pages/Listing';
 import TrainingPrograms from './pages/TrainingPrograms'; 
 import CropCalendar from './pages/CropCalendar'; 
 import Insurance from './pages/Insurance';
-import PriceUpdates from './pages/PriceUpdates'; // <--- 1. IMPORT THE NEW PAGE
+import PriceUpdates from './pages/PriceUpdates'; 
 
 // (We no longer import CropCalendar)
 
@@ -62,13 +63,11 @@ const AppContent = () => {
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/etc" element={<Etc />} />
                     <Route path="/training-programs" element={<TrainingPrograms />} /> 
-                    <Route path="/crop-calendar" element={<CropCalendar />} /> {/* <--- 2. ADD THE NEW ROUTE */}
+                    <Route path="/crop-calendar" element={<CropCalendar />} />
                     <Route path="/insurance" element={<Insurance />} />
-                    <Route path="/price-updates" element={<PriceUpdates />} /> {/* <--- 2. ADD THE NEW ROUTE */}
+                    <Route path="/price-updates" element={<PriceUpdates />} />
                     <Route path="/listing/:id" element={<Listing />} />
 
-                    {/* --- CROP CALENDAR ROUTE REMOVED --- */}
-                    
                     {/* Placeholder route for Weather Widget */}
                     <Route 
                         path="/weather-details" 
@@ -79,6 +78,12 @@ const AppContent = () => {
                             </div>
                         } 
                     />
+
+                    {/* --- 3. APPLY ADMIN ROUTE --- */}
+                    {/* This route needs login AND admin role */}
+                    <Route element={<AdminRoute />}>
+                        <Route path="/admin" element={<Admin />} />
+                    </Route>
 
                     {/* Routes that require login */}
                     <Route element={<ProtectedRoute />}>
@@ -92,7 +97,7 @@ const AppContent = () => {
                         {/* Routes that just need login, but not completion */}
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/settings" element={<Settings />} />
-                        <Route path="/admin" element={<Admin />} />
+                        {/* <Route path="/admin" element={<Admin />} /> <-- 4. REMOVED FROM HERE */}
                     </Route>
                     
                     {/* Default route to redirect to home */}

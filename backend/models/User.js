@@ -28,6 +28,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     select: false, // Hides password from default query results
   },
+
+  lastLoginAt: { type: Date },
   
   settings: {
     language: {

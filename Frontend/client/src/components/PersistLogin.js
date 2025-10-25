@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
     const refresh = useRefreshToken();
-    const { auth } = useAuth();
+    const { auth, setAuth } = useAuth(); // <-- 1. Get setAuth from the hook
     const { i18n } = useTranslation();
 
     useEffect(() => {
@@ -16,15 +16,18 @@ const PersistLogin = () => {
         const verifyRefreshToken = async () => {
             console.log("PersistLogin: Attempting to verify refresh token..."); // Debug
             try {
-                // --- THIS IS THE FIX ---
                 // `data` will now be the { accessToken, user } object
                 const data = await refresh(); 
                 
+                // --- THIS IS THE FIX ---
+                // 2. Explicitly set the auth state with the new token AND user object
+                setAuth({ accessToken: data.accessToken, user: data.user, isLoggedIn: true });
+                // --- END OF FIX ---
+                
                 // Set language from the returned data
                 i18n.changeLanguage(data.user.settings?.language || 'en');
-                // --- END OF FIX ---
 
-                console.log("PersistLogin: Refresh successful."); // Debug
+                console.log("PersistLogin: Refresh successful. User role:", data.user.role); // Debug
             } catch (err) {
                 console.error("PersistLogin: Session refresh failed:", err); // Debug
             } finally {
@@ -46,7 +49,8 @@ const PersistLogin = () => {
             isMounted = false;
         };
         
-    }, [auth?.accessToken, refresh, i18n]);
+        // 3. Add setAuth to the dependency array
+    }, [auth?.accessToken, refresh, i18n, setAuth]); 
 
     return (
         <>

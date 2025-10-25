@@ -297,5 +297,89 @@
     "etc.training_desc": "Browse and enroll in courses",
     "etc.training_placeholder": "New: Drip Irrigation",
     "etc.training_button": "View Programs"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Manage application content and users",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "createBtn": "Create",
+    "creatingBtn": "Creating...",
+    "deleteBtn": "Delete",
+    "applyLink": "Apply Here",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "training": "Training",
+      "calendar": "Crop Calendar",
+      "insurance": "Insurance",
+      "users": "Users"
+    },
+    "error": {
+      "fetch": "Failed to fetch data. Please try again.",
+      "create": "Failed to create item. Please try again.",
+      "delete": "Failed to delete item. Please try again.",
+      "noData": "No data found."
+    },
+    "training": {
+      "manageTitle": "Manage Training Programs",
+      "addTitle": "Add New Training Course",
+      "listTitle": "Existing Courses",
+      "title": "Course Title",
+      "provider": "Provider",
+      "applyLink": "Apply Link",
+      "description": "Description"
+    },
+    "calendar": {
+      "manageTitle": "Manage Crop Calendar",
+      "addTitle": "Add New Calendar Event",
+      "listTitle": "Upcoming Events",
+      "cropName": "Crop Name",
+      "activity": "Activity (e.g., Planting, Harvest)",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "region": "Region",
+      "regionPlaceholder": "e.g., General, Konkan (Optional)",
+      "description": "Description / Notes",
+      "duration": "Duration"
+    },
+    "insurance": {
+      "manageTitle": "Manage Insurance Plans",
+      "addTitle": "Add New Insurance Plan",
+      "listTitle": "Existing Plans",
+      "planName": "Plan Name",
+      "provider": "Provider",
+      "applyLink": "Apply Link",
+      "type": "Type",
+      "category": "Category",
+      "description": "Description",
+      "types": {
+        "government": "Government",
+        "private": "Private"
+      },
+      "categories": {
+        "crop": "Crop",
+        "machinery": "Machinery",
+        "other": "Other"
+      }
+    },
+    "users": {
+      "manageTitle": "Manage Users",
+      "listTitle": "Registered Users",
+      "noName": "User (No Name)",
+      "phone": "Phone"
+    },
+      "dashboard": {
+      "title": "Platform Dashboard",
+      "totalUsers": "Total Users",
+      "activeSellers": "Active Sellers",
+      "activeListings": "Active Listings",
+      "totalEnrollments": "Total Enrollments",
+      "recentListings": "Recent Marketplace Listings",
+      "upcomingEvents": "Upcoming Events (30d)",
+      "recentLogins": "Recent Logins",
+      "loggedIn": "Logged in at",
+      "by": "by"
+    }
   }
+
+
 }

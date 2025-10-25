@@ -1,226 +1,321 @@
 import React, { useState, useEffect, useCallback } from 'react';
-
-// --- Custom CSS for the admin page ---
-const customAdminStyles = `
-    .admin-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    .admin-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-    .admin-header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, #2e7d32, #ffc107);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 40px;
-    }
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #2e7d32;
-        margin-bottom: 10px;
-    }
-    .stat-label {
-        color: #666;
-        font-size: 0.9rem;
-    }
-    .enrollments-list {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    .enrollment-item {
-        border: 1px solid #e0e0e0;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background: #f9f9f9;
-    }
-    .enrollment-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #ffc107;
-    }
-    .enrollment-type {
-        background: #2e7d32;
-        color: white;
-        padding: 5px 15px;
-        border-radius: 15px;
-        font-size: 0.9rem;
-        font-weight: bold;
-    }
-    .enrollment-time {
-        color: #666;
-        font-size: 0.9rem;
-    }
-    .enrollment-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-    .detail-group {
-        margin-bottom: 10px;
-    }
-    .detail-label {
-        font-weight: 600;
-        color: #2e7d32;
-        font-size: 0.9rem;
-        margin-bottom: 5px;
-    }
-    .detail-value {
-        color: #333;
-        word-break: break-word;
-    }
-    .refresh-btn {
-        background: linear-gradient(135deg, #2e7d32, #4caf50);
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 25px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 20px;
-    }
-    .refresh-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
-    }
-    .loading, .error, .no-data {
-        text-align: center;
-        padding: 40px;
-        color: #666;
-    }
-    .error {
-        background: #ffebee;
-        color: #c62828;
-        border-radius: 8px;
-    }
-`;
+import { useTranslation } from 'react-i18next';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import Dashboard from './Dashboard'; // Import the Dashboard component
+import './Admin.css'; // Import the existing CSS
 
 const Admin = () => {
-    const [enrollments, setEnrollments] = useState([]);
-    const [stats, setStats] = useState({ total: 0, bidding: 0, selling: 0, renting: 0 });
-    const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
+    const axiosPrivate = useAxiosPrivate();
+    const [activeTab, setActiveTab] = useState('dashboard'); // <-- FIX #1: Default tab is now dashboard
+
+    // --- State for all sections ---
+    const [training, setTraining] = useState([]);
+    const [calendar, setCalendar] = useState([]);
+    const [insurance, setInsurance] = useState([]);
+    const [users, setUsers] = useState([]); // Optional
+
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const loadEnrollments = useCallback(async () => {
+    // --- State for forms ---
+    const [newCourse, setNewCourse] = useState({ title: '', description: '', provider: '', applyLink: '' });
+    const [newEvent, setNewEvent] = useState({ cropName: '', activity: '', startDate: '', endDate: '', region: '', description: '' });
+    const [newPlan, setNewPlan] = useState({ planName: '', provider: '', type: 'Government', category: 'Crop', description: '', applyLink: '' });
+
+    // --- Data Fetching Logic ---
+    const fetchData = useCallback(async () => {
+        // <-- FIX #2: Don't fetch if dashboard is active, it fetches its own data
+        if (activeTab === 'dashboard') return;
+
         setLoading(true);
         setError(null);
+        let url = '';
         try {
-            // NOTE: You will need to set up CORS on your server for this to work
-            const response = await fetch('http://localhost:5000/api/enrollments');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const result = await response.json();
-            
-            if (result.success) {
-                const sortedData = result.data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                setEnrollments(sortedData);
-                updateStats(sortedData);
-            } else {
-                setError(result.message);
+            switch (activeTab) {
+                case 'training':
+                    url = '/api/training';
+                    const trainingRes = await axiosPrivate.get(url);
+                    setTraining(trainingRes.data);
+                    break;
+                case 'calendar':
+                    url = '/api/calendar';
+                    const calendarRes = await axiosPrivate.get(url);
+                    setCalendar(calendarRes.data);
+                    break;
+                case 'insurance':
+                    url = '/api/insurance';
+                    const insuranceRes = await axiosPrivate.get(url);
+                    setInsurance(insuranceRes.data);
+                    break;
+                case 'users':
+                    url = '/api/admin/users'; // <-- FIX #3: Corrected URL from '/api/admin/users'
+                    const usersRes = await axiosPrivate.get(url);
+                    setUsers(usersRes.data);
+                    break;
+                default:
+                    return;
             }
         } catch (err) {
-            console.error('Error loading enrollments:', err);
-            setError('Failed to load enrollments. Please check if the server is running and accessible.');
+            console.error(`Failed to fetch ${activeTab}:`, err);
+            setError(t('admin.error.fetch'));
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [activeTab, axiosPrivate, t]);
 
-    const updateStats = (data) => {
-        setStats({
-            total: data.length,
-            bidding: data.filter(e => e.type === 'bidding').length,
-            selling: data.filter(e => e.type === 'selling').length,
-            renting: data.filter(e => e.type === 'renting').length,
-        });
-    };
-
+    // Fetch data when tab changes
     useEffect(() => {
-        loadEnrollments(); // Initial load
-        const interval = setInterval(loadEnrollments, 30000); // Auto-refresh every 30 seconds
-        return () => clearInterval(interval); // Cleanup on component unmount
-    }, [loadEnrollments]);
+        fetchData();
+    }, [fetchData]);
 
-    const renderDetails = (data) => {
-        return Object.entries(data).map(([key, value]) => {
-            if (!value || value.toString().trim() === '') return null;
-            const formattedKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
-            return (
-                <div className="detail-group" key={key}>
-                    <div className="detail-label">{formattedKey}</div>
-                    <div className="detail-value">{value.toString()}</div>
-                </div>
-            );
-        });
+    // --- Form Handlers ---
+    const handleCourseChange = (e) => setNewCourse({ ...newCourse, [e.target.name]: e.target.value });
+    const handleEventChange = (e) => setNewEvent({ ...newEvent, [e.target.name]: e.target.value });
+    const handlePlanChange = (e) => setNewPlan({ ...newPlan, [e.target.name]: e.target.value });
+
+    // --- Create Handlers ---
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        let url = '';
+        let data = {};
+
+        try {
+            switch (activeTab) {
+                case 'training':
+                    url = '/api/training'; // <-- FIX #4: Added /api prefix
+                    data = newCourse;
+                    setNewCourse({ title: '', description: '', provider: '', applyLink: '' }); // Reset form
+                    break;
+                case 'calendar':
+                    url = '/api/calendar'; // <-- FIX #4: Added /api prefix
+                    data = newEvent;
+                    setNewEvent({ cropName: '', activity: '', startDate: '', endDate: '', region: '', description: '' }); // Reset form
+                    break;
+                case 'insurance':
+                    url = '/api/insurance'; // <-- FIX #4: Added /api prefix
+                    data = newPlan;
+                    setNewPlan({ planName: '', provider: '', type: 'Government', category: 'Crop', description: '', applyLink: '' }); // Reset form
+                    break;
+                default:
+                    return;
+            }
+            await axiosPrivate.post(url, data);
+            fetchData(); // Refresh the list
+        } catch (err) {
+            console.error(`Failed to create ${activeTab}:`, err);
+            setError(t('admin.error.create'));
+        } finally {
+            setLoading(false);
+        }
     };
 
-    return (
-        <>
-            <style>{customAdminStyles}</style>
-            <div className="admin-container">
-                <div className="admin-header">
-                    <h1>Admin Panel</h1>
-                    <p>View and manage enrollment submissions</p>
-                </div>
+    // --- Delete Handler ---
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('admin.confirmDelete'))) return;
 
-                <button className="refresh-btn" onClick={loadEnrollments} disabled={loading}>
-                    {loading ? '🔄 Refreshing...' : '🔄 Refresh Data'}
-                </button>
+        setLoading(true);
+        setError(null);
+        let url = '';
 
-                <div className="stats-grid">
-                    <div className="stat-card"><div className="stat-number">{stats.total}</div><div className="stat-label">Total Enrollments</div></div>
-                    <div className="stat-card"><div className="stat-number">{stats.bidding}</div><div className="stat-label">Bidding Requests</div></div>
-                    <div className="stat-card"><div className="stat-number">{stats.selling}</div><div className="stat-label">Selling Requests</div></div>
-                    <div className="stat-card"><div className="stat-number">{stats.renting}</div><div className="stat-label">Renting Requests</div></div>
-                </div>
+        try {
+            switch (activeTab) {
+                case 'training':
+                    url = `/api/training/${id}`; // <-- FIX #5: Added /api prefix
+                    break;
+                case 'calendar':
+                    url = `/api/calendar/${id}`; // <-- FIX #5: Added /api prefix
+                    break;
+                case 'insurance':
+                    url = `/api/insurance/${id}`; // <-- FIX #5: Added /api prefix
+                    break;
+                default:
+                    return;
+            }
+            await axiosPrivate.delete(url);
+            fetchData(); // Refresh the list
+        } catch (err) {
+            console.error(`Failed to delete ${activeTab} item:`, err);
+            setError(t('admin.error.delete'));
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                <div className="enrollments-list">
-                    <h2>Recent Enrollments</h2>
-                    <div id="enrollmentsContainer">
-                        {loading && <div className="loading">Loading enrollments...</div>}
-                        {error && <div className="error">{error}</div>}
-                        {!loading && !error && enrollments.length === 0 && <div className="no-data">No enrollments found.</div>}
-                        {!loading && !error && enrollments.map(item => (
-                            <div className="enrollment-item" key={item._id || item.timestamp}>
-                                <div className="enrollment-header">
-                                    <span className="enrollment-type">{item.type.toUpperCase()}</span>
-                                    <span className="enrollment-time">{new Date(item.timestamp).toLocaleString()}</span>
-                                </div>
-                                <div className="enrollment-details">
-                                    {renderDetails(item.data)}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+    // --- Render Functions for Lists ---
+    const renderTrainingForm = () => (
+        <form onSubmit={handleCreate} className="admin-form">
+            <h3>{t('admin.training.addTitle')}</h3>
+            <div className="admin-form-group"><label>{t('admin.training.title')}</label><input type="text" name="title" value={newCourse.title} onChange={handleCourseChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.training.provider')}</label><input type="text" name="provider" value={newCourse.provider} onChange={handleCourseChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.training.applyLink')}</label><input type="url" name="applyLink" value={newCourse.applyLink} onChange={handleCourseChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.training.description')}</label><textarea name="description" value={newCourse.description} onChange={handleCourseChange} required /></div>
+            <button type="submit" disabled={loading}>{loading ? t('admin.creatingBtn') : t('admin.createBtn')}</button>
+        </form>
+    );
+
+    const renderTrainingList = () => training.map(item => (
+        <div key={item._id} className="admin-list-item">
+            <div className="admin-list-item-header"><strong>{item.title}</strong><button onClick={() => handleDelete(item._id)} className="delete-btn" disabled={loading}>{t('admin.deleteBtn')}</button></div>
+            <div className="admin-list-item-body">
+                <p><strong>{t('admin.training.provider')}:</strong> {item.provider}</p>
+                <p>{item.description}</p>
+                <p><a href={item.applyLink} target="_blank" rel="noopener noreferrer">{t('admin.applyLink')}</a></p>
             </div>
-        </>
+        </div>
+    ));
+
+    const renderCalendarForm = () => (
+        <form onSubmit={handleCreate} className="admin-form">
+            <h3>{t('admin.calendar.addTitle')}</h3>
+            <div className="admin-form-group"><label>{t('admin.calendar.cropName')}</label><input type="text" name="cropName" value={newEvent.cropName} onChange={handleEventChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.calendar.activity')}</label><input type="text" name="activity" value={newEvent.activity} onChange={handleEventChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.calendar.startDate')}</label><input type="date" name="startDate" value={newEvent.startDate} onChange={handleEventChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.calendar.endDate')}</label><input type="date" name="endDate" value={newEvent.endDate} onChange={handleEventChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.calendar.region')}</label><input type="text" name="region" value={newEvent.region} onChange={handleEventChange} placeholder={t('admin.calendar.regionPlaceholder')} /></div>
+            <div className="admin-form-group"><label>{t('admin.calendar.description')}</label><textarea name="description" value={newEvent.description} onChange={handleEventChange} /></div>
+            <button type="submit" disabled={loading}>{loading ? t('admin.creatingBtn') : t('admin.createBtn')}</button>
+        </form>
+    );
+
+    const renderCalendarList = () => calendar.map(item => (
+        <div key={item._id} className="admin-list-item">
+            <div className="admin-list-item-header"><strong>{item.cropName} - {item.activity}</strong><button onClick={() => handleDelete(item._id)} className="delete-btn" disabled={loading}>{t('admin.deleteBtn')}</button></div>
+            <div className="admin-list-item-body">
+                <p><strong>{t('admin.calendar.duration')}:</strong> {new Date(item.startDate).toLocaleDateString()} - {new Date(item.endDate).toLocaleDateString()}</p>
+                <p><strong>{t('admin.calendar.region')}:</strong> {item.region}</p>
+                <p>{item.description}</p>
+            </div>
+        </div>
+    ));
+
+    const renderInsuranceForm = () => (
+        <form onSubmit={handleCreate} className="admin-form">
+            <h3>{t('admin.insurance.addTitle')}</h3>
+            <div className="admin-form-group"><label>{t('admin.insurance.planName')}</label><input type="text" name="planName" value={newPlan.planName} onChange={handlePlanChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.insurance.provider')}</label><input type="text" name="provider" value={newPlan.provider} onChange={handlePlanChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.insurance.applyLink')}</label><input type="url" name="applyLink" value={newPlan.applyLink} onChange={handlePlanChange} required /></div>
+            <div className="admin-form-group"><label>{t('admin.insurance.type')}</label>
+                <select name="type" value={newPlan.type} onChange={handlePlanChange}>
+                    <option value="Government">{t('admin.insurance.types.government')}</option>
+                    <option value="Private">{t('admin.insurance.types.private')}</option>
+                </select>
+            </div>
+            <div className="admin-form-group"><label>{t('admin.insurance.category')}</label>
+                <select name="category" value={newPlan.category} onChange={handlePlanChange}>
+                    <option value="Crop">{t('admin.insurance.categories.crop')}</option>
+                    <option value="Machinery">{t('admin.insurance.categories.machinery')}</option>
+                    <option value="Other">{t('admin.insurance.categories.other')}</option>
+                </select>
+            </div>
+            <div className="admin-form-group"><label>{t('admin.insurance.description')}</label><textarea name="description" value={newPlan.description} onChange={handlePlanChange} required /></div>
+            <button type="submit" disabled={loading}>{loading ? t('admin.creatingBtn') : t('admin.createBtn')}</button>
+        </form>
+    );
+
+    const renderInsuranceList = () => insurance.map(item => (
+        <div key={item._id} className="admin-list-item">
+            <div className="admin-list-item-header"><strong>{item.planName} ({item.provider})</strong><button onClick={() => handleDelete(item._id)} className="delete-btn" disabled={loading}>{t('admin.deleteBtn')}</button></div>
+            <div className="admin-list-item-body">
+                <p><strong>{t('admin.insurance.type')}:</strong> {t(`admin.insurance.types.${item.type.toLowerCase()}`)} | <strong>{t('admin.insurance.category')}:</strong> {t(`admin.insurance.categories.${item.category.toLowerCase()}`)}</p>
+                <p>{item.description}</p>
+                <p><a href={item.applyLink} target="_blank" rel="noopener noreferrer">{t('admin.applyLink')}</a></p>
+            </div>
+        </div>
+    ));
+    
+    const renderUserList = () => users.map(user => (
+        <div key={user._id} className="admin-list-item">
+            <div className="admin-list-item-header"><strong>{user.fullName || t('admin.users.noName')}</strong></div>
+            <div className="admin-list-item-body">
+                <p><strong>{t('admin.users.phone')}:</strong> {user.phone}</p>
+            </div>
+        </div>
+    ));
+
+    // --- Main Render ---
+    return (
+        <div className="admin-page-container">
+            <div className="admin-header">
+                <h1>{t('admin.title')}</h1>
+                <p>{t('admin.subtitle')}</p>
+            </div>
+
+            <div className="admin-tabs">
+                <button onClick={() => setActiveTab('dashboard')} className={activeTab === 'dashboard' ? 'active' : ''}>{t('admin.tabs.dashboard')}</button>
+               <button onClick={() => setActiveTab('training')} className={activeTab === 'training' ? 'active' : ''}>{t('admin.tabs.training')}</button>
+                <button onClick={() => setActiveTab('calendar')} className={activeTab === 'calendar' ? 'active' : ''}>{t('admin.tabs.calendar')}</button>
+                <button onClick={() => setActiveTab('insurance')} className={activeTab === 'insurance' ? 'active' : ''}>{t('admin.tabs.insurance')}</button>
+                <button onClick={() => setActiveTab('users')} className={activeTab === 'users' ? 'active' : ''}>{t('admin.tabs.users')}</button>
+            </div>
+            
+
+            <div className="admin-section">
+                {error && <div className="error-msg">{error}</div>}
+
+                {/* --- Dashboard Tab --- */}
+                {activeTab === 'dashboard' && (
+                    <Dashboard />
+                )}
+
+                {/* --- Training Tab --- */}
+                {activeTab === 'training' && (
+                    <>
+                        <h2>{t('admin.training.manageTitle')}</h2>
+                        {renderTrainingForm()}
+                        <div className="admin-list">
+                            <h3>{t('admin.training.listTitle')}</h3>
+                            {loading && <div className="loading-msg">{t('loading')}</div>}
+                            {!loading && training.length === 0 && <p>{t('admin.error.noData')}</p>}
+                            {renderTrainingList()}
+                        </div>
+                    </>
+                )}
+
+                {/* --- Calendar Tab --- */}
+                {activeTab === 'calendar' && (
+                    <>
+                        <h2>{t('admin.calendar.manageTitle')}</h2>
+                        {renderCalendarForm()}
+                        <div className="admin-list">
+                            <h3>{t('admin.calendar.listTitle')}</h3>
+                            {loading && <div className="loading-msg">{t('loading')}</div>}
+                            {!loading && calendar.length === 0 && <p>{t('admin.error.noData')}</p>}
+                            {renderCalendarList()}
+                        </div>
+                    </>
+                )}
+
+                {/* --- Insurance Tab --- */}
+                {activeTab === 'insurance' && (
+                    <>
+                        <h2>{t('admin.insurance.manageTitle')}</h2>
+                        {renderInsuranceForm()}
+                        <div className="admin-list">
+                            <h3>{t('admin.insurance.listTitle')}</h3>
+                            {loading && <div className="loading-msg">{t('loading')}</div>}
+                            {!loading && insurance.length === 0 && <p>{t('admin.error.noData')}</p>}
+                            {renderInsuranceList()}
+                        </div>
+                    </>
+                )}
+
+                {/* --- Users Tab (Optional) --- */}
+                {activeTab === 'users' && (
+                    <>
+                        <h2>{t('admin.users.manageTitle')}</h2>
+                        <div className="admin-list">
+                            <h3>{t('admin.users.listTitle')}</h3>
+                            {loading && <div className="loading-msg">{t('loading')}</div>}
+                            {!loading && users.length === 0 && <p>{t('admin.error.noData')}</p>}
+                            {renderUserList()}
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
     );
 };
 

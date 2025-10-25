@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 
-const marketPriceSchema = new mongoose.Schema({
+const MarketPriceSchema = new mongoose.Schema({ // Renamed to MarketPriceSchema
   state: {
     type: String,
     required: true,
-    index: true // Add index for faster queries
+    index: true 
   },
   district: {
     type: String,
     required: true,
-    index: true // Add index for faster queries
+    index: true 
   },
   market: {
     type: String,
@@ -19,7 +19,7 @@ const marketPriceSchema = new mongoose.Schema({
   commodity: {
     type: String,
     required: true,
-    index: true // Add index for faster queries
+    index: true 
   },
   variety: {
     type: String,
@@ -31,7 +31,7 @@ const marketPriceSchema = new mongoose.Schema({
   arrivalDate: {
     type: Date,
     required: true,
-    index: true // Add index for sorting and filtering by date
+    index: true 
   },
   minPrice: {
     type: Number,
@@ -46,12 +46,13 @@ const marketPriceSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true // Adds createdAt and updatedAt timestamps
+  timestamps: true 
 });
 
 // Create a compound index for common filter combinations
-marketPriceSchema.index({ state: 1, district: 1, commodity: 1, arrivalDate: -1 });
+MarketPriceSchema.index({ state: 1, district: 1, commodity: 1, arrivalDate: -1 });
 
-const MarketPrice = mongoose.model('MarketPrice', marketPriceSchema);
-
+// --- THIS IS THE FIX ---
+// Compile the schema into a model and export the model
+const MarketPrice = mongoose.model('MarketPrice', MarketPriceSchema);
 export default MarketPrice;

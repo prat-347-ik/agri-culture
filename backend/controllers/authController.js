@@ -203,6 +203,9 @@ export const verifyOTP = async (req, res) => {
             return res.status(404).json({ message: 'User not found. Please sign up first. lower' });
         }
 
+        user.lastLoginAt = new Date();
+        await user.save();
+
         otpStorage.delete(phoneNumber); //remove otp after all these shenanigans
 
         // --- Generate Tokens using updated function ---
@@ -240,6 +243,7 @@ export const refreshToken = (req, res) => {
         return res.status(401).json({ message: 'Unauthorized - No refresh token cookie' });
     }
     const receivedRefreshToken = cookies.refreshToken;
+    
 
     jwt.verify(
         receivedRefreshToken,
@@ -268,6 +272,9 @@ export const refreshToken = (req, res) => {
                     res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'Strict' });
                     return res.status(401).json({ message: 'Unauthorized - User associated with token not found' });
                 }
+
+                user.lastLoginAt = new Date();
+                await user.save();
 
                 // Generate a new access token (using ACCESS secret and consistent payload)
                 const newAccessToken = jwt.sign(
@@ -364,15 +371,15 @@ export const requestOtp = async (req, res) => {
 // @route   POST /api/auth/admin/login
 // @access  Public
 export const adminLogin = async (req, res) => {
-  const { phoneNumber, password } = req.body;
+  const { phone, password } = req.body;
 
-  if (!phoneNumber || !password) {
+  if (!phone || !password) {
     return res.status(400).json({ message: 'Phone number and password are required.' });
   }
 
   try {
     // 1. Find the user and explicitly select the password
-    const user = await User.findOne({ phone: phoneNumber }).select('+password');
+    const user = await User.findOne({ phone: phone }).select('+password');
 
     // 2. Check if user exists and is an admin
     if (!user || user.role !== 'admin') {

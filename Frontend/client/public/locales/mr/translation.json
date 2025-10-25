@@ -296,5 +296,88 @@
     "etc.training_desc": "अभ्यासक्रम ब्राउझ करा आणि नोंदणी करा",
     "etc.training_placeholder": "नवीन: ठिबक सिंचन",
     "etc.training_button": "कार्यक्रम पहा"
+  },
+  "admin": {
+    "title": "अ‍ॅडमिन पॅनेल",
+    "subtitle": "अ‍ॅप्लिकेशन सामग्री आणि वापरकर्ते व्यवस्थापित करा",
+    "confirmDelete": "तुम्हाला खात्री आहे की तुम्ही हा आयटम हटवू इच्छिता?",
+    "createBtn": "तयार करा",
+    "creatingBtn": "तयार करत आहे...",
+    "deleteBtn": "हटवा",
+    "applyLink": "येथे अर्ज करा",
+    "tabs": {
+      "dashboard": "डॅशबोर्ड",
+      "training": "प्रशिक्षण",
+      "calendar": "पीक कॅलेंडर",
+      "insurance": "विमा",
+      "users": "वापरकर्ते"
+    },
+    "error": {
+      "fetch": "डेटा आणण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "create": "आयटम तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "delete": "आयटम हटवण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "noData": "कोणताही डेटा आढळला नाही."
+    },
+    "training": {
+      "manageTitle": "प्रशिक्षण कार्यक्रम व्यवस्थापित करा",
+      "addTitle": "नवीन प्रशिक्षण कोर्स जोडा",
+      "listTitle": "विद्यमान कोर्सेस",
+      "title": "कोर्सचे शीर्षक",
+      "provider": "प्रदाता",
+      "applyLink": "अर्ज लिंक",
+      "description": "वर्णन"
+    },
+    "calendar": {
+      "manageTitle": "पीक कॅलेंडर व्यवस्थापित करा",
+      "addTitle": "नवीन कॅलेंडर इव्हेंट जोडा",
+      "listTitle": "आगामी इव्हेंट्स",
+      "cropName": "पिकाचे नाव",
+      "activity": "क्रियाकलाप (उदा. लागवड, कापणी)",
+      "startDate": "सुरुवातीची तारीख",
+      "endDate": "समाप्ती तारीख",
+      "region": "प्रदेश",
+      "regionPlaceholder": "उदा. सामान्य, कोकण (ऐच्छिक)",
+      "description": "वर्णन / टिपा",
+      "duration": "कालावधी"
+    },
+    "insurance": {
+      "manageTitle": "विमा योजना व्यवस्थापित करा",
+      "addTitle": "नवीन विमा योजना जोडा",
+      "listTitle": "विद्यमान योजना",
+      "planName": "योजनेचे नाव",
+      "provider": "प्रदाता",
+      "applyLink": "अर्ज लिंक",
+      "type": "प्रकार",
+      "category": "श्रेणी",
+      "description": "वर्णन",
+      "types": {
+        "government": "सरकारी",
+        "private": "खाजगी"
+      },
+      "categories": {
+        "crop": "पीक",
+        "machinery": "यंत्रसामग्री",
+        "other": "इतर"
+      }
+    },
+    "users": {
+      "manageTitle": "वापरकर्ते व्यवस्थापित करा",
+      "listTitle": "नोंदणीकृत वापरकर्ते",
+      "noName": "वापरकर्ता (नाव नाही)",
+      "phone": "फोन"
+    },
+  "dashboard": {
+      "title": "प्लॅटफॉर्म डॅशबोर्ड",
+      "totalUsers": "एकूण वापरकर्ते",
+      "activeSellers": "सक्रिय विक्रेते",
+      "activeListings": "सक्रिय लिस्टिंग्ज",
+      "totalEnrollments": "एकूण नोंदण्या",
+      "upcomingEvents": "आगामी कार्यक्रम (३०दि)",
+      "recentListings": "अलीकडील मार्केटप्लेस लिस्टिंग्ज",
+      "recentEnrollments": "अलीकडील नोंदण्या",
+      "recentLogins": "अलीकडील लॉगिन", 
+      "loggedIn": "लॉगिन केले",
+      "by": ""
+    }
   }
 }

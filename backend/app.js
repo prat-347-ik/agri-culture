@@ -15,6 +15,7 @@ import calendarRoutes from './routes/cropCalendar.js';
 import insuranceRoutes from './routes/insurance.js';
 import priceRoutes from './routes/prices.js'; // <--- 1. IMPORT YOUR NEW PRICE ROUTES
 import adminRoutes from './routes/admin.js'; // Import admin routes
+import dashboardRoutes from './routes/dashboard.js'; // <-- 1. IMPORT
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,6 +41,8 @@ app.use('/api/calendar', calendarRoutes); // <--- 2. REGISTER YOUR NEW CALENDAR 
 app.use('/api/insurance', insuranceRoutes); // Register insurance routes
 app.use('/api/prices', priceRoutes); // <--- 2. REGISTER YOUR NEW PRICE ROUTES
 app.use('/api/admin', adminRoutes); // Register admin routes
+app.use('/api/dashboard', dashboardRoutes); // <-- 2. REGISTER DASHBOARD ROUTES
+
 
 
 
