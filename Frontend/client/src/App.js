@@ -58,7 +58,7 @@ const AppContent = () => {
                 <Route element={<MainLayout />}>
                     
                     {/* Public Routes */}
-                    <Route path="/home" element={<Home />} />
+                    {/* <Route path="/home" element={<Home />} />  <-- MOVED FROM HERE */}
                     <Route path="/map" element={<Map />} />
                     <Route path="/contacts" element={<Contacts />} />
                     <Route path="/etc" element={<Etc />} />
@@ -87,6 +87,11 @@ const AppContent = () => {
 
                     {/* Routes that require login */}
                     <Route element={<ProtectedRoute />}>
+                        
+                        {/* --- START: MODIFIED --- */}
+                        {/* Home is now protected */}
+                        <Route path="/home" element={<Home />} />
+                        {/* --- END: MODIFIED --- */}
                         
                         {/* Routes that ALSO require a COMPLETE profile */}
                         <Route element={<ProfileCompletionRoute />}>

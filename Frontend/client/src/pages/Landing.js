@@ -9,6 +9,9 @@ const Landing = () => {
         <nav className="landing-nav">
           <a href="#about">About Us</a>
           <a href="#mission">Our Mission</a>
+          <a href="#features">Features</a>
+          {/* --- ADDED --- */}
+          <a href="#how-it-works">How It Works</a>
           <a href="#contact">Contact</a>
         </nav>
       </header>
@@ -42,6 +45,52 @@ const Landing = () => {
             Our mission is to bridge the gap between traditional farming and modern technology. We aim to provide a comprehensive ecosystem that includes a marketplace for goods, a platform for services, and access to vital information like weather patterns and market prices, all in one accessible place.
           </p>
         </section>
+
+        <section id="features" className="landing-section">
+          <h2>Key Features</h2>
+          <div className="features-grid">
+            <div className="feature-card">
+              <h3>Marketplace</h3>
+              <p>Buy and sell produce, equipment, and livestock directly within the community.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Service Enrollment</h3>
+              <p>Find and enroll in vital services like crop insurance, training programs, and equipment rental.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Data & Insights</h3>
+              <p>Access real-time market prices, weather forecasts, and a personalized crop calendar.</p>
+            </div>
+            <div className="feature-card">
+              <h3>Community Map</h3>
+              <p>Locate nearby farms, service providers, and resources on an interactive community map.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* --- START: ADDED "How It Works" Section --- */}
+        <section id="how-it-works" className="landing-section">
+          <h2>How It Works</h2>
+          <div className="steps-grid">
+            <div className="step-card">
+              <span className="step-number">1</span>
+              <h3>Create an Account</h3>
+              <p>Sign up in seconds with just your phone number.</p>
+            </div>
+            <div className="step-card">
+              <span className="step-number">2</span>
+              <h3>Complete Your Profile</h3>
+              <p>Tell us who you are (Farmer, Buyer, Service Provider) to personalize your experience.</p>
+            </div>
+            <div className="step-card">
+              <span className="step-number">3</span>
+              <h3>Explore & Connect</h3>
+              <p>Access the marketplace, enroll in services, and connect with your community.</p>
+            </div>
+          </div>
+        </section>
+        {/* --- END: ADDED "How It Works" Section --- */}
+
       </main>
 
       <footer id="contact" className="landing-footer">

@@ -132,16 +132,72 @@ const Login = () => {
         }
     };
 
+    // --- START: NEW/MODIFIED OTP HANDLERS ---
+
     const handleOtpChange = (element, index) => {
-        if (isNaN(element.value)) return false;
+        if (isNaN(element.value)) return false; // Only allow numbers
         const newOtp = [...otp];
         newOtp[index] = element.value;
         setOtp(newOtp);
 
+        // If a value was entered (not deleted) and it's not the last box, move forward
         if (element.value && element.nextSibling) {
             element.nextSibling.focus();
         }
     };
+
+    const handleOtpPaste = (e) => {
+        const pasteData = e.clipboardData.getData('text');
+        
+        // Check if it's purely numeric and 6 digits
+        if (/^\d{6}$/.test(pasteData)) {
+            e.preventDefault(); // Stop the default paste
+            const newOtp = pasteData.split('');
+            setOtp(newOtp);
+            
+            // Focus the last input box
+            const row = e.target.parentNode;
+            if (row && row.lastChild && row.lastChild.focus) {
+                 row.lastChild.focus();
+            }
+        }
+        // If not 6 digits, let the default behavior happen
+        // (e.g., pasting "1" into a box, which triggers onChange)
+    };
+
+    const handleOtpKeyDown = (e, index) => {
+        const currentInput = e.target;
+        
+        // 1. Handle Enter key: Trigger verify
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleVerifyOtp();
+            return;
+        }
+
+        // 2. Handle Backspace key: Move focus back and clear previous input
+        if (e.key === 'Backspace') {
+            // If the current input is empty and it's not the first input
+            if (currentInput.value === '' && index > 0) {
+                e.preventDefault(); // Prevent browser back navigation
+                
+                const prevInput = currentInput.previousSibling;
+                
+                if (prevInput && prevInput.focus) {
+                    // Focus the previous input
+                    prevInput.focus();
+                    
+                    // Erase the value *in the state* for the previous input
+                    const newOtp = [...otp];
+                    newOtp[index - 1] = '';
+                    setOtp(newOtp);
+                }
+            }
+        }
+    };
+
+    // --- END: NEW/MODIFIED OTP HANDLERS ---
+
 
     // Toggles between user login and user signup
     const toggleUserView = () => {
@@ -212,6 +268,10 @@ const Login = () => {
                                     value={data}
                                     onChange={e => handleOtpChange(e.target, index)}
                                     onFocus={e => e.target.select()}
+                                    // --- ADDED CHANGES ---
+                                    onPaste={handleOtpPaste}
+                                    onKeyDown={e => handleOtpKeyDown(e, index)}
+                                    // --- END ADDED CHANGES ---
                                 />
                             ))}
                         </div>

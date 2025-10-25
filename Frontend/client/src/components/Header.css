@@ -58,13 +58,41 @@
 .profile-btn {
     background-color: #4caf50;
     color: white;
-    padding: 0.5rem 1rem;
+    /* --- CHANGED --- Added padding-right for chevron */
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
     border: none;
     border-radius: 20px;
     cursor: pointer;
     font-size: 1rem;
     font-weight: 500;
+    /* --- ADDED --- For chevron positioning */
+    position: relative; 
 }
+
+/* --- START: ADDED STYLING --- */
+
+/* CSS-only chevron icon */
+.profile-btn::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    margin-top: -3px; /* Adjust vertical center */
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg); /* Points down */
+    transition: transform 0.3s ease; /* Animation for rotation */
+}
+
+/* Rotating chevron when 'open' class is present */
+.profile-btn.open::after {
+    transform: rotate(-135deg); /* Points up */
+}
+
+/* --- END: ADDED STYLING --- */
+
 
 .profile-btn:hover {
     background-color: #45a049;
@@ -85,7 +113,23 @@
     overflow: hidden; /* Ensures items stay within rounded corners */
     display: flex;
     flex-direction: column;
+
+    /* --- START: ADDED/CHANGED STYLING FOR ANIMATION --- */
+    /* Default closed state */
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    /* --- END: ADDED/CHANGED STYLING FOR ANIMATION --- */
 }
+
+/* --- ADDED --- Open state for the menu */
+.dropdown-menu.open {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
 
 .dropdown-menu li {
     width: 100%;

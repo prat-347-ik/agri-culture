@@ -3,18 +3,23 @@
   background-color: #f4f4f4;
   padding: 20px;
   height: 100vh;
-  /* position: fixed; */ /* Removed fixed, as it's part of the grid */
   border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
 }
 
-.menu-text {
+.sidebar-logo {
   font-size: 24px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+}
+
+.sidebar-logo a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c5e2e; /* Dark green for logo */
+    text-decoration: none;
 }
 
 .sidebar-nav ul {
@@ -36,7 +41,17 @@
   padding: 10px 15px;
   border-radius: 5px;
   transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Adds space between icon and text */
 }
+
+/* Target the icons */
+.nav-link svg {
+  font-size: 20px; /* Give icons a consistent size */
+  min-width: 20px; /* Ensure alignment */
+}
+
 
 .nav-link:hover {
   background-color: #ddd;
@@ -44,7 +59,7 @@
 }
 
 .nav-link.active {
-  background-color: #007bff;
+  background-color: #4caf50; /* Aligned with theme green */
   color: #ffffff;
 }
 
@@ -62,7 +77,20 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+
+  /* --- START: Added Styles --- */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center icon and text */
+  gap: 10px; /* Space between icon and text */
+  /* --- END: Added Styles --- */
 }
+
+/* --- START: Added Styles --- */
+.logout-button svg {
+  font-size: 18px;
+}
+/* --- END: Added Styles --- */
 
 .logout-button:hover {
   background-color: #c9302c;
