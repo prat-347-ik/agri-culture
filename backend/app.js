@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 //    (Get your Netlify URL after you create the site)
 const allowedOrigins = [
   'http://localhost:3000',                 // For local development
-// We will add the Netlify URL here later;
+  'https://agri-culture.netlify.app'       // <-- ADD THIS LINE
 ];
 
 
