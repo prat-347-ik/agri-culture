@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { FaBars } from 'react-icons/fa'; // This import is already here
 import './Header.css';
 
-const Header = () => {
+// --- 1. ACCEPT toggleSidebar AS A PROP ---
+const Header = ({ toggleSidebar }) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   
@@ -35,66 +37,62 @@ const Header = () => {
   // Effect to manage focus when menu opens
   useEffect(() => {
     if (isMenuOpen) {
-      // Focus the first item (Link or Button) in the dropdown
-      const firstItem = dropdownListRef.current?.querySelector('li > a, li > button');
-      firstItem?.focus();
+      // Focus the first item in the dropdown
+      dropdownListRef.current?.querySelector('a, button')?.focus();
     }
-    // Note: Focus return on close is handled by the handleKeyDown (for Esc)
-    // or naturally by the browser (for click-outside).
   }, [isMenuOpen]);
 
-  // Keyboard navigation handler
-  const handleKeyDown = (e) => {
+  // Keyboard navigation
+  const handleKeyDown = (event) => {
     if (!isMenuOpen) return;
 
-    const items = Array.from(
-      dropdownListRef.current.querySelectorAll('li > a, li > button')
-    );
-    
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      setIsMenuOpen(false);
-      profileBtnRef.current?.focus(); // Return focus to button
-    } 
-    else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      const activeIndex = items.findIndex(item => item === document.activeElement);
+    const items = Array.from(dropdownListRef.current.querySelectorAll('a, button'));
+    const activeIndex = items.findIndex(item => item === document.activeElement);
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
       const nextIndex = (activeIndex + 1) % items.length;
-      items[nextIndex]?.focus();
-    } 
-    else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      const activeIndex = items.findIndex(item => item === document.activeElement);
+      items[nextIndex].focus();
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
       const prevIndex = (activeIndex - 1 + items.length) % items.length;
-      items[prevIndex]?.focus();
+      items[prevIndex].focus();
+    } else if (event.key === 'Escape') {
+      setIsMenuOpen(false);
+      profileBtnRef.current.focus(); // Return focus to the button
+    } else if (event.key === 'Tab') {
+      // Close menu on tab away
+      setIsMenuOpen(false);
     }
   };
   // --- END: Added A11y ---
-
-
-  const handleLogout = async () => {
-    try {
-      await fetch('http://localhost:5000/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.error("Logout request failed:", error);
-    } finally {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('auth_phone');
-      window.location.href = '/login';
-    }
-  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLogout = () => {
+    localStorage.setItem('isLoggedIn', 'false');
+    setIsLoggedIn(false);
+    setIsMenuOpen(false); 
+    // You might want to navigate to home/login page here
+    // e.g., navigate('/login');
+  };
+
   return (
-    <header className="header">
+    // --- 2. ADDED THE HAMBURGER BUTTON ---
+    <header className="header" role="banner">
+      <button 
+        className="header-menu-toggle" 
+        onClick={toggleSidebar}
+        aria-label="Open navigation menu"
+      >
+        <FaBars />
+      </button>
+      {/* --- END OF ADDED BUTTON --- */}
+
       <div className="logo">
-        <Link to="/">Agri-Culture</Link>
+        Agri-Culture
       </div>
 
       <div className="auth-links">
@@ -109,7 +107,7 @@ const Header = () => {
               ref={profileBtnRef} // Added ref
               onClick={toggleMenu} 
               className={`profile-btn ${isMenuOpen ? 'open' : ''}`}
-              // --- START: Added A11y Attributes ---
+              // --- START: Added A11y Attributes ---\
               aria-haspopup="true"
               aria-expanded={isMenuOpen}
               aria-controls="profile-dropdown-menu"

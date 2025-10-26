@@ -154,3 +154,42 @@
 .dropdown-menu button:hover {
     background-color: #f5f5f5; /* Slight hover effect */
 }
+
+/* This is the hamburger button */
+.header-menu-toggle {
+  display: none; /* Hide on desktop */
+  background: transparent;
+  border: none;
+  border-radius: 8px; /* Rounded corners for focus/hover */
+  color: var(--primary, #2e7d32); /* Use primary color from App.css */
+  font-size: 1.8rem; /* Make it a bit larger */
+  cursor: pointer;
+  padding: 0.25rem 0.5rem; /* Give it some breathing room */
+  margin-right: 1rem; /* Space between button and logo */
+  line-height: 1; /* Ensure icon is centered vertically */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Add a hover and focus state for interactivity */
+.header-menu-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Light background on hover */
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+/* Accessibility: Show a clear focus ring */
+.header-menu-toggle:focus {
+  outline: 2px solid var(--primary, #2e7d32);
+  outline-offset: 2px;
+}
+/* --- END: MODIFIED STYLLES --- */
+
+/* --- START: ADDED MEDIA QUERY --- */
+/* This was missing. It shows the button on mobile. */
+@media (max-width: 768px) {
+  .header-menu-toggle {
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+  }
+}
+/* --- END: ADDED MEDIA QUERY --- */

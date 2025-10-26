@@ -1,20 +1,23 @@
-/* === Root Variables for easy theme management (Enhanced Dark Theme) === */
+html {
+  scroll-behavior: smooth;
+}
+
+/* === Root Variables (Light Theme) === */
 :root {
-  --primary-color: #66FF99; /* bright neon green for accent */
-  --primary-color-dark: #2ECC71; /* rich green for hover states */
-  --background-dark: #0E0E0E; /* deep black for background */
-  --surface-dark: #1A1A1A; /* slightly lighter for content sections */
-  --text-light: #FFFFFF; /* strong white for contrast */
-  --text-muted: #B0B0B0; /* lighter muted text */
-  --shadow-light: rgba(255, 255, 255, 0.05);
-  --shadow-dark: rgba(0, 0, 0, 0.9);
+  --primary-color: #4caf50; /* Main app green */
+  --primary-color-dark: #2e7d32; /* Darker app green */
+  --background-light: #FFFFFF;
+  --surface-light: #f9f9f9; /* Light gray for sections */
+  --text-dark: #333333;
+  --text-muted: #666666;
+  --shadow-light: rgba(0, 0, 0, 0.1);
 }
 
 /* === General Page Styles === */
 .landing-page {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--background-dark);
-  color: var(--text-light);
+  background-color: var(--background-light);
+  color: var(--text-dark);
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -28,7 +31,8 @@
   width: 100%;
   padding: 20px 5%;
   z-index: 1000;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  background: var(--background-light);
+  box-shadow: 0 2px 4px var(--shadow-light);
   transition: background-color 0.3s ease;
 }
 
@@ -40,18 +44,16 @@
 }
 
 .landing-nav a {
-  color: var(--text-light);
+  color: var(--text-dark);
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
-  transition: color 0.3s ease, transform 0.3s ease, text-shadow 0.3s ease;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .landing-nav a:hover {
   color: var(--primary-color);
   transform: translateY(-2px);
-  text-shadow: 0 0 10px var(--primary-color);
 }
 
 /* === Hero Section Styles === */
@@ -63,9 +65,10 @@
   min-height: 100vh;
   padding: 20px;
   text-align: center;
-  color: var(--text-light);
-  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.6)),
-    url('https://www.shutterstock.com/image-photo/drone-shot-tractor-spraying-lush-600nw-2464594961.jpg');
+  color: var(--text-dark);
+  /* New background image - light and natural */
+  background-image: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+    url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1932');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -73,6 +76,11 @@
 
 .hero-content {
   max-width: 900px;
+  /* Add a subtle backdrop for readability */
+  background: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
 
 .hero-title {
@@ -80,8 +88,8 @@
   font-weight: 800;
   margin-bottom: 0.25em;
   line-height: 1.1;
-  color: var(--text-light);
-  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.9), 0 0 8px rgba(102, 255, 153, 0.4);
+  color: var(--primary-color-dark); /* Use dark green for title */
+  text-shadow: 0 2px 15px rgba(255, 255, 255, 0.5);
 }
 
 .hero-subtitle {
@@ -90,9 +98,8 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  opacity: 0.95;
-  color: var(--text-muted);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  color: var(--text-dark);
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.3);
 }
 
 /* === Button Styles === */
@@ -104,9 +111,9 @@
   font-size: 1.1rem;
   transition: all 0.3s ease;
   background: var(--primary-color);
-  color: #000000;
+  color: #FFFFFF;
   border: 2px solid var(--primary-color);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .hero-actions .hero-btn:hover {
@@ -114,7 +121,7 @@
   border-color: var(--primary-color-dark);
   color: #FFFFFF;
   transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
 .admin-login-link {
@@ -128,14 +135,14 @@
   text-decoration: none;
   font-weight: 600;
   transition: all 0.3s ease;
-  color: var(--text-light);
+  color: var(--primary-color-dark);
   background: transparent;
-  border: 2px solid var(--text-light);
+  border: 2px solid var(--primary-color-dark);
 }
 
 .admin-login-link a:hover {
-  background: var(--text-light);
-  color: var(--primary-color-dark);
+  background: var(--primary-color-dark);
+  color: var(--background-light);
 }
 
 /* === Content Sections (About Us, Mission, etc.) === */
@@ -145,30 +152,29 @@
   margin: 40px auto;
   text-align: center;
   line-height: 1.8;
-  background-color: var(--surface-dark);
+  background-color: var(--surface-light);
   border-radius: 16px;
   box-shadow: 0 8px 30px var(--shadow-light);
 }
 
 .landing-section h2 {
   font-size: clamp(2rem, 5vw, 2.8rem);
-  color: var(--primary-color);
+  color: var(--primary-color-dark); /* Use dark green */
   margin-bottom: 25px;
   font-weight: 700;
-  text-shadow: 0 0 10px rgba(102, 255, 153, 0.3);
 }
 
 /* === Footer Styles === */
 .landing-footer {
-  background-color: #000000;
-  color: #CCCCCC;
+  background-color: #f4f4f4; /* Match sidebar bg */
+  color: var(--text-muted);
   padding: 60px 20px;
   text-align: center;
 }
 
 .landing-footer h2 {
   font-size: 2.2rem;
-  color: #FFFFFF;
+  color: var(--text-dark);
   margin-bottom: 20px;
 }
 
@@ -194,11 +200,16 @@
 
   .landing-header {
     padding: 15px 20px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    background: var(--background-light);
   }
 
   .hero-section {
     background-attachment: scroll;
+  }
+  
+  .hero-content {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
   }
 
   .hero-title {
@@ -227,3 +238,93 @@
     font-size: 2rem;
   }
 }
+
+/* --- "Key Features" Styles (Light Theme) --- */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 40px;
+  text-align: left;
+}
+
+.feature-card {
+  background-color: var(--background-light);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card h3 {
+  color: var(--primary-color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- START: ADDED "How It Works" Styles --- */
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 25px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.step-card {
+  background-color: var(--background-light);
+  padding: 30px;
+  border-radius: 12px;
+  /* Simpler than feature card, no shadow */
+  border: 1px solid #eee;
+}
+
+.step-number {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.step-card h3 {
+  color: var(--text-dark);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.step-card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- END: ADDED "How It Works" Styles --- */

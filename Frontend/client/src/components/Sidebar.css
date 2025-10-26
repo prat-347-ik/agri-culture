@@ -8,6 +8,52 @@
   flex-direction: column;
 }
 
+/* --- START: Corrected Styles for Close Button --- */
+.sidebar-close-btn {
+  display: none; /* Hide on desktop */
+  background: transparent;
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  color: var(--text, #333); /* Use theme color or default */
+  font-size: 1.8rem; /* Make it a bit larger */
+  cursor: pointer;
+  padding: 0.25rem 0.5rem; /* Breathing room */
+  position: absolute;
+  top: 15px;
+  right: 15px; /* Adjusted position slightly */
+  z-index: 110; /* Above sidebar content */
+  line-height: 1; /* Center icon */
+  transition: all 0.2s ease-in-out;
+  
+  /* --- The 'display: flex' was REMOVED from this main rule --- */
+
+}
+
+/* Hover and focus states */
+.sidebar-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Light background */
+  transform: scale(1.1); /* Slight zoom */
+}
+
+/* Accessibility: Show a clear focus ring */
+.sidebar-close-btn:focus {
+  outline: 2px solid var(--primary, #2e7d32);
+  outline-offset: 2px;
+}
+
+/* --- THIS IS THE FIX --- */
+/* The rule is now WRAPPED in the media query */
+@media (max-width: 768px) {
+  .sidebar-close-btn {
+    /* --- MOVED flex properties here --- */
+    display: flex; 
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+  }
+}
+/* --- END: Modified Styles --- */
+
+
 .sidebar-logo {
   font-size: 24px;
   font-weight: bold;

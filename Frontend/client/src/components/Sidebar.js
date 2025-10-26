@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import './Sidebar.css';
 import useAuth from '../hooks/useAuth';
 import { 
   FaHome, 
@@ -11,20 +12,30 @@ import {
   FaUser, 
   FaCog,
   FaPlusCircle,
-  FaSignOutAlt // --- START: Added Import ---
+  FaArrowLeft // --- 1. CHANGED: New Icon Import ---
 } from 'react-icons/fa';
-// --- END: Added Import ---
 
-const Sidebar = () => {
+// --- START: Updated Component Signature ---
+const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+// --- END: Updated Component Signature ---
   const { t } = useTranslation();
-  const { logout } = useAuth();
+  // --- REMOVED: useAuth and logout (wasnt used) ---
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
 
-  const handleLogout = async () => {
-    await logout();
+  // --- REMOVED: handleLogout (wasnt used) ---
+
+  // --- START: Added Handler ---
+  // Closes sidebar on link click (for mobile)
+  const handleLinkClick = () => {
+    if (isSidebarOpen) {
+      toggleSidebar();
+    }
   };
+
+  
+  // --- END: Added Handler ---
 
   return (
     // --- START: Added ARIA Roles ---
@@ -35,47 +46,67 @@ const Sidebar = () => {
     >
     {/* --- END: Added ARIA Roles --- */}
 
-    
+    {/* --- START: Added Close Button --- */}
+    <button className="sidebar-close-btn" onClick={toggleSidebar} aria-label="Close menu">
+      <FaArrowLeft /> {/* --- 2. CHANGED: New Icon Used Here --- */}
+    </button>
+    {/* --- END: Added Close Button --- */}
 
       <nav className="sidebar-nav">
         <ul>
           <li>
-            <Link to="/home" className={`nav-link ${isActive('/home') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/home" className={`nav-link ${isActive('/home') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaHome /> {t('sidebar.home', 'Home')}
             </Link>
           </li>
           <li>
-            <Link to="/map" className={`nav-link ${isActive('/map') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/map" className={`nav-link ${isActive('/map') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaMapMarkedAlt /> {t('sidebar.map', 'Map')}
             </Link>
           </li>
           <li>
-            <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaStore /> {t('sidebar.marketplace', 'Marketplace')}
             </Link>
           </li>
           <li>
-            <Link to="/enroll" className={`nav-link ${isActive('/enroll') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/enroll" className={`nav-link ${isActive('/enroll') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaTasks /> {t('sidebar.enroll', 'Enroll Services')}
             </Link>
           </li>
           <li>
-            <Link to="/contacts" className={`nav-link ${isActive('/contacts') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/contacts" className={`nav-link ${isActive('/contacts') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaAddressBook /> {t('sidebar.contacts', 'Contacts')}
             </Link>
           </li>
           <li>
-            <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaUser /> {t('sidebar.profile', 'Profile')}
             </Link>
           </li>
           <li>
-            <Link to="/etc" className={`nav-link ${isActive('/etc') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/etc" className={`nav-link ${isActive('/etc') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaPlusCircle /> {t('sidebar.etc', 'Additional Services')}
             </Link>
           </li>
           <li>
-            <Link to="/settings" className={`nav-link ${isActive('/settings') ? 'active' : ''}`}>
+            {/* --- START: Added onClick --- */}
+            <Link to="/settings" className={`nav-link ${isActive('/settings') ? 'active' : ''}`} onClick={handleLinkClick}>
+            {/* --- END: Added onClick --- */}
               <FaCog /> {t('sidebar.settings', 'Settings')}
             </Link>
           </li>

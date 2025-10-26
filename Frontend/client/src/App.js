@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // --- START: Added Imports ---
 import { Route, Routes, useLocation, Navigate, Outlet } from 'react-router-dom';
 
 import Header from './components/Header';
@@ -31,20 +31,48 @@ import PriceUpdates from './pages/PriceUpdates';
 
 import './App.css';
 
+// --- START: MODIFIED MainLayout ---
 // This is the main layout for the app.
-// It uses <Outlet /> to render the child routes (e.g., Home, Map, etc.)
-const MainLayout = () => (
-    <div className="container">
-        <Header />
-        <div className="main-layout">
-            <Sidebar />
-            <main className="content">
-                <Outlet /> {/* Child routes will render here */}
-            </main>
+// It now manages the sidebar toggle state for mobile.
+const MainLayout = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+    // Add/remove 'sidebar-open' class to body based on state
+    useEffect(() => {
+        if (isSidebarOpen) {
+            document.body.classList.add('sidebar-open');
+        } else {
+            document.body.classList.remove('sidebar-open');
+        }
+        
+        // Cleanup function to remove class on component unmount
+        return () => {
+            document.body.classList.remove('sidebar-open');
+        };
+    }, [isSidebarOpen]);
+
+    return (
+        <div className="container">
+            {/* Pass toggle function to Header (for hamburger button) */}
+            <Header toggleSidebar={toggleSidebar} />
+            
+            {/* Backdrop for closing sidebar on mobile */}
+            {isSidebarOpen && <div className="sidebar-backdrop" onClick={toggleSidebar}></div>}
+
+            <div className="main-layout">
+                {/* Pass state and toggle function to Sidebar */}
+                <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                <main className="content">
+                    <Outlet /> {/* Child routes will render here */}
+                </main>
+            </div>
+            <Footer />
         </div>
-        <Footer />
-    </div>
-);
+    );
+};
+// --- END: MODIFIED MainLayout ---
 
 const AppContent = () => {
     return (
