@@ -43,6 +43,7 @@ app.use(cors({
   credentials: true // Allow cookies
 }));
 app.use(cookieParser()); // 2. Use cookie-parser middleware
+app.use(express.json()); // <--- This is the fix
 
 // API Routes
 // Only the upload route is registered for now

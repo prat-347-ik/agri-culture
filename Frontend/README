@@ -12,9 +12,12 @@ Node.js: Version 16.x or later is recommended. You can download it from nodejs.o
 npm (Node Package Manager): This is included with the Node.js installation.
 
 You can verify your installation by running the following commands in your terminal:
-
+```bash
 node -v
+```
+```bash
 npm -v
+```
 
 
 ## Setup Instructions
@@ -23,15 +26,25 @@ Follow these steps to get the development environment running on your machine.
 1. Navigate to the Client Directory
 
 From the main project root (agri-culture-feature-react-conversion), navigate into the React client folder:
+```bash
 cd Frontend/client
+```
 
 
 2. Install Dependencies
 Once inside the client directory, run the following command to install all the necessary project dependencies listed in the package.json file. This may take a few minutes.
+```bash
 npm install
+```
+If the package version conficts error message comes you can run this following command
+```bash
+npm install --legacy-peer-deps
+```
 
 
 This command will create a node_modules directory containing all the libraries required for the project, such as React, React Router, and Leaflet.
+---
+
 3. Start the Development Server
 After the installation is complete, you can start the local development server with this command:
 npm start
@@ -41,9 +54,10 @@ This will launch the application in development mode and automatically open it i
 The server will automatically reload the page whenever you make changes to the source code, providing a live preview of your edits.
 Available Scripts
 
-In the project directory, you can run:
-
-npm start: Runs the app in development mode.
+In the project directory, you can run:(Runs the app in development mode)
+```bash
+npm start
+```
 
 npm run build: Builds the app for production to the build folder. It correctly bundles React in production mode and optimizes the build for the best performance.
 
