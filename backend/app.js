@@ -20,11 +20,28 @@ import dashboardRoutes from './routes/dashboard.js'; // <-- 1. IMPORT
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// --- 1. DEFINE YOUR ALLOWED ORIGINS ---
+//    (Get your Netlify URL after you create the site)
+const allowedOrigins = [
+  'http://localhost:3000',                 // For local development
+// We will add the Netlify URL here later;
+];
+
+
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests ONLY from your React frontend
-  credentials: true                 // Allow cookies and authorization headers
-}));app.use(express.json());
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true // Allow cookies
+}));
 app.use(cookieParser()); // 2. Use cookie-parser middleware
 
 // API Routes

@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000';
-
+const BASE_URL = process.env.REACT_APP_API_URL;
 // Create a regular instance for public routes
 export const axiosPublic = axios.create({
     baseURL: BASE_URL,
