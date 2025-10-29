@@ -154,14 +154,19 @@ const Contacts = () => {
                   <td data-label={t('contacts.table_header_name')}>
                     {contact.name}
                   </td>
+
                   <td data-label={t('contacts.table_header_details')}>
-                    {/* Display more details */}
-                    <div><strong>{t('contacts.phone_label', 'Phone:')}</strong> {contact.phone}</div>
-                    {contact.email && <div><strong>{t('contacts.email_label', 'Email:')}</strong> <a href={`mailto:${contact.email}`}>{contact.email}</a></div>}
-                    {contact.address && <div><strong>{t('contacts.address_label', 'Address:')}</strong> {contact.address}</div>}
-                    {contact.operatingHours && <div><strong>{t('contacts.hours_label', 'Hours:')}</strong> {contact.operatingHours}</div>}
-                    {contact.website && <div><strong>{t('contacts.website_label', 'Website:')}</strong> <a href={contact.website.startsWith('http') ? contact.website : `http://${contact.website}`} target="_blank" rel="noopener noreferrer">{contact.website}</a></div>}
+                    {/* --- ADD THIS WRAPPER DIV --- */}
+                    <div className="contact-details-wrapper">
+                      <div><strong>{t('contacts.phone_label', 'Phone:')}</strong> {contact.phone}</div>
+                      {contact.email && <div><strong>{t('contacts.email_label', 'Email:')}</strong> <a href={`mailto:${contact.email}`}>{contact.email}</a></div>}
+                      {contact.address && <div><strong>{t('contacts.address_label', 'Address:')}</strong> {contact.address}</div>}
+                      {contact.operatingHours && <div><strong>{t('contacts.hours_label', 'Hours:')}</strong> {contact.operatingHours}</div>}
+                      {contact.website && <div><strong>{t('contacts.website_label', 'Website:')}</strong> <a href={contact.website.startsWith('http') ? contact.website : `http://${contact.website}`} target="_blank" rel="noopener noreferrer">{contact.website}</a></div>}
+                    </div>
+                    {/* --- END WRAPPER DIV --- */}
                   </td>
+                  
                   <td data-label={t('contacts.table_header_action')}>
                     <div className="action-buttons"> {/* Wrapper for buttons */}
                       <button

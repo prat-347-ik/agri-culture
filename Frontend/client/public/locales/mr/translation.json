@@ -194,7 +194,8 @@
     "role_weather": "हवामान सेवा",
     "role_extension": "कृषी विस्तार",
     "role_helpline": "आपत्कालीन हेल्पलाइन",
-    "role_insurance": "पीक विमा"
+    "role_insurance": "पीक विमा",
+    "table_header_details":"तपशील"
   },
 
   "map": {

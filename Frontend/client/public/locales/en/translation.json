@@ -196,7 +196,8 @@
     "role_weather": "Weather Service",
     "role_extension": "Agricultural Extension",
     "role_helpline": "Emergency Helpline",
-    "role_insurance": "Crop Insurance"
+    "role_insurance": "Crop Insurance",
+    "table_header_details":" Details"
   },
 
   "map": {
