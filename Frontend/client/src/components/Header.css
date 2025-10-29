@@ -83,7 +83,7 @@
     display: inline-block;
     padding: 3px;
     transform: rotate(45deg); /* Points down */
-    transition: transform 0.3s ease; /* Animation for rotation */
+    transition: transform 0.5s ease; /* Animation for rotation */
 }
 
 /* Rotating chevron when 'open' class is present */
