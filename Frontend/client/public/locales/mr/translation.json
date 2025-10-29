@@ -195,7 +195,14 @@
     "role_extension": "कृषी विस्तार",
     "role_helpline": "आपत्कालीन हेल्पलाइन",
     "role_insurance": "पीक विमा",
-    "table_header_details":"तपशील"
+    "table_header_details":"तपशील",
+    "phone_label":"फोन:",
+    "email_label":"ईमेल:",
+    "address_label":"पत्ता:",
+    "hours_label":"कार्याचे तास:",
+    "website_label":"वेबसाइट:",
+    "map_button": "नकाशा",
+    "map_button_title": "नकाशावर स्थान पहा" 
   },
 
   "map": {

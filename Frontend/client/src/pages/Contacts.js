@@ -158,11 +158,11 @@ const Contacts = () => {
                   <td data-label={t('contacts.table_header_details')}>
                     {/* --- ADD THIS WRAPPER DIV --- */}
                     <div className="contact-details-wrapper">
-                      <div><strong>{t('contacts.phone_label', 'Phone:')}</strong> {contact.phone}</div>
-                      {contact.email && <div><strong>{t('contacts.email_label', 'Email:')}</strong> <a href={`mailto:${contact.email}`}>{contact.email}</a></div>}
-                      {contact.address && <div><strong>{t('contacts.address_label', 'Address:')}</strong> {contact.address}</div>}
-                      {contact.operatingHours && <div><strong>{t('contacts.hours_label', 'Hours:')}</strong> {contact.operatingHours}</div>}
-                      {contact.website && <div><strong>{t('contacts.website_label', 'Website:')}</strong> <a href={contact.website.startsWith('http') ? contact.website : `http://${contact.website}`} target="_blank" rel="noopener noreferrer">{contact.website}</a></div>}
+                      <div><strong>{t('contacts.phone_label')}</strong> {contact.phone}</div>
+                      {contact.email && <div><strong>{t('contacts.email_label')}</strong> <a href={`mailto:${contact.email}`}>{contact.email}</a></div>}
+                      {contact.address && <div><strong>{t('contacts.address_label')}</strong> {contact.address}</div>}
+                      {contact.operatingHours && <div><strong>{t('contacts.hours_label')}</strong> {contact.operatingHours}</div>}
+                      {contact.website && <div><strong>{t('contacts.website_label')}</strong> <a href={contact.website.startsWith('http') ? contact.website : `http://${contact.website}`} target="_blank" rel="noopener noreferrer">{contact.website}</a></div>}
                     </div>
                     {/* --- END WRAPPER DIV --- */}
                   </td>
@@ -184,7 +184,7 @@ const Contacts = () => {
                           onClick={() => handleViewOnMap(contact)}
                            title={t('contacts.map_button_title', 'View on Map')} // Tooltip
                         >
-                           🗺️ {t('contacts.map_button', 'Map')}
+                           🗺️ {t('contacts.map_button' )}
                         </button>
                       )}
                     </div>

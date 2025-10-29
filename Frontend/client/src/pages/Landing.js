@@ -19,7 +19,7 @@ const Landing = () => {
       <main className="landing-main">
         <section className="hero-section">
           <div className="hero-content">
-            <h1 className="hero-title">Agri-Culture</h1>
+            <h1 className="hero-title">Agri-Cult</h1>
             <p className="hero-subtitle">
               Connecting Farmers for a Better Tomorrow.
             </p>
@@ -35,7 +35,7 @@ const Landing = () => {
         <section id="about" className="landing-section">
           <h2>About Us</h2>
           <p>
-            Agri-Culture is a digital platform designed to empower farmers by connecting them with the resources, information, and markets they need to thrive. We believe in leveraging technology to build a stronger, more sustainable agricultural community.
+            Agri-Cult is a digital platform designed to empower farmers by connecting them with the resources, information, and markets they need to thrive. We believe in leveraging technology to build a stronger, more sustainable agricultural community.
           </p>
         </section>
 
@@ -96,9 +96,9 @@ const Landing = () => {
       <footer id="contact" className="landing-footer">
         <h2>Contact Us</h2>
         <p>Have questions? Reach out to us.</p>
-        <p><strong>Email:</strong> contact@agri-culture.com</p>
+        <p><strong>Email:</strong> contact@agri-cult.com</p>
         <p><strong>Phone:</strong> +91 98765 43210</p>
-        <p className="copyright">&copy; 2025 Agri-Culture. All Rights Reserved.</p>
+        <p className="copyright">&copy; 2025 Agri-Cult. All Rights Reserved.</p>
       </footer>
     </div>
   );

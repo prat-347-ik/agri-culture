@@ -92,7 +92,7 @@ const Header = ({ toggleSidebar }) => {
       {/* --- END OF ADDED BUTTON --- */}
 
       <div className="logo">
-        Agri-Culture
+        Agri-Cult
       </div>
 
       <div className="auth-links">
