@@ -11,11 +11,9 @@
     z-index: 1000;
 }
 
-/* --- NEWLY ADDED --- */
-/* This is the hamburger button from your Header.js file */
-/* By default, it's hidden on desktop */
+/* Hamburger Button (from Header.js) */
 .sidebar-toggle {
-  display: none;
+  display: none; /* Hidden on desktop by default */
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -37,7 +35,6 @@
   outline: 2px solid var(--primary, #2e7d32);
   outline-offset: 2px;
 }
-/* --- END OF NEW RULES --- */
 
 
 .logo a {
@@ -82,15 +79,19 @@
     position: relative;
 }
 
+/* --- MODIFIED Profile Button --- */
 .profile-btn {
-    background-color: #4CAF50; /* Green */
+    background-color: #4caf50;
     color: white;
+    /* Added padding-right for chevron */
+    padding: 0.75rem 2.5rem 0.75rem 1.5rem; /* Adjusted padding to match old size */
     border: none;
-    padding: 0.75rem 1.5rem;
+    border-radius: 25px; /* Kept your 25px radius */
+    cursor: pointer;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 25px;
-    cursor: pointer;
+    /* Added for chevron positioning */
+    position: relative; 
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -101,6 +102,26 @@
     background-color: #45a049; /* Darker green */
 }
 
+/* --- MODIFIED Chevron Arrow Animation --- */
+.profile-btn::after {
+    content: '';
+    position: absolute;
+    right: 1.25rem; /* Adjusted position */
+    top: 50%;
+    margin-top: -3px; /* Adjust vertical center */
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg); /* Points down */
+    transition: transform 0.5s ease; /* Animation for rotation */
+}
+
+.profile-btn.open::after {
+    transform: rotate(-135deg); /* Points up */
+}
+/* --- END MODIFIED SECTION --- */
+
 /* Accessibility: Show focus ring clearly */
 .profile-btn:focus-visible {
   outline: 3px solid #76bde5; /* A clear blue outline */
@@ -108,30 +129,39 @@
 }
 
 
-/* The dropdown menu */
+/* --- MODIFIED Dropdown Menu (with Animation) --- */
 .dropdown-menu {
-    display: none; /* Hide by default */
     position: absolute;
-    top: 120%; /* Position below the button */
+    top: 130%; /* Position it right below the button */
     right: 0;
     background-color: white;
-    min-width: 180px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
-    overflow: hidden; /* To clip the items to the border-radius */
-    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     list-style: none;
-    padding: 0.5rem 0; /* Add padding to top/bottom */
+    padding: 0.5rem 0;
     margin: 0;
+    min-width: 180px; /* Kept your 180px width */
+    overflow: hidden; /* Ensures items stay within rounded corners */
+    z-index: 1001;
+
+    /* Default closed state */
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
 .dropdown-menu.open {
-    display: block; /* Show when open */
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
 }
+/* --- END MODIFIED SECTION --- */
 
 .dropdown-menu li {
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 .dropdown-menu a,
@@ -154,35 +184,7 @@
     background-color: #f5f5f5; /* Slight hover effect */
 }
 
-/* This is the old hamburger button class */
-.header-menu-toggle {
-  display: none; /* Hide on desktop */
-  background: transparent;
-  border: none;
-  border-radius: 8px; /* Rounded corners for focus/hover */
-  color: var(--primary, #2e7d32); /* Use primary color from App.css */
-  font-size: 1.8rem; /* Make it a bit larger */
-  cursor: pointer;
-  padding: 0.25rem 0.5rem; /* Give it some breathing room */
-  margin-right: 1rem; /* Space between button and logo */
-  line-height: 1; /* Ensure icon is centered vertically */
-  transition: all 0.2s ease-in-out;
-}
-
-/* Add a hover and focus state for interactivity */
-.header-menu-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* Light background on hover */
-  transform: scale(1.1); /* Slight zoom effect */
-}
-
-/* Accessibility: Show a clear focus ring */
-.header-menu-toggle:focus {
-  outline: 2px solid var(--primary, #2e7d32); /* Use a high-contrast color */
-  outline-offset: 2px; /* Add space so outline doesn't clash with icon */
-}
-
-/* --- NEWLY ADDED MEDIA QUERY --- */
-/* This block applies styles only on screens 768px wide or less */
+/* Media query for mobile */
 @media (max-width: 768px) {
   .header {
     padding: 1rem; /* Adjust padding for mobile */
