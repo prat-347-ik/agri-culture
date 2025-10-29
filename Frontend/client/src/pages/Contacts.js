@@ -79,19 +79,30 @@ const Contacts = () => {
     window.location.href = `tel:${phoneNumber}`;
   };
 
-  // --- New Function: Handle Map Button Click ---
+  // --- MODIFIED FUNCTION ---
   const handleViewOnMap = (contact) => {
-    if (contact.location?.coordinates) {
-      // Navigate to Map page with coordinates and name
-      navigate('/map', { state: { contactLocation: contact.location.coordinates, contactName: contact.name } });
+    // **FIX 1: Check for coordinates *and* ensure the array has 2 values.**
+    // An empty array [] from a failed geocode will now fail this check.
+    if (contact.location?.coordinates && contact.location.coordinates.length === 2) {
+      
+      // **FIX 2: Swap coordinates.**
+      // Backend provides [Longitude, Latitude].
+      // Map (Leaflet) needs [Latitude, Longitude].
+      const [lng, lat] = contact.location.coordinates;
+      
+      // Navigate to your internal /map page with the correct data structure
+      navigate('/map', { state: { markerPosition: [lat, lng], contactName: contact.name } });
+
     } else if (contact.address) {
-      // Fallback: Open Google Maps search in a new tab
+      // **This is the fallback:**
+      // This block will now correctly run for contacts that failed geocoding.
       const query = encodeURIComponent(`${contact.name}, ${contact.address}`);
       window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
     } else {
       alert(t('contacts.no_location', 'No location information available for this contact.'));
     }
   };
+  // --- END MODIFICATION ---
 
   if (isLoading) {
     return <div className="content-inner"><p>{t('contacts.loading', 'Loading contacts...')}</p></div>;
@@ -161,7 +172,8 @@ const Contacts = () => {
                          📞 {t('contacts.call_button')}
                       </button>
                       {/* --- Map Button --- */}
-                      {(contact.location?.coordinates || contact.address) && (
+                      {/* MODIFIED: Also check for length here for consistency */}
+                      {( (contact.location?.coordinates && contact.location.coordinates.length === 2) || contact.address) && (
                         <button
                           className="map-btn"
                           onClick={() => handleViewOnMap(contact)}

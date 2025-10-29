@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
+import geocoder from '../utils/geocoder.js'; // <-- 1. Import the geocoder
 
 const contactSchema = new mongoose.Schema({
-  roleKey: { // Key for translation (e.g., 'role_taluka')
+  // ... (all your existing fields like roleKey, name, phone, etc.)
+  roleKey: {
     type: String,
     required: true,
   },
-  name: { // Specific name (e.g., 'Main Taluka Office')
+  name: {
     type: String,
     required: true,
   },
@@ -16,7 +18,7 @@ const contactSchema = new mongoose.Schema({
   email: {
     type: String,
   },
-  category: { // Government, Emergency, Services
+  category: {
     type: String,
     required: true,
     enum: ['Government', 'Emergency', 'Services', 'Other'],
@@ -24,11 +26,11 @@ const contactSchema = new mongoose.Schema({
   address: { // Full address string
     type: String,
   },
-  district: { // For location-based filtering
+  district: {
     type: String,
-    index: true, // Index for faster querying
+    index: true,
   },
-  taluka: { // For location-based filtering
+  taluka: {
     type: String,
     index: true,
   },
@@ -36,9 +38,8 @@ const contactSchema = new mongoose.Schema({
     type: String,
   },
   operatingHours: {
-    type: String, // e.g., "Mon-Fri 9am-5pm"
+    type: String,
   },
-  // Optional: Add GeoJSON for precise map location
   location: {
     type: {
       type: String,
@@ -50,8 +51,44 @@ const contactSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Optional: Index for combined district/taluka searches
 contactSchema.index({ district: 1, taluka: 1 });
+
+// --- 2. Add Pre-Save Hook for Geocoding ---
+contactSchema.pre('save', async function (next) {
+  // Check if the address was modified, or if it's a new contact with an address
+  if (!this.isModified('address') || !this.address) {
+    return next();
+  }
+
+  try {
+    const loc = await geocoder.geocode(this.address);
+    
+    // Check if geocoder found a result
+    if (loc && loc.length > 0) {
+      this.location = {
+        type: 'Point',
+        coordinates: [loc[0].longitude, loc[0].latitude],
+      };
+    } else {
+      // Could not geocode, set empty coordinates
+      this.location = {
+        type: 'Point',
+        coordinates: [],
+      };
+      console.warn(`Could not geocode address: ${this.address}`);
+    }
+    next();
+  } catch (err) {
+    console.error('Geocoder error:', err);
+    // Don't block saving, just proceed without coordinates
+    this.location = {
+      type: 'Point',
+      coordinates: [],
+    };
+    next();
+  }
+});
+// ------------------------------------------
 
 const Contact = mongoose.model('Contact', contactSchema);
 
