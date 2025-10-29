@@ -11,6 +11,35 @@
     z-index: 1000;
 }
 
+/* --- NEWLY ADDED --- */
+/* This is the hamburger button from your Header.js file */
+/* By default, it's hidden on desktop */
+.sidebar-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--primary, #2e7d32);
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  margin-right: 1rem;
+  line-height: 1;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.sidebar-toggle:focus {
+  outline: 2px solid var(--primary, #2e7d32);
+  outline-offset: 2px;
+}
+/* --- END OF NEW RULES --- */
+
+
 .logo a {
     font-size: 1.5rem;
     font-weight: bold;
@@ -46,93 +75,63 @@
 .auth-links a {
     text-decoration: none;
     color: #333;
-    margin-left: 1.5rem;
     font-weight: 500;
 }
 
-/* Profile Menu Specific Styles */
 .profile-menu {
     position: relative;
 }
 
 .profile-btn {
-    background-color: #4caf50;
+    background-color: #4CAF50; /* Green */
     color: white;
-    /* --- CHANGED --- Added padding-right for chevron */
-    padding: 0.5rem 2.5rem 0.5rem 1rem;
     border: none;
-    border-radius: 20px;
-    cursor: pointer;
+    padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: 500;
-    /* --- ADDED --- For chevron positioning */
-    position: relative; 
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
 }
 
-/* --- START: ADDED STYLING --- */
-
-/* CSS-only chevron icon */
-.profile-btn::after {
-    content: '';
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    margin-top: -3px; /* Adjust vertical center */
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-    transform: rotate(45deg); /* Points down */
-    transition: transform 0.5s ease; /* Animation for rotation */
+.profile-btn:hover, .profile-btn.open {
+    background-color: #45a049; /* Darker green */
 }
 
-/* Rotating chevron when 'open' class is present */
-.profile-btn.open::after {
-    transform: rotate(-135deg); /* Points up */
+/* Accessibility: Show focus ring clearly */
+.profile-btn:focus-visible {
+  outline: 3px solid #76bde5; /* A clear blue outline */
+  outline-offset: 2px;
 }
 
-/* --- END: ADDED STYLING --- */
 
-
-.profile-btn:hover {
-    background-color: #45a049;
-}
-
-/* Dropdown Menu Styling */
+/* The dropdown menu */
 .dropdown-menu {
+    display: none; /* Hide by default */
     position: absolute;
-    top: 130%; /* Position it right below the button */
+    top: 120%; /* Position below the button */
     right: 0;
     background-color: white;
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden; /* To clip the items to the border-radius */
+    z-index: 1001;
     list-style: none;
-    padding: 0.5rem 0;
+    padding: 0.5rem 0; /* Add padding to top/bottom */
     margin: 0;
-    width: 160px; /* Set a fixed width */
-    overflow: hidden; /* Ensures items stay within rounded corners */
-    display: flex;
-    flex-direction: column;
-
-    /* --- START: ADDED/CHANGED STYLING FOR ANIMATION --- */
-    /* Default closed state */
-    opacity: 0;
-    transform: translateY(-10px);
-    visibility: hidden;
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-    /* --- END: ADDED/CHANGED STYLING FOR ANIMATION --- */
 }
 
-/* --- ADDED --- Open state for the menu */
 .dropdown-menu.open {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
+    display: block; /* Show when open */
 }
-
 
 .dropdown-menu li {
-    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .dropdown-menu a,
@@ -140,10 +139,10 @@
     display: block;
     width: 100%;
     text-align: left;
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 1.5rem;
     text-decoration: none;
     color: #333;
-    background-color: transparent;
+    background: transparent;
     border: none;
     cursor: pointer;
     font-size: 0.95rem;
@@ -155,7 +154,7 @@
     background-color: #f5f5f5; /* Slight hover effect */
 }
 
-/* This is the hamburger button */
+/* This is the old hamburger button class */
 .header-menu-toggle {
   display: none; /* Hide on desktop */
   background: transparent;
@@ -178,18 +177,19 @@
 
 /* Accessibility: Show a clear focus ring */
 .header-menu-toggle:focus {
-  outline: 2px solid var(--primary, #2e7d32);
-  outline-offset: 2px;
+  outline: 2px solid var(--primary, #2e7d32); /* Use a high-contrast color */
+  outline-offset: 2px; /* Add space so outline doesn't clash with icon */
 }
-/* --- END: MODIFIED STYLLES --- */
 
-/* --- START: ADDED MEDIA QUERY --- */
-/* This was missing. It shows the button on mobile. */
+/* --- NEWLY ADDED MEDIA QUERY --- */
+/* This block applies styles only on screens 768px wide or less */
 @media (max-width: 768px) {
-  .header-menu-toggle {
-    display: inline-flex; 
-    align-items: center;
-    justify-content: center;
+  .header {
+    padding: 1rem; /* Adjust padding for mobile */
+  }
+
+  /* Show the hamburger button (from Header.js) on mobile */
+  .sidebar-toggle {
+    display: block;
   }
 }
-/* --- END: ADDED MEDIA QUERY --- */
