@@ -58,6 +58,26 @@ const Home = () => {
   };
   // --- End Inline Styles ---
 
+  // --- MOVED THIS BLOCK INSIDE THE COMPONENT ---
+  // Add hover effects through inline styles
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .home-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      }
+      @media (max-width: 768px) {
+        .home-card {
+          margin: 0 10px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+  // --- END OF MOVED BLOCK ---
+
   return (
     <div style={pageStyle}>
       <div style={gridContainerStyle}>
@@ -92,23 +112,5 @@ const Home = () => {
     </div>
   );
 };
-
-// Add hover effects through inline styles
-React.useEffect(() => {
-  const style = document.createElement('style');
-  style.textContent = `
-    .home-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-    }
-    @media (max-width: 768px) {
-      .home-card {
-        margin: 0 10px;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-  return () => document.head.removeChild(style);
-}, []);
 
 export default Home;
