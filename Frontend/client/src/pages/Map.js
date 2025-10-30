@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'; // --- MODIFIED --- (Added useRef)
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'; 
-import { Link, useLocation } from 'react-router-dom'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { Link, useLocation } from 'react-router-dom';
 import L from 'leaflet';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
 
 // CSS Imports
 import 'leaflet/dist/leaflet.css';
-import './Map.css';
+import './Map.css'; // Make sure to update this file
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -66,23 +66,17 @@ const getIcon = (category) => {
 };
 // --- End Icon Code ---
 
-// --- MapFocusController (MODIFIED) ---
-// This controller now also accepts a ref to the marker to open its popup
-const MapFocusController = ({ contactLocation, markerRef }) => { // --- MODIFIED ---
+// --- MapFocusController (Unchanged) ---
+const MapFocusController = ({ contactLocation, markerRef }) => {
     const map = useMap();
     useEffect(() => {
-        // contactLocation is already [lat, lng] from Contacts.js
         if (contactLocation?.length === 2) {
-            map.flyTo(contactLocation, 15); // Fly to the [lat, lng]
-             
-             // --- MODIFIED ---
-             // Remove the old L.popup logic
-             // Instead, open the popup of the marker we created
+            map.flyTo(contactLocation, 15); 
              if (markerRef.current) {
                 markerRef.current.openPopup();
              }
         }
-    }, [map, contactLocation, markerRef]); // --- MODIFIED ---
+    }, [map, contactLocation, markerRef]);
     return null;
 };
 // --- End MapFocusController ---
@@ -93,16 +87,18 @@ const Map = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // --- NEW --- Add state for the filter
+  const [filterCategory, setFilterCategory] = useState('All'); // 'All', 'Produces', 'Machineries', 'Services'
+  // --- END NEW ---
+
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const location = useLocation();
-  const contactMarkerRef = useRef(null); // --- ADDED --- (Ref for the new contact marker)
+  const contactMarkerRef = useRef(null); 
 
-  // --- MODIFIED ---
-  // Read the correct state keys from Contacts.js
-  const contactLocationFromState = location.state?.markerPosition; // Was 'contactLocation'
+  const contactLocationFromState = location.state?.markerPosition; 
   const contactNameFromState = location.state?.contactName;
-  // --- END MODIFICATION ---
 
   const DEFAULT_CENTER = [20.5937, 78.9629];
   const DEFAULT_ZOOM = 5;
@@ -116,14 +112,10 @@ const Map = () => {
     initialZoom = USER_ZOOM;
   }
   
-  // --- MODIFIED ---
-  // Override if coming from Contacts page
-  // The location is already [lat, lng], no need to swap
   if (contactLocationFromState?.length === 2) {
-      initialCenter = contactLocationFromState; // Was [contactLocationFromState[1], contactLocationFromState[0]]
+      initialCenter = contactLocationFromState; 
       initialZoom = 15;
   }
-  // --- END MODIFICATION ---
 
   useEffect(() => {
     let isMounted = true;
@@ -153,6 +145,18 @@ const Map = () => {
   } else if (error) {
     mapContent = <p className="map-error">{t('map.error', 'Error:')} {error}</p>; 
   } else {
+
+    // --- NEW --- Apply filter logic ---
+    const filteredListings = listings
+      .filter(listing => listing.user?.location?.coordinates?.length === 2)
+      .filter(listing => {
+        if (filterCategory === 'All') {
+          return true; // Show all
+        }
+        return listing.category === filterCategory; // Show only matching category
+      });
+    // --- END NEW ---
+
     mapContent = (
       <MapContainer center={initialCenter} zoom={initialZoom} className="map-container">
         <TileLayer
@@ -160,35 +164,26 @@ const Map = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* --- MODIFIED --- 
-           Pass the markerRef to the controller */}
         <MapFocusController
            contactLocation={contactLocationFromState}
            markerRef={contactMarkerRef}
         />
-        {/* --- END MODIFICATION --- */}
 
-
-        {/* --- ADDED --- 
-           Render the marker for the contact, if it exists */}
         {contactLocationFromState && (
           <Marker 
             position={contactLocationFromState} 
-            icon={defaultIcon} // Use the default icon
-            ref={contactMarkerRef} // Assign the ref
+            icon={defaultIcon}
+            ref={contactMarkerRef}
           >
             <Popup>
               <b>{contactNameFromState || t('contacts.selected_contact', 'Selected Contact')}</b>
             </Popup>
           </Marker>
         )}
-        {/* --- END ADDED --- */}
-
 
         <MarkerClusterGroup chunkedLoading maxClusterRadius={80}>
-          {listings
-            .filter(listing => listing.user?.location?.coordinates?.length === 2)
-            .map(listing => (
+          {/* --- MODIFIED --- Use filteredListings here --- */}
+          {filteredListings.map(listing => (
               <Marker
                 key={listing._id}
                 position={[listing.user.location.coordinates[1], listing.user.location.coordinates[0]]}
@@ -208,6 +203,7 @@ const Map = () => {
                 </Popup>
               </Marker>
             ))}
+          {/* --- END MODIFICATION --- */}
         </MarkerClusterGroup>
       </MapContainer>
     );
@@ -216,6 +212,36 @@ const Map = () => {
   return (
     <div className="map-page-container">
       <h2>{t('map.title', 'Listings Map')}</h2> 
+      
+      {/* --- NEW --- Filter Buttons --- */}
+      <div className="map-filter-container">
+        <button
+          className={`map-filter-btn ${filterCategory === 'All' ? 'active' : ''}`}
+          onClick={() => setFilterCategory('All')}
+        >
+          {t('map.filter_all', 'All')}
+        </button>
+        <button
+          className={`map-filter-btn ${filterCategory === 'Produces' ? 'active' : ''}`}
+          onClick={() => setFilterCategory('Produces')}
+        >
+          {t('map.filter_produces', 'Produces')}
+        </button>
+        <button
+          className={`map-filter-btn ${filterCategory === 'Machineries' ? 'active' : ''}`}
+          onClick={() => setFilterCategory('Machineries')}
+        >
+          {t('map.filter_machineries', 'Machineries')}
+        </button>
+        <button
+          className={`map-filter-btn ${filterCategory === 'Services' ? 'active' : ''}`}
+          onClick={() => setFilterCategory('Services')}
+        >
+          {t('map.filter_services', 'Services')}
+        </button>
+      </div>
+      {/* --- END NEW --- */}
+
       {mapContent}
     </div>
   );
